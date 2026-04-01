@@ -2,33 +2,57 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Career Atlas</title>
+<title>Career Roadmap</title>
 
 <style>
 body {
   margin: 0;
-  background: black;
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', sans-serif;
+  color: white;
+  background: linear-gradient(180deg, #1a0005, #3b0a1a, #0d0d0d);
 }
 
-.container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 4px;
-  padding: 10px;
+/* HEADER */
+h1 {
+  text-align: center;
+  padding: 30px;
+  font-size: 42px;
+  letter-spacing: 2px;
+}
+
+/* SECTION */
+.section {
+  margin: 20px;
+  padding: 15px;
+  border-radius: 15px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+}
+
+/* TITLE */
+.section h2 {
+  cursor: pointer;
+  color: #ff4d6d;
+}
+
+/* JOB LIST */
+.jobs {
+  display: none;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .job {
-  font-size: 10px;
-  color: #00ffcc;
-  padding: 3px 5px;
-  border: 1px solid rgba(0,255,204,0.2);
-  text-align: center;
-  white-space: nowrap;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(255, 77, 109, 0.1);
+  border: 1px solid rgba(255, 77, 109, 0.3);
 }
 
 .job:hover {
-  background: #00ffcc;
+  background: #ff4d6d;
   color: black;
 }
 </style>
@@ -37,49 +61,97 @@ body {
 
 <body>
 
-<div class="container">
+<h1>🍷 Career Roadmap</h1>
 
-<span class="job">Software Engineer</span>
-<span class="job">AI Engineer</span>
-<span class="job">Data Scientist</span>
-<span class="job">Machine Learning Engineer</span>
-<span class="job">Blockchain Developer</span>
-<span class="job">Cybersecurity Analyst</span>
-<span class="job">DevOps Engineer</span>
-<span class="job">Cloud Architect</span>
-<span class="job">Game Developer</span>
-<span class="job">Quantum Computing Engineer</span>
+<div id="container"></div>
 
-<span class="job">Investment Banker</span>
-<span class="job">Financial Analyst</span>
-<span class="job">Quantitative Trader</span>
-<span class="job">Portfolio Manager</span>
-<span class="job">Wealth Manager</span>
+<script>
 
-<span class="job">Surgeon</span>
-<span class="job">Cardiologist</span>
-<span class="job">Neurologist</span>
-<span class="job">Radiologist</span>
+// 🔥 YOUR JOB DATA (AUTO SYSTEM)
+const data = {
+  "💻 Tech": [
+    "Software Engineer","AI Engineer","Data Scientist","Machine Learning Engineer",
+    "Blockchain Developer","Cybersecurity Analyst","Cloud Architect","DevOps Engineer",
+    "Game Developer","Quantum Computing Engineer"
+  ],
 
-<span class="job">Corporate Lawyer</span>
-<span class="job">Criminal Lawyer</span>
-<span class="job">Cyber Law Expert</span>
+  "💰 Finance": [
+    "Investment Banker","Financial Analyst","Quantitative Trader",
+    "Portfolio Manager","Wealth Manager","Risk Manager","Actuary"
+  ],
 
-<span class="job">Mechanical Engineer</span>
-<span class="job">Civil Engineer</span>
-<span class="job">Robotics Engineer</span>
+  "🏥 Medical": [
+    "Surgeon","Cardiologist","Neurologist","Radiologist",
+    "Psychiatrist","Geneticist","Epidemiologist"
+  ],
 
-<span class="job">YouTuber</span>
-<span class="job">Photographer</span>
-<span class="job">DJ</span>
-<span class="job">Actor</span>
+  "⚖️ Law": [
+    "Corporate Lawyer","Criminal Lawyer","Cyber Law Expert","Tax Lawyer"
+  ],
 
-<span class="job">Drone Pilot</span>
-<span class="job">Marine Engineer</span>
-<span class="job">Pilot</span>
-<span class="job">Space Scientist</span>
+  "⚙️ Engineering": [
+    "Mechanical Engineer","Civil Engineer","Electrical Engineer",
+    "Robotics Engineer","Aerospace Engineer"
+  ],
 
-</div>
+  "🎨 Creative": [
+    "YouTuber","Photographer","Animator","DJ","Actor","Filmmaker"
+  ],
+
+  "🚀 Space": [
+    "Rocket Propulsion Engineer","Astrodynamics Specialist",
+    "Space Data Analyst","Planetary Scientist"
+  ],
+
+  "🌊 Marine": [
+    "Marine Engineer","Oceanographer","Naval Architect"
+  ],
+
+  "✈️ Sky": [
+    "Pilot","Flight Attendant","Drone Pilot"
+  ],
+
+  "🧠 Niche": [
+    "Perfusionist","Embryologist","Flavor Chemist",
+    "Foley Artist","Ballistics Expert"
+  ]
+};
+
+
+// 🚀 RENDER SYSTEM
+const container = document.getElementById("container");
+
+Object.keys(data).forEach(category => {
+
+  const section = document.createElement("div");
+  section.className = "section";
+
+  const title = document.createElement("h2");
+  title.innerText = category;
+
+  const jobsDiv = document.createElement("div");
+  jobsDiv.className = "jobs";
+
+  data[category].forEach(job => {
+    const span = document.createElement("span");
+    span.className = "job";
+    span.innerText = job;
+    jobsDiv.appendChild(span);
+  });
+
+  // TOGGLE
+  title.onclick = () => {
+    jobsDiv.style.display =
+      jobsDiv.style.display === "flex" ? "none" : "flex";
+  };
+
+  section.appendChild(title);
+  section.appendChild(jobsDiv);
+  container.appendChild(section);
+
+});
+
+</script>
 
 </body>
 </html>
