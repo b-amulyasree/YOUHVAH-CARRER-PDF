@@ -1,75 +1,70 @@
+// INIT GRAPH
 const Graph = ForceGraph3D()(document.getElementById('graph'))
 
-/* DATA STRUCTURE (TREE) */
+// ENABLE CONTROLS (FIXED ZOOM)
+Graph.enableNodeDrag(true)
+Graph.enableNavigationControls(true)
+
+/* DATA (you can expand later to 1000 jobs) */
 const data = {
   nodes: [
     { id: "CAREERS", group: 0 },
 
-    // SECTORS
     { id: "Tech", group: 1 },
     { id: "Finance", group: 1 },
     { id: "Medical", group: 1 },
     { id: "Law", group: 1 },
     { id: "Engineering", group: 1 },
 
-    // TECH JOBS
     { id: "Software Engineer", group: 2 },
     { id: "AI Engineer", group: 2 },
     { id: "Cloud Architect", group: 2 },
 
-    // FINANCE JOBS
     { id: "Investment Banker", group: 3 },
     { id: "Quant Trader", group: 3 },
 
-    // MEDICAL
     { id: "Surgeon", group: 4 },
     { id: "Cardiologist", group: 4 },
 
-    // LAW
     { id: "Corporate Lawyer", group: 5 },
 
-    // ENGINEERING
     { id: "Mechanical Engineer", group: 6 }
   ],
 
   links: [
-    // ROOT → SECTORS
     { source: "CAREERS", target: "Tech" },
     { source: "CAREERS", target: "Finance" },
     { source: "CAREERS", target: "Medical" },
     { source: "CAREERS", target: "Law" },
     { source: "CAREERS", target: "Engineering" },
 
-    // TECH → JOBS
     { source: "Tech", target: "Software Engineer" },
     { source: "Tech", target: "AI Engineer" },
     { source: "Tech", target: "Cloud Architect" },
 
-    // FINANCE → JOBS
     { source: "Finance", target: "Investment Banker" },
     { source: "Finance", target: "Quant Trader" },
 
-    // MEDICAL
     { source: "Medical", target: "Surgeon" },
     { source: "Medical", target: "Cardiologist" },
 
-    // LAW
     { source: "Law", target: "Corporate Lawyer" },
 
-    // ENGINEERING
     { source: "Engineering", target: "Mechanical Engineer" }
   ]
 }
 
-/* GRAPH CONFIG */
+// APPLY GRAPH
 Graph
   .graphData(data)
 
-  /* NODE LOOK */
+  // COLORS
   .nodeAutoColorBy('group')
+
+  // LABELS
   .nodeLabel(node => node.id)
 
-  /* COOL GLOW EFFECT */
+  // GLOW NODE STYLE
   .nodeThreeObject(node => {
     const sprite = new THREE.Sprite(
       new THREE.SpriteMaterial({
@@ -80,14 +75,14 @@ Graph
     return sprite
   })
 
-  /* LINK STYLE */
+  // LINKS
   .linkWidth(1.5)
   .linkOpacity(0.4)
 
-  /* CLICK FOCUS */
+  // CLICK ZOOM
   .onNodeClick(node => {
     const distance = 80
-    const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z)
+    const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z)
 
     Graph.cameraPosition(
       {
@@ -100,7 +95,12 @@ Graph
     )
   })
 
-/* COLOR FUNCTION (WINE STYLE) */
+// 🔥 ZOOM FIX (IMPORTANT)
+Graph.controls().minDistance = 50
+Graph.controls().maxDistance = 1000
+Graph.controls().zoomSpeed = 2
+
+// 🎨 COLORS (WINE THEME)
 function getColor(group) {
   const colors = {
     0: "#ffffff",
@@ -113,4 +113,3 @@ function getColor(group) {
   }
   return colors[group] || "#ffffff"
 }
-
