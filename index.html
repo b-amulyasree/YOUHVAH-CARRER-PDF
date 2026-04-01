@@ -1,1290 +1,798 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Youvah - The Infinite Career Pathway | India</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        :root {
-            --wine-dark: #1a0505;
-            --wine-deep: #2d0a0f;
-            --wine-royal: #4a0e16;
-            --wine-burgundy: #722f37;
-            --wine-rose: #9e4755;
-            --gold-accent: #d4af37;
-            --text-cream: #f5e6d3;
-        }
-        
-        body {
-            background-color: var(--wine-dark);
-            color: var(--text-cream);
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-        }
-        
-        h1, h2, h3, .cinzel {
-            font-family: 'Cinzel', serif;
-        }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--wine-deep);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--wine-burgundy);
-            border-radius: 4px;
-        }
-        
-        /* The Infinite Pathway */
-        .pathway-container {
-            position: relative;
-            min-height: 100vh;
-        }
-        
-        .path-line {
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: linear-gradient(to bottom, 
-                transparent 0%, 
-                var(--gold-accent) 10%, 
-                var(--wine-burgundy) 50%, 
-                var(--gold-accent) 90%, 
-                transparent 100%);
-            transform: translateX(-50%);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-        }
-        
-        .milestone {
-            position: relative;
-            margin: 100px 0;
-            opacity: 0;
-            transform: translateY(50px);
-        }
-        
-        .milestone-node {
-            width: 60px;
-            height: 60px;
-            background: radial-gradient(circle at 30% 30%, var(--wine-rose), var(--wine-royal));
-            border: 3px solid var(--gold-accent);
-            border-radius: 50%;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
-        }
-        
-        .milestone-node:hover {
-            transform: translateX(-50%) scale(1.2);
-            box-shadow: 0 0 50px rgba(212, 175, 55, 0.6);
-        }
-        
-        .milestone-content {
-            width: 40%;
-            padding: 30px;
-            background: rgba(45, 10, 15, 0.9);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 16px;
-            backdrop-filter: blur(10px);
-            position: relative;
-        }
-        
-        .milestone:nth-child(odd) .milestone-content {
-            margin-left: 55%;
-        }
-        .milestone:nth-child(even) .milestone-content {
-            margin-right: 55%;
-            margin-left: 5%;
-            text-align: right;
-        }
-        
-        /* Branching Tree System */
-        .profession-tree {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(26, 5, 5, 0.98);
-            z-index: 100;
-            overflow: auto;
-            padding: 40px;
-        }
-        
-        .tree-container {
-            position: relative;
-            min-width: 1200px;
-            min-height: 800px;
-            transform-origin: center top;
-        }
-        
-        .tree-node {
-            position: absolute;
-            width: 280px;
-            background: linear-gradient(135deg, rgba(114, 47, 55, 0.9), rgba(45, 10, 15, 0.95));
-            border: 2px solid var(--gold-accent);
-            border-radius: 12px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
-        
-        .tree-node:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
-            border-color: #fff;
-        }
-        
-        .tree-node img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 12px;
-        }
-        
-        .tree-connector {
-            position: absolute;
-            background: var(--gold-accent);
-            height: 2px;
-            transform-origin: left center;
-        }
-        
-        /* Career Detail Modal */
-        .career-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(26, 5, 5, 0.98);
-            z-index: 200;
-            overflow-y: auto;
-        }
-        
-        .roadmap-step {
-            position: relative;
-            padding-left: 40px;
-            border-left: 3px solid var(--wine-burgundy);
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-        }
-        
-        .roadmap-step::before {
-            content: '';
-            position: absolute;
-            left: -9px;
-            top: 0;
-            width: 16px;
-            height: 16px;
-            background: var(--gold-accent);
-            border-radius: 50%;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-        }
-        
-        /* Chatbot */
-        .chatbot-widget {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 300;
-        }
-        
-        .chatbot-button {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, var(--wine-rose), var(--wine-royal));
-            border: 3px solid var(--gold-accent);
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-            transition: all 0.3s ease;
-        }
-        
-        .chatbot-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
-        }
-        
-        .chat-window {
-            display: none;
-            position: absolute;
-            bottom: 90px;
-            right: 0;
-            width: 380px;
-            height: 500px;
-            background: linear-gradient(180deg, #2d0a0f, #1a0505);
-            border: 2px solid var(--gold-accent);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-        }
-        
-        .chat-header {
-            background: linear-gradient(90deg, var(--wine-royal), var(--wine-burgundy));
-            padding: 20px;
-            border-bottom: 2px solid var(--gold-accent);
-        }
-        
-        .chat-messages {
-            height: 350px;
-            overflow-y: auto;
-            padding: 20px;
-        }
-        
-        .chat-input-area {
-            padding: 15px;
-            border-top: 1px solid rgba(212, 175, 55, 0.3);
-            display: flex;
-            gap: 10px;
-        }
-        
-        .message {
-            margin-bottom: 15px;
-            max-width: 80%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        
-        .message.user {
-            background: var(--wine-burgundy);
-            margin-left: auto;
-            border-bottom-right-radius: 4px;
-        }
-        
-        .message.bot {
-            background: rgba(212, 175, 55, 0.15);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-bottom-left-radius: 4px;
-        }
-        
-        /* Ambient Effects */
-        .glow-orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.4;
-            pointer-events: none;
-            z-index: -1;
-        }
-        
-        .orb-1 { width: 400px; height: 400px; background: var(--wine-royal); top: 10%; left: -10%; }
-        .orb-2 { width: 300px; height: 300px; background: var(--gold-accent); bottom: 20%; right: -5%; opacity: 0.2; }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .milestone-content {
-                width: 80%;
-                margin: 0 auto !important;
-                text-align: center !important;
-                margin-top: 80px !important;
-            }
-            .path-line { left: 20px; }
-            .milestone-node { left: 20px; }
-            .chat-window { width: 90vw; right: -70px; }
-        }
-        
-        .sector-icon {
-            font-size: 32px;
-            color: var(--gold-accent);
-            margin-bottom: 16px;
-        }
-        
-        .close-btn {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            background: rgba(255,255,255,0.1);
-            border: 2px solid var(--gold-accent);
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 250;
-            transition: all 0.3s;
-        }
-        
-        .close-btn:hover {
-            background: var(--gold-accent);
-            color: var(--wine-dark);
-            transform: rotate(90deg);
-        }
-        
-        .tab-btn {
-            padding: 10px 24px;
-            background: transparent;
-            border: 1px solid var(--wine-burgundy);
-            color: var(--text-cream);
-            cursor: pointer;
-            transition: all 0.3s;
-            border-radius: 8px;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .tab-btn.active, .tab-btn:hover {
-            background: var(--wine-burgundy);
-            border-color: var(--gold-accent);
-        }
-        
-        .info-card {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 20px;
-        }
-        
-        .salary-tag {
-            display: inline-block;
-            padding: 6px 16px;
-            background: rgba(212, 175, 55, 0.2);
-            border: 1px solid var(--gold-accent);
-            border-radius: 20px;
-            font-size: 14px;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .progress-bar {
-            height: 8px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 8px;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--gold-accent), var(--wine-rose));
-            border-radius: 4px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YOUHVAH — Explore Every Career Path</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg0:#07000a;--bg1:#120010;--wine:#5c001a;--crimson:#b01030;--cr-glow:rgba(176,16,48,.45);
+  --gold:#c9943a;--gold-lt:#e8c070;--ivory:#f2e2cc;--ivory-d:rgba(242,226,204,.65);
+  --line:1px solid rgba(176,16,48,.25);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg0);color:var(--ivory);
+  font-family:'Jost',sans-serif;font-weight:300;overflow-x:hidden;
+}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg0)}
+::-webkit-scrollbar-thumb{background:var(--wine)}::-webkit-scrollbar-thumb:hover{background:var(--crimson)}
+
+/* ─── GRAIN ─── */
+#grain{
+  position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:300px;animation:grainShift 8s steps(10) infinite;
+}
+@keyframes grainShift{0%{background-position:0 0}100%{background-position:300px 300px}}
+
+/* ─── BACKGROUND ─── */
+#bg{position:fixed;inset:0;z-index:0}
+.bg-slide{
+  position:absolute;inset:0;background-size:cover;background-position:center;
+  opacity:0;transition:opacity 2s cubic-bezier(.4,0,.2,1);
+}
+.bg-slide.active{opacity:.14}
+#bg::after{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 80% at 15% 50%,rgba(92,0,26,.35) 0%,transparent 70%),
+    linear-gradient(180deg,rgba(7,0,10,.92) 0%,rgba(18,0,16,.5) 40%,rgba(7,0,10,.92) 100%);
+  z-index:1;
+}
+
+/* ─── HEADER ─── */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  padding:22px 48px;display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(to bottom,rgba(7,0,10,.95) 60%,transparent);
+}
+.logo{
+  font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:300;
+  letter-spacing:.18em;color:var(--ivory);text-shadow:0 0 30px var(--cr-glow);
+}
+.logo b{color:var(--crimson);font-weight:400}
+.hdr-search{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(176,16,48,.3);padding:9px 18px;
+  backdrop-filter:blur(12px);transition:border-color .3s;
+}
+.hdr-search:focus-within{border-color:var(--crimson)}
+.hdr-search input{
+  background:none;border:none;outline:none;color:var(--ivory);
+  font-family:'Jost',sans-serif;font-size:.78rem;letter-spacing:.12em;width:200px;
+}
+.hdr-search input::placeholder{color:rgba(242,226,204,.3)}
+.hdr-tag{font-size:.65rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);opacity:.75}
+
+/* ─── PROGRESS ─── */
+#progress{
+  position:fixed;right:28px;top:50%;transform:translateY(-50%);
+  z-index:400;display:flex;flex-direction:column;gap:9px;
+}
+.pd{
+  width:5px;height:5px;border-radius:50%;background:rgba(242,226,204,.2);
+  cursor:pointer;transition:all .35s;border:none;padding:0;
+}
+.pd.active,.pd:hover{background:var(--gold);box-shadow:0 0 10px rgba(201,148,58,.6);transform:scale(1.4)}
+
+/* ─── HERO ─── */
+#hero{
+  height:100vh;display:flex;align-items:center;justify-content:center;
+  text-align:center;position:relative;z-index:2;
+}
+.hero-inner{position:relative}
+.hero-eyebrow{
+  font-size:.65rem;letter-spacing:.5em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:2rem;opacity:.8;
+}
+.hero-h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(3.2rem,9vw,7.5rem);font-weight:300;
+  line-height:1.05;letter-spacing:-.01em;margin-bottom:1.8rem;
+}
+.hero-h1 em{font-style:italic;color:var(--crimson);text-shadow:0 0 60px var(--cr-glow)}
+.hero-sub{
+  font-size:.8rem;letter-spacing:.35em;text-transform:uppercase;
+  color:var(--ivory-d);margin-bottom:3.5rem;
+}
+.scroll-hint{
+  display:inline-flex;flex-direction:column;align-items:center;gap:14px;
+  color:var(--gold);font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;
+}
+.scroll-line{
+  width:1px;height:65px;
+  background:linear-gradient(to bottom,var(--gold),transparent);
+  animation:linePulse 2.2s ease-in-out infinite;
+}
+@keyframes linePulse{0%,100%{opacity:.25;transform:scaleY(.7)}60%{opacity:1;transform:scaleY(1)}}
+
+/* ─── STATS ─── */
+.stats{
+  position:relative;z-index:2;display:flex;justify-content:center;gap:80px;
+  padding:60px 48px;border-top:var(--line);border-bottom:var(--line);
+}
+.stat{text-align:center}
+.stat-n{
+  display:block;font-family:'Cormorant Garamond',serif;font-size:3.2rem;
+  font-weight:300;color:var(--gold);line-height:1;margin-bottom:10px;
+}
+.stat-l{font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;color:var(--ivory-d);opacity:.5}
+
+/* ─── TIMELINE ─── */
+#timeline{position:relative;z-index:2;padding-bottom:220px}
+.central-line{
+  position:absolute;left:50%;top:0;bottom:0;width:1px;transform:translateX(-50%);
+  background:linear-gradient(to bottom,transparent 2%,var(--wine) 8%,var(--crimson) 30%,var(--gold) 55%,var(--crimson) 80%,var(--wine) 95%,transparent);
+  box-shadow:0 0 18px var(--cr-glow);
+}
+
+/* ─── SECTOR NODE ─── */
+.sn{
+  display:grid;grid-template-columns:1fr 56px 1fr;
+  align-items:center;min-height:380px;padding:60px 0;position:relative;
+}
+.sn-dot-col{
+  display:flex;flex-direction:column;align-items:center;
+  position:relative;gap:6px;z-index:3;
+}
+.sn-dot{
+  width:18px;height:18px;border-radius:50%;
+  background:radial-gradient(circle,var(--crimson) 0%,var(--wine) 100%);
+  border:2px solid var(--gold);cursor:pointer;
+  box-shadow:0 0 18px var(--cr-glow),0 0 40px rgba(176,16,48,.18);
+  transition:all .35s;flex-shrink:0;
+}
+.sn-dot:hover{transform:scale(1.5);box-shadow:0 0 30px var(--cr-glow),0 0 70px rgba(176,16,48,.3)}
+.sn-pip{
+  width:3px;height:3px;border-radius:50%;background:var(--gold);
+  box-shadow:0 0 6px var(--gold);opacity:.4;
+  animation:pipPulse 3s ease-in-out infinite;
+}
+@keyframes pipPulse{0%,100%{opacity:.2}50%{opacity:.9}}
+
+.sn-left{padding-right:52px;text-align:right}
+.sn-right{padding-left:52px;text-align:left}
+.sn-empty{opacity:0;pointer-events:none}
+
+.sn-content{opacity:0;transition:opacity .9s ease,transform .9s cubic-bezier(.4,0,.2,1)}
+.sn-left .sn-content{transform:translateX(-28px)}
+.sn-right .sn-content{transform:translateX(28px)}
+.sn.visible .sn-content{opacity:1;transform:translateX(0)}
+
+.sn-icon{display:block;font-size:2.2rem;margin-bottom:14px}
+.sn-num{
+  font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;
+  color:var(--gold);opacity:.55;margin-bottom:6px;
+}
+.sn-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.8rem,3.5vw,3rem);font-weight:300;
+  letter-spacing:.04em;line-height:1.1;margin-bottom:14px;
+}
+.sn-desc{
+  font-size:.82rem;color:var(--ivory-d);line-height:1.85;
+  letter-spacing:.04em;margin-bottom:18px;
+}
+.sn-meta{
+  font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--gold);opacity:.6;margin-bottom:20px;
+}
+.sn-meta span{color:var(--crimson);opacity:1}
+.explore-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:9px 22px;border:1px solid rgba(176,16,48,.4);
+  background:rgba(176,16,48,.07);color:var(--ivory);
+  font-family:'Jost',sans-serif;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;
+  cursor:pointer;transition:all .3s;backdrop-filter:blur(6px);
+}
+.explore-btn:hover{
+  background:rgba(176,16,48,.2);border-color:var(--crimson);
+  box-shadow:0 0 24px rgba(176,16,48,.2),0 6px 24px rgba(0,0,0,.3);
+}
+.connector-h{
+  position:absolute;top:50%;height:1px;
+  background:linear-gradient(to right,transparent,rgba(176,16,48,.3),transparent);
+}
+.sn-left .connector-h{right:56px;width:calc(50% - 56px - 48px);transform:translateY(-50%)}
+.sn-right .connector-h{left:56px;width:calc(50% - 56px - 48px);transform:translateY(-50%)}
+
+/* ─── TREE OVERLAY ─── */
+#overlay{
+  position:fixed;inset:0;z-index:1000;
+  background:rgba(7,0,10,.97);backdrop-filter:blur(24px);
+  display:none;flex-direction:column;overflow:hidden;
+}
+#overlay.open{display:flex;animation:overlayIn .4s cubic-bezier(.4,0,.2,1)}
+@keyframes overlayIn{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
+
+.ov-head{
+  padding:26px 48px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:var(--line);flex-shrink:0;
+  background:linear-gradient(to right,rgba(92,0,26,.1),transparent);
+}
+.ov-title-sup{font-size:.58rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);opacity:.6;margin-bottom:6px}
+.ov-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.85rem;font-weight:300;letter-spacing:.08em;
+}
+.ov-title span{color:var(--crimson)}
+.ov-meta{font-size:.65rem;letter-spacing:.2em;color:var(--ivory-d);opacity:.5}
+.ov-close{
+  width:42px;height:42px;border:1px solid rgba(176,16,48,.3);
+  background:none;color:var(--ivory);font-size:1.1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .3s;
+}
+.ov-close:hover{background:rgba(176,16,48,.15);border-color:var(--crimson)}
+
+/* Tabs */
+.ov-tabs{
+  display:flex;gap:2px;padding:0 48px;overflow-x:auto;
+  flex-shrink:0;padding-top:22px;padding-bottom:22px;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  scrollbar-width:none;
+}
+.ov-tabs::-webkit-scrollbar{display:none}
+.tab{
+  padding:9px 18px;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ivory-d);cursor:pointer;border:1px solid transparent;
+  white-space:nowrap;transition:all .25s;background:none;
+  font-family:'Jost',sans-serif;flex-shrink:0;
+}
+.tab:hover{color:var(--ivory);border-color:rgba(176,16,48,.3);background:rgba(176,16,48,.06)}
+.tab.active{color:var(--gold-lt);border-color:var(--crimson);background:rgba(176,16,48,.1)}
+
+/* Cards */
+.ov-body{flex:1;overflow-y:auto;padding:36px 48px}
+.cards-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;
+}
+.cc{
+  background:linear-gradient(135deg,rgba(92,0,26,.15),rgba(7,0,10,.7));
+  border:1px solid rgba(176,16,48,.12);padding:26px 22px;
+  cursor:pointer;transition:all .38s cubic-bezier(.4,0,.2,1);
+  opacity:0;transform:translateY(16px);
+  animation:cardIn .45s cubic-bezier(.4,0,.2,1) forwards;
+  position:relative;overflow:hidden;backdrop-filter:blur(6px);
+}
+.cc::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--crimson),var(--gold));
+  opacity:0;transition:opacity .3s;
+}
+.cc:hover{
+  border-color:var(--crimson);transform:translateY(-5px) scale(1.025);
+  box-shadow:0 18px 40px rgba(0,0,0,.45),0 0 28px rgba(176,16,48,.18);
+}
+.cc:hover::after{opacity:.04}
+@keyframes cardIn{to{opacity:1;transform:translateY(0)}}
+.cc-icon{font-size:1.9rem;display:block;margin-bottom:14px;position:relative;z-index:1}
+.cc-title{
+  font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400;
+  letter-spacing:.03em;line-height:1.3;position:relative;z-index:1;margin-bottom:7px;
+}
+.cc-tag{
+  font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold);opacity:.6;position:relative;z-index:1;
+}
+
+/* ─── SEARCH RESULTS ─── */
+.no-results{
+  text-align:center;padding:80px 20px;
+  font-family:'Cormorant Garamond',serif;font-size:1.5rem;
+  color:var(--ivory-d);opacity:.4;font-style:italic;
+}
+
+/* ─── FOOTER ─── */
+footer{
+  position:relative;z-index:2;text-align:center;padding:64px;
+  border-top:var(--line);
+}
+.ft{
+  font-family:'Cormorant Garamond',serif;font-size:.75rem;
+  letter-spacing:.3em;color:var(--ivory-d);opacity:.3;font-style:italic;
+}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:700px){
+  header{padding:18px 20px}
+  .hdr-search,.hdr-tag{display:none}
+  .sn{grid-template-columns:32px 1fr;padding:40px 0}
+  .sn-dot-col{position:absolute;left:0}
+  .sn-left,.sn-right{grid-column:2;padding:0 20px 0 36px;text-align:left}
+  .sn-left .sn-content,.sn-right .sn-content{transform:translateX(-20px)}
+  .connector-h{display:none}
+  .central-line{left:16px}
+  #progress{display:none}
+  .stats{gap:40px;flex-wrap:wrap;padding:40px 20px}
+  .ov-head,.ov-tabs,.ov-body{padding-left:20px;padding-right:20px}
+  .sn-left{order:2}.sn-dot-col{order:1}
+}
+</style>
 </head>
 <body>
 
-    <!-- Ambient Background -->
-    <div class="glow-orb orb-1"></div>
-    <div class="glow-orb orb-2"></div>
+<div id="grain"></div>
+<div id="bg"></div>
 
-    <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 bg-gradient-to-b from-[#1a0505] to-transparent px-8 py-6">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-[#722f37] to-[#d4af37] rounded-lg flex items-center justify-center">
-                    <i data-lucide="compass" class="text-white w-6 h-6"></i>
-                </div>
-                <span class="text-2xl font-bold cinzel text-[#d4af37]">Youvah</span>
-            </div>
-            <div class="hidden md:flex gap-8 text-sm font-semibold tracking-wider">
-                <button onclick="switchMode('sectors')" class="hover:text-[#d4af37] transition-colors">BY SECTORS</button>
-                <button onclick="switchMode('adventure')" class="hover:text-[#d4af37] transition-colors">ADVENTURE MODE</button>
-                <button onclick="document.getElementById('faq').scrollIntoView({behavior: 'smooth'})" class="hover:text-[#d4af37] transition-colors">FAQ</button>
-            </div>
-        </div>
-    </nav>
+<!-- HEADER -->
+<header>
+  <div class="logo">YOUHVAH<b></div>
+  <div class="hdr-search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:.4;flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="searchInput" placeholder="Search any career or sector…">
+  </div>
+  <div class="hdr-tag">1,141 Careers Mapped</div>
+</header>
 
-    <!-- Hero Section -->
-    <header class="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
-        <div class="absolute inset-0 z-0">
-            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#1a0505]/50 to-[#1a0505]"></div>
-            <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80" class="w-full h-full object-cover opacity-30" alt="Abstract pathway">
-        </div>
-        
-        <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
-            <h1 class="text-5xl md:text-7xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#f5e6d3] via-[#d4af37] to-[#f5e6d3] leading-tight">
-                Discover Your Destiny
-            </h1>
-            <p class="text-xl md:text-2xl text-gray-300 mb-4 font-light">1000+ Career Paths Across India</p>
-            <p class="text-lg text-[#d4af37] mb-12 cinzel">From UPSC to Silicon Valley • From Army to Arts</p>
-            
-            <div class="flex flex-col md:flex-row gap-6 justify-center items-center">
-                <button onclick="startJourney()" class="group relative px-8 py-4 bg-gradient-to-r from-[#722f37] to-[#9e4755] rounded-full overflow-hidden transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(212,175,55,0.4)]">
-                    <div class="absolute inset-0 bg-gradient-to-r from-[#d4af37] to-[#f5e6d3] opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                    <span class="relative flex items-center gap-2 font-bold text-lg">
-                        Begin Your Journey <i data-lucide="arrow-down" class="w-5 h-5 animate-bounce"></i>
-                    </span>
-                </button>
-                
-                <button onclick="toggleChat()" class="px-8 py-4 border-2 border-[#d4af37] rounded-full hover:bg-[#d4af37] hover:text-[#1a0505] transition-all font-semibold flex items-center gap-2">
-                    <i data-lucide="bot" class="w-5 h-5"></i> Ask Youvah AI
-                </button>
-            </div>
-            
-            <div class="mt-16 flex justify-center gap-12 text-sm text-gray-400">
-                <div class="flex flex-col items-center gap-2">
-                    <i data-lucide="building-2" class="w-6 h-6 text-[#d4af37]"></i>
-                    <span>Government</span>
-                </div>
-                <div class="flex flex-col items-center gap-2">
-                    <i data-lucide="code" class="w-6 h-6 text-[#d4af37]"></i>
-                    <span>Technology</span>
-                </div>
-                <div class="flex flex-col items-center gap-2">
-                    <i data-lucide="stethoscope" class="w-6 h-6 text-[#d4af37]"></i>
-                    <span>Medical</span>
-                </div>
-                <div class="flex flex-col items-center gap-2">
-                    <i data-lucide="shield" class="w-6 h-6 text-[#d4af37]"></i>
-                    <span>Defense</span>
-                </div>
-            </div>
-        </div>
-    </header>
+<!-- PROGRESS -->
+<nav id="progress"></nav>
 
-    <!-- The Infinite Pathway -->
-    <main id="pathway" class="pathway-container max-w-7xl mx-auto px-4 py-20 relative">
-        <div class="path-line"></div>
-        
-        <!-- Sector 1: Government & Civil Services -->
-        <div class="milestone" data-sector="government">
-            <div class="milestone-node" onclick="openSector('government')">
-                <i data-lucide="landmark" class="w-6 h-6 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
-            </div>
-            <div class="milestone-content group cursor-pointer" onclick="openSector('government')">
-                <div class="sector-icon"><i data-lucide="landmark" class="w-10 h-10"></i></div>
-                <h2 class="text-3xl font-bold mb-3 text-[#d4af37]">Government & Civil Services</h2>
-                <p class="text-gray-300 mb-4">Serve the nation through prestigious roles like IAS, IPS, IFS, and State Civil Services. The backbone of Indian administration.</p>
-                <div class="flex flex-wrap gap-2">
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">UPSC</span>
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">SSC</span>
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">State PCS</span>
-                </div>
-                <img src="https://kimi-web-img.moonshot.cn/img/s3rozgar.s3.ap-south-1.amazonaws.com/73dc456f969f434e9c37b981fd8ff59f95ebdf2c.png" class="w-full h-48 object-cover rounded-lg mt-4 opacity-80 group-hover:opacity-100 transition-opacity" alt="UPSC Services">
-            </div>
-        </div>
-
-        <!-- Sector 2: Defense & Security -->
-        <div class="milestone" data-sector="defense">
-            <div class="milestone-node" onclick="openSector('defense')">
-                <i data-lucide="shield" class="w-6 h-6 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
-            </div>
-            <div class="milestone-content group cursor-pointer" onclick="openSector('defense')">
-                <div class="sector-icon"><i data-lucide="shield" class="w-10 h-10"></i></div>
-                <h2 class="text-3xl font-bold mb-3 text-[#d4af37]">Defense & Security</h2>
-                <p class="text-gray-300 mb-4">Protect the motherland through Indian Army, Navy, Air Force, and paramilitary forces. A life of honor and discipline.</p>
-                <div class="flex flex-wrap gap-2">
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">NDA</span>
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">CDS</span>
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">AFCAT</span>
-                </div>
-                <img src="https://kimi-web-img.moonshot.cn/img/olivesquad.com/64bf297af591ee3f254e27772cafa4c2c84fbfff.jpg" class="w-full h-48 object-cover rounded-lg mt-4 opacity-80 group-hover:opacity-100 transition-opacity" alt="Indian Armed Forces">
-            </div>
-        </div>
-
-        <!-- Sector 3: Technology & IT -->
-        <div class="milestone" data-sector="technology">
-            <div class="milestone-node" onclick="openSector('technology')">
-                <i data-lucide="cpu" class="w-6 h-6 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
-            </div>
-            <div class="milestone-content group cursor-pointer" onclick="openSector('technology')">
-                <div class="sector-icon"><i data-lucide="cpu" class="w-10 h-10"></i></div>
-                <h2 class="text-3xl font-bold mb-3 text-[#d4af37]">Technology & Engineering</h2>
-                <p class="text-gray-300 mb-4">Build the future through Software Engineering, AI, Data Science, and Core Engineering disciplines.</p>
-                <div class="flex flex-wrap gap-2">
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">JEE</span>
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">Software Dev</span>
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">AI/ML</span>
-                </div>
-                <img src="https://kimi-web-img.moonshot.cn/img/kahedu.edu.in/f5e4c2a0a5d9f01ec6e1525da8e73589d6edbe29.jpg" class="w-full h-48 object-cover rounded-lg mt-4 opacity-80 group-hover:opacity-100 transition-opacity" alt="Software Engineering">
-            </div>
-        </div>
-
-        <!-- Sector 4: Medical & Healthcare -->
-        <div class="milestone" data-sector="medical">
-            <div class="milestone-node" onclick="openSector('medical')">
-                <i data-lucide="heart-pulse" class="w-6 h-6 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
-            </div>
-            <div class="milestone-content group cursor-pointer" onclick="openSector('medical')">
-                <div class="sector-icon"><i data-lucide="heart-pulse" class="w-10 h-10"></i></div>
-                <h2 class="text-3xl font-bold mb-3 text-[#d4af37]">Medical & Healthcare</h2>
-                <p class="text-gray-300 mb-4">Heal and serve humanity through MBBS, Nursing, Pharmacy, and Allied Health Sciences.</p>
-                <div class="flex flex-wrap gap-2">
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">NEET</span>
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">AIIMS</span>
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">Nursing</span>
-                </div>
-                <img src="https://kimi-web-img.moonshot.cn/img/vaidyog.com/2a6ab8332aeafad117c138054948dbd71aa86bfc.jpg" class="w-full h-48 object-cover rounded-lg mt-4 opacity-80 group-hover:opacity-100 transition-opacity" alt="Medical Professionals">
-            </div>
-        </div>
-
-        <!-- Sector 5: Finance & Commerce -->
-        <div class="milestone" data-sector="finance">
-            <div class="milestone-node" onclick="openSector('finance')">
-                <i data-lucide="trending-up" class="w-6 h-6 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
-            </div>
-            <div class="milestone-content group cursor-pointer" onclick="openSector('finance')">
-                <div class="sector-icon"><i data-lucide="trending-up" class="w-10 h-10"></i></div>
-                <h2 class="text-3xl font-bold mb-3 text-[#d4af37]">Finance & Commerce</h2>
-                <p class="text-gray-300 mb-4">Master the markets through CA, CS, Investment Banking, and Financial Analysis.</p>
-                <div class="flex flex-wrap gap-2">
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">CA</span>
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">MBA</span>
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">Banking</span>
-                </div>
-                <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&q=80" class="w-full h-48 object-cover rounded-lg mt-4 opacity-80 group-hover:opacity-100 transition-opacity" alt="Finance">
-            </div>
-        </div>
-
-        <!-- Sector 6: Education & Research -->
-        <div class="milestone" data-sector="education">
-            <div class="milestone-node" onclick="openSector('education')">
-                <i data-lucide="graduation-cap" class="w-6 h-6 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
-            </div>
-            <div class="milestone-content group cursor-pointer" onclick="openSector('education')">
-                <div class="sector-icon"><i data-lucide="graduation-cap" class="w-10 h-10"></i></div>
-                <h2 class="text-3xl font-bold mb-3 text-[#d4af37]">Education & Research</h2>
-                <p class="text-gray-300 mb-4">Shape future generations through Teaching, Research, and Academic Administration.</p>
-                <div class="flex flex-wrap gap-2">
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">NET/SET</span>
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">PhD</span>
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">Teaching</span>
-                </div>
-                <img src="https://kimi-web-img.moonshot.cn/img/akm-img-a-in.tosshub.com/6e7483ac0a038c682407468f772bd283a4739bca.jpg" class="w-full h-48 object-cover rounded-lg mt-4 opacity-80 group-hover:opacity-100 transition-opacity" alt="Teaching Career">
-            </div>
-        </div>
-
-        <!-- Sector 7: Arts & Creative -->
-        <div class="milestone" data-sector="arts">
-            <div class="milestone-node" onclick="openSector('arts')">
-                <i data-lucide="palette" class="w-6 h-6 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
-            </div>
-            <div class="milestone-content group cursor-pointer" onclick="openSector('arts')">
-                <div class="sector-icon"><i data-lucide="palette" class="w-10 h-10"></i></div>
-                <h2 class="text-3xl font-bold mb-3 text-[#d4af37]">Arts & Creative</h2>
-                <p class="text-gray-300 mb-4">Express creativity through Fine Arts, Design, Media, and Performing Arts.</p>
-                <div class="flex flex-wrap gap-2">
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">NID</span>
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">NIFT</span>
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">FTII</span>
-                </div>
-                <img src="https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=800&q=80" class="w-full h-48 object-cover rounded-lg mt-4 opacity-80 group-hover:opacity-100 transition-opacity" alt="Arts">
-            </div>
-        </div>
-
-        <!-- Sector 8: Traditional Professions -->
-        <div class="milestone" data-sector="traditional">
-            <div class="milestone-node" onclick="openSector('traditional')">
-                <i data-lucide="hand" class="w-6 h-6 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
-            </div>
-            <div class="milestone-content group cursor-pointer" onclick="openSector('traditional')">
-                <div class="sector-icon"><i data-lucide="hand" class="w-10 h-10"></i></div>
-                <h2 class="text-3xl font-bold mb-3 text-[#d4af37]">Traditional & Cultural</h2>
-                <p class="text-gray-300 mb-4">Preserve India's heritage through traditional crafts, Ayurveda, and indigenous occupations.</p>
-                <div class="flex flex-wrap gap-2">
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">Crafts</span>
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">Ayurveda</span>
-                    <span class="px-3 py-1 bg-[#722f37]/50 rounded-full text-xs border border-[#d4af37]/30">Farming</span>
-                </div>
-                <img src="https://kimi-web-img.moonshot.cn/img/cdn.dollsofindia.com/f95f1c094d40871bfb3bcb3afcb7fab11e873598.jpg" class="w-full h-48 object-cover rounded-lg mt-4 opacity-80 group-hover:opacity-100 transition-opacity" alt="Traditional Professions">
-            </div>
-        </div>
-    </main>
-
-    <!-- Profession Tree Overlay -->
-    <div id="professionTree" class="profession-tree">
-        <button class="close-btn" onclick="closeSector()">
-            <i data-lucide="x" class="w-6 h-6"></i>
-        </button>
-        <div class="max-w-7xl mx-auto">
-            <h2 id="treeTitle" class="text-4xl font-bold text-center mb-4 text-[#d4af37] cinzel"></h2>
-            <p id="treeSubtitle" class="text-center text-gray-400 mb-12">Click on any profession to view detailed roadmap</p>
-            
-            <div id="treeContainer" class="tree-container">
-                <!-- Dynamic tree nodes will be inserted here -->
-            </div>
-        </div>
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner" id="heroInner">
+    <p class="hero-eyebrow">A Universe of Career Paths</p>
+    <h1 class="hero-h1">Every <em>Path</em><br>Begins Here</h1>
+    <p class="hero-sub">1,141 Careers &nbsp;·&nbsp; 20 Sectors &nbsp;·&nbsp; 95 Specializations</p>
+    <div class="scroll-hint">
+      <span>Begin Your Journey</span>
+      <div class="scroll-line"></div>
     </div>
+  </div>
+</section>
 
-    <!-- Career Detail Modal -->
-    <div id="careerModal" class="career-modal">
-        <button class="close-btn" onclick="closeCareer()">
-            <i data-lucide="x" class="w-6 h-6"></i>
-        </button>
-        
-        <div class="max-w-5xl mx-auto px-6 py-20">
-            <div id="careerContent">
-                <!-- Dynamic content -->
-            </div>
-        </div>
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><span class="stat-n" data-count="1141">0</span><span class="stat-l">Career Paths</span></div>
+  <div class="stat"><span class="stat-n" data-count="20">0</span><span class="stat-l">Major Sectors</span></div>
+  <div class="stat"><span class="stat-n" data-count="95">0</span><span class="stat-l">Specializations</span></div>
+</div>
+
+<!-- TIMELINE -->
+<div id="timeline">
+  <div class="central-line"></div>
+</div>
+
+<!-- FOOTER -->
+<footer><p class="ft">YOUHVAH &nbsp;—&nbsp; Explore Every Horizon &nbsp;—&nbsp; © 2026</p></footer>
+
+<!-- TREE OVERLAY -->
+<div id="overlay">
+  <div class="ov-head">
+    <div>
+      <div class="ov-title-sup">Exploring Sector</div>
+      <div class="ov-title" id="ovTitle">Technology</div>
     </div>
-
-    <!-- FAQ Section -->
-    <section id="faq" class="py-20 bg-gradient-to-b from-[#1a0505] to-[#2d0a0f]">
-        <div class="max-w-4xl mx-auto px-6">
-            <h2 class="text-4xl font-bold text-center mb-12 text-[#d4af37] cinzel">Frequently Asked Questions</h2>
-            
-            <div class="space-y-4">
-                <div class="bg-[#2d0a0f]/50 border border-[#722f37] rounded-lg p-6 cursor-pointer hover:border-[#d4af37] transition-colors" onclick="toggleFaq(this)">
-                    <div class="flex justify-between items-center">
-                        <h3 class="font-semibold text-lg">How do I choose the right career path?</h3>
-                        <i data-lucide="chevron-down" class="w-5 h-5 text-[#d4af37]"></i>
-                    </div>
-                    <p class="mt-4 text-gray-300 hidden">Consider your interests, strengths, and market demand. Use our Adventure Mode for younger students or Sector Mode for focused exploration. Youvah AI can also provide personalized guidance.</p>
-                </div>
-                
-                <div class="bg-[#2d0a0f]/50 border border-[#722f37] rounded-lg p-6 cursor-pointer hover:border-[#d4af37] transition-colors" onclick="toggleFaq(this)">
-                    <div class="flex justify-between items-center">
-                        <h3 class="font-semibold text-lg">What is the best way to prepare for UPSC?</h3>
-                        <i data-lucide="chevron-down" class="w-5 h-5 text-[#d4af37]"></i>
-                    </div>
-                    <p class="mt-4 text-gray-300 hidden">Start with NCERTs, follow a disciplined routine, read newspapers daily, and practice answer writing. Consistency over 1-2 years is key. Check our detailed IAS roadmap for step-by-step guidance.</p>
-                </div>
-                
-                <div class="bg-[#2d0a0f]/50 border border-[#722f37] rounded-lg p-6 cursor-pointer hover:border-[#d4af37] transition-colors" onclick="toggleFaq(this)">
-                    <div class="flex justify-between items-center">
-                        <h3 class="font-semibold text-lg">Are there careers outside of Engineering and Medicine?</h3>
-                        <i data-lucide="chevron-down" class="w-5 h-5 text-[#d4af37]"></i>
-                    </div>
-                    <p class="mt-4 text-gray-300 hidden">Absolutely! India offers diverse opportunities in Design, Psychology, Data Science, Defense, Civil Services, Arts, and traditional crafts. Explore our Arts and Creative section for unconventional paths.</p>
-                </div>
-                
-                <div class="bg-[#2d0a0f]/50 border border-[#722f37] rounded-lg p-6 cursor-pointer hover:border-[#d4af37] transition-colors" onclick="toggleFaq(this)">
-                    <div class="flex justify-between items-center">
-                        <h3 class="font-semibold text-lg">How accurate is the salary information?</h3>
-                        <i data-lucide="chevron-down" class="w-5 h-5 text-[#d4af37]"></i>
-                    </div>
-                    <p class="mt-4 text-gray-300 hidden">Our salary data is compiled from government pay commissions, industry reports, and professional surveys. Government salaries follow 7th Pay Commission standards, while private sector ranges reflect market averages.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-[#0f0202] border-t border-[#722f37] py-12">
-        <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="text-center md:text-left">
-                <h3 class="text-2xl font-bold text-[#d4af37] cinzel mb-2">Youvah</h3>
-                <p class="text-gray-400 text-sm">Guiding India's youth towards meaningful careers</p>
-            </div>
-            
-            <div class="flex gap-6">
-                <a href="mailto:contact@youvah.in" class="flex items-center gap-2 text-gray-300 hover:text-[#d4af37] transition-colors">
-                    <i data-lucide="mail" class="w-5 h-5"></i>
-                    contact@youvah.in
-                </a>
-                <a href="#" class="flex items-center gap-2 text-gray-300 hover:text-[#d4af37] transition-colors">
-                    <i data-lucide="instagram" class="w-5 h-5"></i>
-                    @youvah.careers
-                </a>
-            </div>
-        </div>
-        <div class="text-center mt-8 text-gray-600 text-sm">
-            © 2026 Youvah Career Explorer. All rights reserved.
-        </div>
-    </footer>
-
-    <!-- Youvah Chatbot -->
-    <div class="chatbot-widget">
-        <div id="chatWindow" class="chat-window">
-            <div class="chat-header">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-[#d4af37] rounded-full flex items-center justify-center">
-                        <i data-lucide="bot" class="text-[#1a0505] w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-white">Youvah AI</h4>
-                        <p class="text-xs text-gray-300">Career Assistant</p>
-                    </div>
-                </div>
-            </div>
-            <div id="chatMessages" class="chat-messages">
-                <div class="message bot">
-                    Namaste! 🙏 I'm Youvah, your personal career guide. I can help you explore career paths, exam preparation strategies, or salary insights. What would you like to know about?
-                </div>
-            </div>
-            <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Ask about careers, exams..." 
-                    class="flex-1 bg-[#1a0505] border border-[#722f37] rounded-full px-4 py-2 text-white focus:outline-none focus:border-[#d4af37]"
-                    onkeypress="if(event.key==='Enter') sendMessage()">
-                <button onclick="sendMessage()" class="w-10 h-10 bg-[#d4af37] rounded-full flex items-center justify-center hover:scale-110 transition-transform">
-                    <i data-lucide="send" class="w-5 h-5 text-[#1a0505]"></i>
-                </button>
-            </div>
-        </div>
-        
-        <button class="chatbot-button" onclick="toggleChat()">
-            <i data-lucide="message-circle" class="w-8 h-8 text-white"></i>
-        </button>
+    <div style="display:flex;align-items:center;gap:20px">
+      <div class="ov-meta" id="ovMeta"></div>
+      <button class="ov-close" id="ovClose">✕</button>
     </div>
+  </div>
+  <div class="ov-tabs" id="ovTabs"></div>
+  <div class="ov-body"><div class="cards-grid" id="cardsGrid"></div></div>
+</div>
 
-    <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA  —  20 Sectors · 95 Subcategories · 1,141 Careers
+// ═══════════════════════════════════════════════════════
+const SECTORS=[
+{id:'tech',name:'Technology',icon:'⚡',
+ desc:'Architect the algorithms, platforms and digital systems powering tomorrow\'s civilization.',
+ bg:'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1920&q=80',
+ sub:[
+  {n:'Software Development',e:'💻',p:['Software Engineer','Frontend Developer','Backend Developer','Full Stack Developer','iOS Developer','Android Developer','DevOps Engineer','Site Reliability Engineer','Cloud Architect','Solutions Architect','Platform Engineer','Software Architect','Embedded Systems Engineer','Firmware Engineer','API Developer','SDK Developer']},
+  {n:'AI & Machine Learning',e:'🤖',p:['Machine Learning Engineer','Data Scientist','AI Researcher','NLP Engineer','Computer Vision Engineer','Deep Learning Engineer','MLOps Engineer','AI Ethicist','Reinforcement Learning Researcher','AI Product Manager','Prompt Engineer','AI Safety Researcher','Robotics AI Engineer','Speech Recognition Engineer','Recommendation Systems Engineer']},
+  {n:'Cybersecurity',e:'🔐',p:['Security Analyst','Penetration Tester','Security Engineer','CISO','Cryptographer','Digital Forensics Analyst','Threat Intelligence Analyst','Security Architect','Red Team Specialist','Blue Team Analyst','Malware Analyst','Bug Bounty Hunter','Security Consultant','Zero Trust Architect','Identity & Access Manager']},
+  {n:'Data Engineering',e:'📊',p:['Data Engineer','Data Analyst','BI Analyst','Database Administrator','Data Architect','Analytics Engineer','Data Pipeline Engineer','Hadoop Developer','Spark Developer','ETL Developer','Data Warehouse Architect','Real-time Analytics Engineer','Data Governance Specialist']},
+  {n:'Product & UX Design',e:'🎨',p:['Product Manager','UX Designer','UI Designer','UX Researcher','Product Designer','Interaction Designer','Information Architect','Design Systems Engineer','UX Writer','Accessibility Specialist','Growth PM','Technical PM','Enterprise Architect']},
+  {n:'Infrastructure & Cloud',e:'☁️',p:['Network Engineer','Systems Administrator','Cloud Engineer','IT Support Specialist','Cloud Security Engineer','Kubernetes Administrator','AWS Architect','Azure Architect','GCP Architect','Infrastructure Engineer','Network Architect','CDN Engineer','IT Project Manager']},
+  {n:'Emerging Technologies',e:'🚀',p:['Blockchain Developer','AR/VR Developer','Game Developer','Quantum Computing Researcher','IoT Engineer','Edge Computing Specialist','Digital Twin Engineer','Web3 Developer','Metaverse Architect','QA Engineer','Technical Writer']},
+]},
+{id:'finance',name:'Finance',icon:'💰',
+ desc:'Navigate capital flows, risk structures and the complex machinery of global markets.',
+ bg:'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1920&q=80',
+ sub:[
+  {n:'Investment Banking',e:'🏦',p:['Investment Banker','M&A Analyst','ECM Analyst','DCM Analyst','LBO Analyst','IPO Specialist','Restructuring Advisor','Financial Sponsor Coverage','Syndication Banker','Cross-border M&A Advisor']},
+  {n:'Trading & Markets',e:'📈',p:['Equity Trader','Forex Trader','Derivatives Trader','Portfolio Manager','Hedge Fund Manager','Market Maker','Proprietary Trader','Fixed Income Trader','Commodity Trader','Quantitative Trader','Algorithmic Trading Developer','High-Frequency Trader']},
+  {n:'Financial Analysis',e:'🔍',p:['Financial Analyst','Equity Research Analyst','Credit Rating Analyst','Risk Analyst','Quantitative Analyst','Valuation Analyst','Macro Economist','Sector Analyst','ESG Analyst','Thematic Research Analyst']},
+  {n:'Insurance & Actuarial',e:'🛡️',p:['Actuary','Insurance Underwriter','Claims Adjuster','Insurance Agent','Risk Manager','Reinsurance Analyst','Catastrophe Modeler','Life Insurance Consultant','P&C Underwriter','Health Insurance Actuary']},
+  {n:'Accounting & Tax',e:'📋',p:['CPA','Forensic Accountant','Tax Advisor','External Auditor','Controller','CFO','Bookkeeper','Payroll Specialist','Cost Accountant','Management Accountant','Tax Attorney','Transfer Pricing Specialist','Revenue Recognition Specialist']},
+  {n:'Wealth Management',e:'💎',p:['Financial Planner','Wealth Manager','Venture Capitalist','Private Equity Analyst','Family Office Advisor','Estate Planner','Trust Officer','Financial Coach','Retirement Planning Specialist','Impact Investing Analyst']},
+]},
+{id:'health',name:'Healthcare',icon:'⚕️',
+ desc:'Dedicate your expertise to healing, prevention and the relentless advancement of human health.',
+ bg:'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1920&q=80',
+ sub:[
+  {n:'Physicians & Surgeons',e:'👨‍⚕️',p:['General Practitioner','Cardiologist','Neurologist','Oncologist','Pediatrician','Orthopedic Surgeon','Dermatologist','Psychiatrist','Radiologist','Anesthesiologist','Emergency Physician','Ophthalmologist','Gastroenterologist','Endocrinologist','Nephrologist','Pulmonologist','Rheumatologist','Urologist','Hematologist','Geriatrician','Intensivist','Hospitalist','Infectious Disease Specialist']},
+  {n:'Nursing',e:'🏥',p:['Registered Nurse','Nurse Practitioner','Licensed Practical Nurse','Nurse Anesthetist','Midwife','Clinical Nurse Specialist','ICU Nurse','ER Nurse','Oncology Nurse','Pediatric Nurse','Psychiatric Nurse','Public Health Nurse','Travel Nurse']},
+  {n:'Allied Health',e:'🩺',p:['Physical Therapist','Occupational Therapist','Speech Therapist','Respiratory Therapist','Radiologic Technologist','MRI Technologist','Surgical Technologist','Medical Laboratory Scientist','Diagnostic Sonographer','Nuclear Medicine Technologist','Cardiovascular Technologist','Phlebotomist']},
+  {n:'Mental Health',e:'🧠',p:['Psychologist','Clinical Social Worker','Mental Health Counselor','Marriage & Family Therapist','Substance Abuse Counselor','Behavioral Analyst','Play Therapist','Art Therapist','Music Therapist','Neuropsychologist','Forensic Psychologist']},
+  {n:'Dental & Vision',e:'🦷',p:['Dentist','Orthodontist','Oral Surgeon','Dental Hygienist','Prosthodontist','Endodontist','Periodontist','Pediatric Dentist','Optometrist','Vision Therapist','Ocularist']},
+  {n:'Healthcare Operations',e:'🏨',p:['Healthcare Administrator','Medical Coder','EMT','Paramedic','Patient Care Coordinator','Medical Scribe','Clinical Research Coordinator','Hospital CEO','Chief Medical Officer','Health IT Manager','Medical Social Worker','Patient Advocate','Nutritionist','Dietitian']},
+]},
+{id:'edu',name:'Education',icon:'📚',
+ desc:'Shape the minds of generations through teaching, mentorship and intellectual leadership.',
+ bg:'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1920&q=80',
+ sub:[
+  {n:'K-12 Teaching',e:'🏫',p:['Kindergarten Teacher','Elementary Teacher','Middle School Teacher','High School Math Teacher','High School Science Teacher','High School English Teacher','High School History Teacher','PE Teacher','Special Education Teacher','ESL Teacher','Art Teacher','Music Teacher','Drama Teacher','Computer Science Teacher']},
+  {n:'Higher Education',e:'🎓',p:['University Professor','Adjunct Lecturer','Research Scientist','Academic Dean','Department Chair','University President','Postdoctoral Researcher','Graduate Teaching Assistant','Academic Advisor','Registrar','Financial Aid Officer','Admissions Counselor']},
+  {n:'Student Support',e:'🤝',p:['School Counselor','School Psychologist','Librarian','Media Specialist','Instructional Coach','Curriculum Developer','Behavior Interventionist','School Social Worker','Attendance Officer']},
+  {n:'Administration',e:'📝',p:['Principal','Vice Principal','Superintendent','School Board Member','District Curriculum Director','Assessment Coordinator','Special Education Director','Athletic Director']},
+  {n:'EdTech & Non-Traditional',e:'💡',p:['Online Course Creator','Corporate Trainer','Private Tutor','EdTech Specialist','Instructional Designer','eLearning Developer','Learning Experience Designer','Homeschool Educator','Museum Educator','STEM Education Specialist','Literacy Coach']},
+]},
+{id:'arts',name:'Creative Arts',icon:'🎭',
+ desc:'Channel human imagination and storytelling into culture-defining work across every medium.',
+ bg:'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1920&q=80',
+ sub:[
+  {n:'Visual Arts & Design',e:'🖌️',p:['Graphic Designer','Illustrator','Photographer','Videographer','Animator','3D Artist','Motion Graphics Designer','Art Director','Fine Artist','Sculptor','Conceptual Artist','Muralist','Digital Artist','Concept Artist','Environment Artist','Character Artist','VFX Artist']},
+  {n:'Music',e:'🎵',p:['Musician','Singer','Songwriter','Music Producer','Sound Engineer','DJ','Mixing Engineer','Mastering Engineer','Music Teacher','Conductor','Composer','Film Score Composer','Session Musician','Music Therapist','A&R Manager','Music Supervisor']},
+  {n:'Writing & Literature',e:'✍️',p:['Author','Copywriter','Content Writer','Screenwriter','Editor','Journalist','Technical Writer','Grant Writer','Ghostwriter','Literary Agent','Poet','Creative Writing Teacher','UX Writer','Fantasy Author','Travel Writer']},
+  {n:'Performance',e:'🎬',p:['Actor','Stand-Up Comedian','Stage Manager','Stage Director','Film Director','Theater Producer','Improv Artist','Circus Performer','Stunt Performer','Voice Actor','Casting Director','Choreographer','Ballet Dancer','Opera Singer']},
+  {n:'Architecture & Space Design',e:'🏛️',p:['Interior Designer','Fashion Designer','Industrial Designer','Landscape Architect','Set Designer','Production Designer','Costume Designer','Jewelry Designer','Furniture Designer','Typographer','Brand Identity Designer','Exhibition Designer']},
+]},
+{id:'eng',name:'Engineering',icon:'⚙️',
+ desc:'Solve civilization\'s grand challenges in infrastructure, materials and complex systems.',
+ bg:'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1920&q=80',
+ sub:[
+  {n:'Civil & Structural',e:'🏗️',p:['Civil Engineer','Structural Engineer','Geotechnical Engineer','Transportation Engineer','Water Resources Engineer','Environmental Engineer','Bridge Engineer','Tunnel Engineer','Highway Engineer','Urban Infrastructure Engineer','Coastal Engineer','Dam Engineer','Foundation Engineer']},
+  {n:'Mechanical',e:'🔧',p:['Mechanical Engineer','Automotive Engineer','Aerospace Engineer','HVAC Engineer','Manufacturing Engineer','Robotics Engineer','Thermal Engineer','Fluid Mechanics Engineer','Mechatronics Engineer','Product Development Engineer','Tool & Die Engineer','Turbomachinery Engineer']},
+  {n:'Electrical & Electronic',e:'⚡',p:['Electrical Engineer','Electronics Engineer','Power Systems Engineer','Control Systems Engineer','Signal Processing Engineer','RF Engineer','Photonics Engineer','VLSI Design Engineer','PCB Designer','EMI/EMC Engineer','Power Electronics Engineer','Smart Grid Engineer']},
+  {n:'Chemical & Materials',e:'⚗️',p:['Chemical Engineer','Process Engineer','Petroleum Engineer','Materials Engineer','Polymer Engineer','Nanotechnology Engineer','Semiconductor Engineer','Metallurgical Engineer','Nuclear Engineer','Corrosion Engineer','Food Process Engineer','Pharmaceutical Process Engineer']},
+  {n:'Industrial & Systems',e:'🏭',p:['Industrial Engineer','Quality Engineer','Safety Engineer','Operations Research Analyst','Lean Manufacturing Specialist','Six Sigma Engineer','Supply Chain Engineer','Ergonomics Engineer','Systems Engineer','Reliability Engineer','Maintenance Engineer']},
+  {n:'Biomedical',e:'🔬',p:['Biomedical Engineer','Biomechanical Engineer','Clinical Engineer','Prosthetics Engineer','Medical Device Engineer','Tissue Engineer','Neural Engineer','Pharmaceutical Engineer','Bioinformatics Engineer','Lab Automation Engineer']},
+]},
+{id:'legal',name:'Law & Legal',icon:'⚖️',
+ desc:'Uphold justice, navigate regulatory complexity and protect the rights of individuals and institutions.',
+ bg:'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80',
+ sub:[
+  {n:'Practice Areas',e:'📜',p:['Corporate Lawyer','Criminal Defense Attorney','Prosecutor','Family Lawyer','Immigration Attorney','IP Attorney','Patent Attorney','Tax Attorney','Personal Injury Lawyer','Real Estate Attorney','Environmental Lawyer','Employment Lawyer','Bankruptcy Attorney','International Trade Lawyer','Human Rights Attorney','Antitrust Lawyer','Securities Lawyer','Healthcare Attorney']},
+  {n:'Legal Support',e:'📁',p:['Paralegal','Legal Secretary','Court Reporter','Bailiff','Law Clerk','Legal Researcher','Legal Aid Worker','E-Discovery Specialist','Jury Consultant','Process Server']},
+  {n:'Judiciary & ADR',e:'🔨',p:['Judge','Magistrate','Arbitrator','Mediator','Administrative Law Judge','Small Claims Adjudicator','Family Court Judge','Federal Circuit Judge']},
+  {n:'Corporate Legal',e:'🏢',p:['General Counsel','Deputy General Counsel','Compliance Officer','Legal Analyst','Contract Manager','Privacy Officer','Regulatory Affairs Specialist','In-house Litigation Manager','M&A Legal Counsel','Data Protection Officer']},
+]},
+{id:'biz',name:'Business',icon:'📊',
+ desc:'Drive strategy, markets and the commercial engines that shape economies worldwide.',
+ bg:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920&q=80',
+ sub:[
+  {n:'Executive Leadership',e:'👔',p:['CEO','COO','CFO','CMO','CTO','Chief People Officer','Chief Strategy Officer','President','General Manager','Business Unit Head','Managing Director','Partner']},
+  {n:'Operations & Management',e:'📋',p:['Operations Manager','Project Manager','Business Analyst','Program Manager','Process Improvement Manager','Logistics Manager','Supply Chain Manager','Procurement Manager','Facilities Manager','Administrative Director']},
+  {n:'Marketing & Growth',e:'📣',p:['Marketing Manager','Brand Strategist','Digital Marketing Specialist','SEO Specialist','Social Media Manager','Growth Hacker','Market Research Analyst','Content Strategist','Email Marketing Manager','Influencer Marketing Manager','Performance Marketing Analyst','PR Manager','Event Marketing Manager','Community Manager']},
+  {n:'Sales & BD',e:'🤝',p:['Sales Manager','Account Executive','Business Development Manager','Sales Engineer','SDR','Key Account Manager','Enterprise Sales Rep','Channel Sales Manager','VP of Sales','Customer Success Manager','Partnership Manager']},
+  {n:'Human Resources',e:'👥',p:['HR Manager','Recruiter','Talent Acquisition Specialist','Compensation Analyst','L&D Specialist','HR Business Partner','CHRO','Employee Relations Specialist','Benefits Administrator','Workforce Planning Analyst','OD Consultant']},
+  {n:'Entrepreneurship',e:'🚀',p:['Entrepreneur','Startup Founder','Franchise Owner','Angel Investor','Venture Partner','Startup Studio Operator','Incubator Manager','Social Entrepreneur','Serial Entrepreneur']},
+]},
+{id:'sci',name:'Science & Research',icon:'🔭',
+ desc:'Push the boundaries of human knowledge through rigorous inquiry, experiment and discovery.',
+ bg:'https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=1920&q=80',
+ sub:[
+  {n:'Life Sciences',e:'🧬',p:['Biologist','Microbiologist','Geneticist','Biochemist','Ecologist','Marine Biologist','Botanist','Zoologist','Neuroscientist','Immunologist','Parasitologist','Virologist','Cell Biologist','Structural Biologist','Evolutionary Biologist','Developmental Biologist']},
+  {n:'Physical Sciences',e:'⚛️',p:['Physicist','Chemist','Astronomer','Astrophysicist','Geologist','Meteorologist','Oceanographer','Seismologist','Mineralogist','Nuclear Physicist','Particle Physicist','Cosmologist','Plasma Physicist']},
+  {n:'Research Infrastructure',e:'🔬',p:['Research Scientist','Laboratory Technician','Clinical Research Coordinator','Science Writer','Postdoctoral Fellow','Principal Investigator','Lab Manager','Grants Coordinator','Science Communicator','Research Librarian']},
+  {n:'Applied Science',e:'🧪',p:['Environmental Scientist','Food Scientist','Materials Scientist','Forensic Scientist','Toxicologist','Pharmaceutical Scientist','Agricultural Scientist','Atmospheric Scientist','Remote Sensing Scientist','Conservation Scientist','Hydrologist']},
+]},
+{id:'gov',name:'Government & Public Service',icon:'🏛️',
+ desc:'Serve the public interest through policy, governance, national security and diplomacy.',
+ bg:'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=1920&q=80',
+ sub:[
+  {n:'Public Administration',e:'📋',p:['Policy Analyst','Government Administrator','City Manager','Urban Planner','Budget Analyst','Government Auditor','Legislative Assistant','Public Affairs Specialist','Parliamentary Secretary','Regional Governor','Municipal Manager']},
+  {n:'Elected Officials',e:'🗳️',p:['Mayor','Governor','Senator','Representative','Councilmember','President','Prime Minister','Ambassador','State Attorney General','Comptroller','Commissioner','School Board Trustee']},
+  {n:'Intelligence & Security',e:'🕵️',p:['FBI Agent','CIA Analyst','NSA Analyst','Border Patrol Agent','Secret Service Agent','DEA Agent','ATF Agent','Homeland Security Analyst','Counterintelligence Analyst','Cybersecurity Federal Analyst','Signals Intelligence Analyst']},
+  {n:'Regulatory & Compliance',e:'📜',p:['Regulatory Affairs Specialist','Inspector General','Customs Officer','FDA Reviewer','FTC Investigator','SEC Examiner','Health Inspector','Building Code Inspector','Environmental Inspector','Transportation Safety Inspector']},
+  {n:'International Affairs',e:'🌐',p:['Diplomat','Foreign Service Officer','International Development Specialist','UN Program Officer','World Bank Consultant','USAID Specialist','International Trade Negotiator','Cultural Attaché','Conflict Resolution Specialist','Peacekeeping Coordinator']},
+]},
+{id:'hosp',name:'Hospitality & Tourism',icon:'🏨',
+ desc:'Craft unforgettable experiences across hotels, restaurants, travel and world-class events.',
+ bg:'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1920&q=80',
+ sub:[
+  {n:'Hotels & Lodging',e:'🛎️',p:['Hotel General Manager','Front Desk Manager','Concierge','Revenue Manager','Housekeeping Supervisor','Guest Relations Manager','Hotel Controller','Reservations Manager','Hotel Marketing Manager','Spa Manager','F&B Director','Butler']},
+  {n:'Food & Beverage',e:'🍽️',p:['Executive Chef','Sous Chef','Pastry Chef','Line Cook','Bartender','Sommelier','Restaurant Manager','Catering Manager','Banquet Manager','Mixologist','Head Baker','Chocolatier','Sushi Chef','Butcher','Brew Master']},
+  {n:'Travel & Tourism',e:'✈️',p:['Travel Agent','Tour Guide','Tourism Manager','Travel Blogger','Destination Marketing Manager','Ecotourism Guide','River Cruise Director','Expedition Leader','Tourism Policy Analyst','Cruise Director','Airport Services Manager']},
+  {n:'Events & Entertainment',e:'🎉',p:['Event Planner','Wedding Planner','Conference Coordinator','Entertainment Manager','Casino Manager','Amusement Park Manager','Sports Venue Manager','Convention Services Manager','Corporate Events Director','Experience Designer','Live Production Manager']},
+]},
+{id:'const',name:'Construction & Architecture',icon:'🏗️',
+ desc:'Design and build the physical world — from skyscrapers to sustainable communities.',
+ bg:'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1920&q=80',
+ sub:[
+  {n:'Architecture & Design',e:'📐',p:['Architect','Interior Architect','Landscape Architect','Urban Designer','Sustainable Architect','Historic Preservation Architect','Healthcare Architect','Airport Architect','Residential Designer','BIM Manager','Architectural Illustrator']},
+  {n:'Skilled Trades',e:'🔨',p:['Carpenter','Electrician','Plumber','HVAC Technician','Welder','Mason','Ironworker','Painter','Roofer','Flooring Specialist','Tile Setter','Glazier','Insulation Worker','Drywall Installer','Pipefitter','Boilermaker']},
+  {n:'Construction Management',e:'🏢',p:['Construction Manager','Site Supervisor','Project Manager','Estimator','Construction Safety Officer','Quantity Surveyor','Procurement Manager','Subcontractor Manager','Commissioning Manager','Construction Claims Specialist']},
+  {n:'Inspection & Compliance',e:'📋',p:['Building Inspector','Code Enforcement Officer','Structural Inspector','Fire Inspector','Environmental Compliance Officer','Materials Testing Engineer','Home Inspector','Safety Inspector']},
+]},
+{id:'agri',name:'Agriculture & Food',icon:'🌾',
+ desc:'Feed the planet and steward natural resources through science, policy and skilled practice.',
+ bg:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80',
+ sub:[
+  {n:'Farming & Production',e:'🌱',p:['Farmer','Rancher','Crop Scientist','Soil Scientist','Agricultural Engineer','Precision Agriculture Specialist','Organic Farmer','Aquaculture Farmer','Beekeeping Specialist','Horticulturist','Viticulturist','Arborist']},
+  {n:'Food Science',e:'🥬',p:['Food Scientist','Food Technologist','Quality Control Inspector','Nutritionist','Dietitian','Food Safety Auditor','Flavor Chemist','Food Product Developer','Beverage Scientist','Sensory Analyst']},
+  {n:'Forestry & Wildlife',e:'🌲',p:['Forester','Park Ranger','Wildlife Biologist','Conservation Officer','Restoration Ecologist','Wildfire Firefighter','Wood Scientist','Watershed Manager','Recreation Manager','Wildlife Photographer']},
+  {n:'Veterinary Sciences',e:'🐾',p:['Veterinarian','Veterinary Technician','Animal Scientist','Zoologist','Wildlife Rehabilitator','Marine Mammal Trainer','Animal Shelter Manager','Livestock Inspector','Equine Veterinarian','Exotic Animal Specialist']},
+]},
+{id:'media',name:'Media & Communications',icon:'📡',
+ desc:'Inform, entertain and shape public discourse across every modern storytelling platform.',
+ bg:'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=1920&q=80',
+ sub:[
+  {n:'Journalism',e:'📰',p:['Reporter','Editor','Photojournalist','Broadcast Journalist','Investigative Journalist','Data Journalist','Foreign Correspondent','Science Journalist','Business Reporter','Political Reporter','Sports Journalist','Editorial Writer','Fact Checker','War Correspondent']},
+  {n:'Digital & Social Media',e:'📱',p:['Blogger','Podcaster','YouTuber','TikToker','Social Media Influencer','Content Creator','Newsletter Writer','Digital Storyteller','Online Community Manager','Streaming Personality','Digital Media Producer','Social Video Editor']},
+  {n:'Broadcasting',e:'📺',p:['TV Anchor','Radio Host','Sports Commentator','Weather Reporter','News Producer','Show Runner','Broadcast Engineer','Production Assistant','Floor Manager','Talk Show Host','Documentary Presenter']},
+  {n:'Film & Audio Production',e:'🎥',p:['Film Producer','Video Editor','Camera Operator','Sound Designer','Foley Artist','Boom Operator','Lighting Director','Color Grader','Post-Production Supervisor','VFX Supervisor','Storyboard Artist','Script Supervisor']},
+  {n:'Publishing',e:'📚',p:['Book Publisher','Magazine Editor','Literary Agent','Acquisitions Editor','Copy Editor','Proofreader','Book Cover Designer','Editorial Director','Self-Publishing Consultant','Rights Manager']},
+]},
+{id:'sport',name:'Sports & Athletics',icon:'🏆',
+ desc:'Compete, coach and operate at the apex of human physical performance and sports entertainment.',
+ bg:'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1920&q=80',
+ sub:[
+  {n:'Professional Athletes',e:'🏅',p:['Soccer Player','Basketball Player','Tennis Player','Swimmer','Sprinter','Gymnast','Boxer','MMA Fighter','Golfer','Baseball Player','Football Player','Cricket Player','Rugby Player','Volleyball Player','Cyclist','Triathlete','Esports Player','Race Car Driver']},
+  {n:'Coaching & Training',e:'🏋️',p:['Head Coach','Assistant Coach','Strength & Conditioning Coach','Defensive Coordinator','Pitching Coach','Personal Trainer','Sports Psychologist','Youth Sports Coach','Video Analyst','Tactical Analyst','Recruiting Coordinator']},
+  {n:'Sports Medicine & Science',e:'🩺',p:['Athletic Trainer','Sports Medicine Physician','Sports Physical Therapist','Sports Cardiologist','Team Physician','Sports Biomechanist','Performance Scientist','Wearable Tech Analyst','Sports Massage Therapist','Orthopedic Sports Surgeon']},
+  {n:'Sports Business',e:'💼',p:['Sports Agent','Sports Marketing Manager','Stadium Manager','Athletic Director','General Manager','Team Owner','Ticket Sales Director','Media Rights Negotiator','Sports Lawyer','Brand Partnership Manager','Sports Finance Analyst']},
+]},
+{id:'mil',name:'Military & Defense',icon:'🎖️',
+ desc:'Serve, protect and lead in the world\'s most demanding operational environments.',
+ bg:'https://images.unsplash.com/photo-1526649661456-89c7ed4d00b8?w=1920&q=80',
+ sub:[
+  {n:'Officers & Leadership',e:'⭐',p:['Army Officer','Navy Officer','Air Force Officer','Marine Corps Officer','Coast Guard Officer','Space Force Officer','Special Forces Commander','Battalion Commander','Intelligence Officer','Operations Officer','Logistics Officer','Judge Advocate (JAG)']},
+  {n:'Enlisted & Special Ops',e:'🎯',p:['Infantry Soldier','Special Forces Operator','Navy SEAL','Army Ranger','Paratrooper','Intelligence Analyst','Combat Medic','Military Police Officer','Bomb Disposal Technician','Drone Operator','Cyber Warfare Specialist','Signal Corps Specialist']},
+  {n:'Military Support Services',e:'🏥',p:['Military Doctor','Military Surgeon','Military Chaplain','Military Social Worker','Military Psychologist','Military Dentist','Military Pharmacist','Military Nurse','Flight Surgeon','Military Lawyer']},
+  {n:'Defense & Veterans',e:'🛡️',p:['Defense Contractor','Defense Analyst','Military Systems Engineer','Veteran Affairs Counselor','Defense Policy Analyst','Aerospace Defense Engineer','Defense Cybersecurity Specialist','Weapons Systems Engineer','Security Clearance Investigator']},
+]},
+{id:'env',name:'Environment & Sustainability',icon:'🌍',
+ desc:'Safeguard ecosystems, drive clean energy and engineer a livable future for our planet.',
+ bg:'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&q=80',
+ sub:[
+  {n:'Conservation & Ecology',e:'🌿',p:['Environmental Scientist','Conservation Biologist','Wildlife Conservationist','Marine Conservationist','Habitat Restoration Specialist','Wetland Scientist','Biodiversity Researcher','Environmental Planner','Ecotoxicologist','Marine Ecologist','Freshwater Ecologist','Urban Ecologist']},
+  {n:'Clean Energy',e:'☀️',p:['Renewable Energy Engineer','Solar Panel Installer','Wind Turbine Technician','Energy Auditor','Battery Technology Engineer','Hydrogen Fuel Cell Engineer','Smart Grid Engineer','Energy Storage Analyst','EV Infrastructure Planner','Offshore Wind Engineer','Geothermal Engineer','Tidal Energy Specialist']},
+  {n:'Sustainability & Climate',e:'🌡️',p:['Sustainability Consultant','Carbon Analyst','ESG Specialist','Climate Scientist','Climate Risk Analyst','Carbon Credit Trader','Circular Economy Designer','Life Cycle Assessment Analyst','Corporate Sustainability Manager','Net Zero Strategist','Green Building Certifier']},
+  {n:'Environmental Policy',e:'📜',p:['Environmental Policy Analyst','Conservation Officer','Environmental Lawyer','Regulatory Compliance Specialist','Environmental Economist','Climate Policy Advisor','International Environmental Negotiator','Environmental Impact Assessor','Pollution Control Officer']},
+]},
+{id:'fashion',name:'Fashion & Luxury',icon:'👗',
+ desc:'Define cultural aesthetics, craft luxury experiences and lead the global style economy.',
+ bg:'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=1920&q=80',
+ sub:[
+  {n:'Design & Creation',e:'✂️',p:['Fashion Designer','Textile Designer','Accessories Designer','Footwear Designer','Knitwear Designer','Womenswear Designer','Menswear Designer','Avant-garde Designer','Pattern Maker','Tailor','Embroidery Specialist','Print Designer']},
+  {n:'Fashion Business',e:'👜',p:['Fashion Buyer','Merchandise Planner','Retail Buyer','Fashion Brand Manager','Wholesale Manager','Licensing Manager','Fashion Finance Analyst','Retail Store Manager','Fashion Operations Manager','Supply Chain Manager (Fashion)']},
+  {n:'Styling & Production',e:'💄',p:['Fashion Stylist','Celebrity Stylist','Personal Shopper','Image Consultant','Fashion Show Producer','Wardrobe Manager','Costume Supervisor','Makeup Artist','Hair Stylist','Set Designer']},
+  {n:'Fashion Media & Marketing',e:'📸',p:['Fashion Photographer','Fashion Editor','Fashion Blogger','Fashion Journalist','Creative Director','Art Director (Fashion)','Fashion Social Media Manager','Fashion PR Manager','Fashion Content Creator','Trend Analyst','Fashion Forecaster']},
+]},
+{id:'avia',name:'Aviation & Aerospace',icon:'🛸',
+ desc:'Command the skies and pioneer the frontier of space exploration and aeronautical innovation.',
+ bg:'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1920&q=80',
+ sub:[
+  {n:'Flight Operations',e:'✈️',p:['Commercial Airline Pilot','First Officer','Flight Engineer','Corporate Pilot','Military Fighter Pilot','Helicopter Pilot','Test Pilot','Bush Pilot','Medevac Pilot','Cargo Pilot','Drone Pilot','UAS Operator','Glider Pilot']},
+  {n:'Air Traffic & Ground Ops',e:'🗼',p:['Air Traffic Controller','Airport Operations Manager','Flight Dispatcher','Airline Operations Coordinator','Ground Crew Manager','Ramp Agent','Cargo Operations Specialist','Airline Safety Manager','Aviation Security Manager','Airport CEO','Flight Planning Analyst']},
+  {n:'Aircraft Maintenance',e:'🔧',p:['Aircraft Mechanic','Avionics Technician','Aircraft Inspector','Structural Repair Technician','Engine Test Technician','Aircraft Painter','Interior Refurbishment Specialist','NDT Technician','Line Maintenance Technician','Heavy Maintenance Planner']},
+  {n:'Aerospace Engineering',e:'🚀',p:['Aerospace Engineer','Propulsion Engineer','Aerodynamics Engineer','Rocket Scientist','Satellite Engineer','Mission Controller','Spacecraft Systems Engineer','Launch Vehicle Engineer','Flight Dynamics Analyst','Orbital Mechanics Engineer','Space Habitat Designer','Planetary Scientist','Astronaut']},
+]},
+{id:'social',name:'Social Services',icon:'❤️',
+ desc:'Empower communities, uplift vulnerable populations and drive meaningful social change.',
+ bg:'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1920&q=80',
+ sub:[
+  {n:'Social Work',e:'🤲',p:['Social Worker','Child Protective Services Worker','Family Services Coordinator','Geriatric Social Worker','School Social Worker','Medical Social Worker','Homeless Services Coordinator','Refugee Resettlement Specialist','Foster Care Case Manager','Adoption Specialist','Crisis Intervention Specialist']},
+  {n:'Mental Health & Addiction',e:'💙',p:['Mental Health Counselor','Substance Abuse Counselor','Rehabilitation Specialist','Addiction Therapist','Trauma Counselor','Group Therapist','Co-occurring Disorders Specialist','Peer Support Specialist','Harm Reduction Coordinator','Recovery Coach']},
+  {n:'Nonprofits & NGOs',e:'🌍',p:['Nonprofit CEO','Program Director','Fundraiser','Grant Writer','Community Organizer','Volunteer Coordinator','Advocacy Director','Foundation Officer','Impact Evaluator','Corporate Giving Manager','Philanthropy Advisor','Field Operations Manager']},
+  {n:'Public Health',e:'🏥',p:['Public Health Officer','Epidemiologist','Health Educator','Community Health Worker','Biostatistician','Health Policy Analyst','Global Health Specialist','Disease Surveillance Officer','Vaccination Program Manager','Health Communications Specialist','Emergency Preparedness Planner']},
+]},
+];
 
-        // Career Data Database
-        const careerData = {
-            government: {
-                title: "Government & Civil Services",
-                professions: [
-                    {
-                        id: "ias",
-                        title: "Indian Administrative Service (IAS)",
-                        image: "https://kimi-web-img.moonshot.cn/img/s3rozgar.s3.ap-south-1.amazonaws.com/73dc456f969f434e9c37b981fd8ff59f95ebdf2c.png",
-                        description: "The premier administrative civil service of India. IAS officers hold key positions in the Union Government, States, and public-sector undertakings.",
-                        whatTheyDo: "Policy formulation, administrative supervision, law and order management, development project implementation, and advisory roles to ministers.",
-                        eligibility: "Bachelor's degree in any discipline. Age: 21-32 years (general category). Indian citizenship.",
-                        exams: "UPSC Civil Services Exam (Prelims, Mains, Interview). One of the toughest exams globally with a success rate of ~0.1%.",
-                        roadmap: [
-                            "Complete graduation in any stream",
-                            "Start UPSC preparation (1-2 years)",
-                            "Clear Preliminary Examination (CSAT + GS)",
-                            "Clear Main Examination (9 papers)",
-                            "Clear Personality Test (Interview)",
-                            "Training at Lal Bahadur Shastri National Academy of Administration",
-                            "Posting as Assistant Collector/SDM"
-                        ],
-                        skills: ["Leadership", "Decision Making", "Public Policy", "Crisis Management", "Communication"],
-                        salary: "₹56,100 - ₹2,50,000 (Basic) + DA + Bungalow + Vehicle + Staff",
-                        progression: "Assistant Collector → District Collector → Divisional Commissioner → Secretary → Chief Secretary",
-                        pros: ["High social status", "Job security", "Power to serve society", "Excellent perks"],
-                        cons: ["Political pressure", "Frequent transfers", "High stress", "Limited personal time"],
-                        risks: "Political interference, accountability pressures, public scrutiny",
-                        alternatives: ["State PCS", "Banking", "Corporate Management"]
-                    },
-                    {
-                        id: "ips",
-                        title: "Indian Police Service (IPS)",
-                        image: "https://kimi-web-img.moonshot.cn/img/diademy.com/4e0e884f15020384953e709150a2afad329493dd.jpg",
-                        description: "Responsible for maintaining law and order, preventing and investigating crimes, and ensuring internal security.",
-                        whatTheyDo: "Crime prevention, investigation, intelligence gathering, VIP security, counter-terrorism, and maintaining public order.",
-                        eligibility: "Bachelor's degree. Physical fitness standards apply. Height: 165cm (Male), 150cm (Female).",
-                        exams: "UPSC Civil Services Exam. Physical tests post-selection.",
-                        roadmap: ["Graduation", "UPSC preparation", "Foundation training at SVPNPA", "District training", "Posting as ASP/SP"],
-                        skills: ["Physical fitness", "Crisis management", "Investigation", "Leadership", "Courage"],
-                        salary: "₹56,100 - ₹2,25,000 + Benefits",
-                        progression: "ASP → SP → DIG → IG → ADG → DGP",
-                        pros: ["Authority", "Uniform pride", "Direct impact on society", "Adventure"],
-                        cons: ["High risk", "Irregular hours", "Stressful environment", "Political interference"],
-                        risks: "Physical danger, stress-related health issues, target for criminals",
-                        alternatives: ["State Police", "CAPF", "Intelligence Bureau"]
-                    },
-                    {
-                        id: "ifs",
-                        title: "Indian Foreign Service (IFS)",
-                        image: "https://images.unsplash.com/photo-1526304640152-d4619684e484?w=800&q=80",
-                        description: "Diplomatic service representing India abroad in embassies, high commissions, and international organizations.",
-                        whatTheyDo: "Diplomatic relations, treaty negotiations, consular services, promoting India's interests abroad.",
-                        eligibility: "Bachelor's degree. Age: 21-32 years. Excellent communication skills.",
-                        exams: "UPSC Civil Services Exam. High rank required for IFS.",
-                        roadmap: ["Graduation", "UPSC with top rank", "Training at Sushma Swaraj Institute", "Foreign language training", "First posting abroad"],
-                        skills: ["Diplomacy", "Foreign languages", "International relations", "Cultural sensitivity", "Negotiation"],
-                        salary: "₹56,100 - ₹2,50,000 + Foreign allowance (2-3x basic)",
-                        progression: "Third Secretary → Second Secretary → First Secretary → Counsellor → Ambassador",
-                        pros: ["Global travel", "Cultural exposure", "Diplomatic immunity", "Luxurious lifestyle abroad"],
-                        cons: ["Frequent relocations", "Family separation", "Cultural adjustment", "Limited India postings"],
-                        risks: "Security risks in conflict zones, isolation from homeland",
-                        alternatives: ["Ministry of External Affairs", "International Organizations", "Corporate Diplomacy"]
-                    },
-                    {
-                        id: "ssc",
-                        title: "SSC CGL Officer",
-                        image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80",
-                        description: "Group B and C posts in various ministries and departments through Staff Selection Commission.",
-                        whatTheyDo: "Administrative work, data compilation, audit, inspection, and assisting in policy implementation.",
-                        eligibility: "Bachelor's degree. Age: 18-32 years depending on post.",
-                        exams: "SSC CGL Tier I, II, III, IV examinations.",
-                        roadmap: ["Graduation", "SSC CGL preparation (6-12 months)", "Clear all tiers", "Document verification", "Training and posting"],
-                        skills: ["Quantitative aptitude", "English proficiency", "Reasoning", "Computer knowledge"],
-                        salary: "₹25,500 - ₹1,51,100 depending on post",
-                        progression: "Assistant → Section Officer → Under Secretary",
-                        pros: ["Job security", "Work-life balance", "Regular promotions", "Transferable skills"],
-                        cons: ["Lower starting salary than UPSC", "Desk job", "Limited decision-making power"],
-                        risks: "Automation of clerical tasks",
-                        alternatives: ["Banking exams", "State government jobs", "Railway jobs"]
-                    }
-                ]
-            },
-            defense: {
-                title: "Defense & Security",
-                professions: [
-                    {
-                        id: "army",
-                        title: "Indian Army Officer",
-                        image: "https://kimi-web-img.moonshot.cn/img/olivesquad.com/64bf297af591ee3f254e27772cafa4c2c84fbfff.jpg",
-                        description: "Lead troops, defend borders, and participate in peacekeeping operations and disaster relief.",
-                        whatTheyDo: "Command troops, strategic planning, border security, counter-insurgency, disaster management.",
-                        eligibility: "10+2 (NDA) or Graduation (CDS). Age: 16.5-24 years. Strict medical standards.",
-                        exams: "NDA/ CDS written exam followed by SSB interview (5 days).",
-                        roadmap: ["10+2 or Graduation", "Clear written exam", "SSB Interview", "Medical examination", "Training at IMA/OTA", "Commissioning"],
-                        skills: ["Leadership", "Physical endurance", "Strategic thinking", "Discipline", "Teamwork"],
-                        salary: "₹56,100 - ₹2,50,000 + MSP + Allowances",
-                        progression: "Lieutenant → Captain → Major → Lt Colonel → Colonel → Brigadier → General",
-                        pros: ["Prestigious uniform", "Adventure", "Pension benefits", "Medical facilities", "Camaraderie"],
-                        cons: ["Posting in remote areas", "Family separation", "Physical danger", "Rigid hierarchy"],
-                        risks: "Combat casualties, PTSD, physical injuries",
-                        alternatives: ["Territorial Army", "CAPF", "State Police", "Private Security"]
-                    },
-                    {
-                        id: "airforce",
-                        title: "Indian Air Force Pilot",
-                        image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80",
-                        description: "Fly advanced fighter jets, transport aircraft, or helicopters to defend Indian airspace.",
-                        whatTheyDo: "Combat flying, reconnaissance, transport operations, humanitarian missions.",
-                        eligibility: "10+2 with Physics & Math (Flying branch). Age: 20-24 years. Height: 162.5cm.",
-                        exams: "NDA/CDS/AFCAT + CPSS (Computerized Pilot Selection System).",
-                        roadmap: ["10+2 PCM", "Clear AFCAT/CDS", "AFSB Interview", "Medical (strict)", "Training at AFA Dundigal", "Commissioning"],
-                        skills: ["Spatial awareness", "Quick decision making", "Physical fitness", "Technical knowledge", "Stress management"],
-                        salary: "₹56,100 - ₹2,50,000 + Flying allowance (₹25,000/month)",
-                        progression: "Flying Officer → Flight Lieutenant → Squadron Leader → Wing Commander → Group Captain",
-                        pros: ["Flying fighter jets", "High status", "Technical exposure", "Global opportunities"],
-                        cons: ["High risk", "Stringent medical standards", "Frequent relocations", "High training dropout rate"],
-                        risks: "Aircraft accidents, G-force health effects, combat risks",
-                        alternatives: ["Commercial Pilot", "DRDO", "Aviation Industry", "Coast Guard"]
-                    },
-                    {
-                        id: "navy",
-                        title: "Indian Navy Officer",
-                        image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
-                        description: "Protect maritime borders, operate warships, submarines, and naval aircraft.",
-                        whatTheyDo: "Maritime security, anti-piracy, disaster relief, underwater operations, diplomatic missions.",
-                        eligibility: "10+2 with PCM or Engineering degree. Age: 16.5-25 years.",
-                        exams: "NDA, CDS, or INET followed by SSB interview.",
-                        roadmap: ["10+2/Engineering", "Entrance exam", "SSB Interview", "Medical", "Training at INA Ezhimala", "Sea training"],
-                        skills: ["Navigation", "Leadership", "Technical expertise", "Adaptability", "Crisis management"],
-                        salary: "₹56,100 - ₹2,50,000 + Sea allowance",
-                        progression: "Sub Lieutenant → Lieutenant → Lt Commander → Commander → Captain → Commodore",
-                        pros: ["World travel", "Technical training", "Water sports", "Distinctive white uniform"],
-                        cons: ["Months at sea", "Confined spaces", "Family separation", "Seasickness"],
-                        risks: "Naval accidents, drowning, combat at sea",
-                        alternatives: ["Merchant Navy", "Coast Guard", "Marine Engineering", "Port Trust"]
-                    }
-                ]
-            },
-            technology: {
-                title: "Technology & Engineering",
-                professions: [
-                    {
-                        id: "software",
-                        title: "Software Engineer",
-                        image: "https://kimi-web-img.moonshot.cn/img/kahedu.edu.in/f5e4c2a0a5d9f01ec6e1525da8e73589d6edbe29.jpg",
-                        description: "Design, develop, and maintain software applications, systems, and platforms.",
-                        whatTheyDo: "Coding, system design, debugging, testing, deployment, and maintenance of software products.",
-                        eligibility: "B.Tech/B.E in CS/IT or BCA/MCA. Strong programming fundamentals.",
-                        exams: "JEE for IITs/NITs. Campus placements. Off-campus: LeetCode, HackerRank assessments.",
-                        roadmap: ["10+2 PCM", "B.Tech/BCA", "Internships", "Placement/Coding tests", "Junior Developer → Senior → Lead → Architect"],
-                        skills: ["Programming (Java/Python/JS)", "Data Structures", "System Design", "Problem solving", "Git"],
-                        salary: "₹6 LPA - ₹50+ LPA (Freshers: ₹6-20 LPA at top companies)",
-                        progression: "SDE I → SDE II → Senior Engineer → Staff Engineer → Principal Engineer",
-                        pros: ["High salary", "Remote work options", "Global opportunities", "Constant learning"],
-                        cons: ["Sedentary lifestyle", "Rapid skill obsolescence", "Work pressure", "Ageism"],
-                        risks: "Burnout, repetitive strain injuries, layoffs during recessions",
-                        alternatives: ["Data Science", "Product Management", "Technical Writing", "IT Consulting"]
-                    },
-                    {
-                        id: "ai",
-                        title: "AI/ML Engineer",
-                        image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80",
-                        description: "Build intelligent systems using machine learning algorithms and deep learning.",
-                        whatTheyDo: "Model training, data preprocessing, neural network architecture, AI product development.",
-                        eligibility: "B.Tech/M.Tech in CS/AI/Data Science. Strong math background.",
-                        exams: "GATE for MTech. Company-specific ML assessments.",
-                        roadmap: ["B.Tech", "Learn Python + Math + ML frameworks", "Kaggle competitions", "Projects/Internships", "MLE roles"],
-                        skills: ["Python", "TensorFlow/PyTorch", "Statistics", "Linear Algebra", "Data processing"],
-                        salary: "₹10 LPA - ₹80+ LPA (High demand niche)",
-                        progression: "MLE → Senior MLE → Staff MLE → Principal Scientist",
-                        pros: ["Cutting-edge field", "High compensation", "Research opportunities", "Automation impact"],
-                        cons: ["Requires advanced math", "PhD preferred for research", "Ethical concerns", "Rapid changes"],
-                        risks: "AI regulation impacts, job displacement debates",
-                        alternatives: ["Data Scientist", "Research Scientist", "Robotics Engineer"]
-                    }
-                ]
-            },
-            medical: {
-                title: "Medical & Healthcare",
-                professions: [
-                    {
-                        id: "doctor",
-                        title: "Doctor (Physician)",
-                        image: "https://kimi-web-img.moonshot.cn/img/vaidyog.com/2a6ab8332aeafad117c138054948dbd71aa86bfc.jpg",
-                        description: "Diagnose and treat illnesses, injuries, and other health conditions.",
-                        whatTheyDo: "Patient diagnosis, treatment planning, surgery (specialists), emergency care, research.",
-                        eligibility: "10+2 PCB. MBBS (5.5 years). NEET mandatory.",
-                        exams: "NEET-UG for MBBS. NEET-PG for specialization.",
-                        roadmap: ["10+2 PCB", "NEET-UG", "MBBS (4.5+1 year)", "Internship", "NEET-PG (for MD/MS)", "Specialization", "Practice"],
-                        skills: ["Medical knowledge", "Diagnosis", "Empathy", "Stamina", "Decision making"],
-                        salary: "₹6 LPA (Govt) - ₹50+ LPA (Private/Specialists)",
-                        progression: "Junior Resident → Senior Resident → Consultant → HOD → Director",
-                        pros: ["Noble profession", "High respect", "Financial stability", "Helping others"],
-                        cons: ["Long training (10+ years)", "High stress", "Expensive education", "Irregular hours"],
-                        risks: "Infection exposure, malpractice suits, physical exhaustion",
-                        alternatives: ["Dentistry", "Veterinary", "Public Health", "Medical Research"]
-                    }
-                ]
-            },
-            finance: {
-                title: "Finance & Commerce",
-                professions: [
-                    {
-                        id: "ca",
-                        title: "Chartered Accountant",
-                        image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&q=80",
-                        description: "Financial experts handling auditing, taxation, and financial advisory.",
-                        whatTheyDo: "Audit financial statements, tax planning, financial consulting, corporate finance.",
-                        eligibility: "10+2 for Foundation. Graduation for Direct Entry.",
-                        exams: "CA Foundation → Intermediate → Final (ICAI exams). Articleship (3 years).",
-                        roadmap: ["10+2", "CA Foundation", "CA Intermediate", "Articleship (3 years)", "CA Final", "Membership"],
-                        skills: ["Accounting", "Taxation", "Audit", "Excel", "Analytics", "Ethics"],
-                        salary: "₹7 LPA - ₹50+ LPA (Partners earn crores)",
-                        progression: "Article Assistant → Audit Senior → Manager → Partner",
-                        pros: ["Prestigious qualification", "Entrepreneurship", "Global mobility", "Job security"],
-                        cons: ["Difficult exams", "Long articleship", "Initial low stipend", "High pressure during audits"],
-                        risks: "Liability issues, regulatory changes, automation of compliance",
-                        alternatives: ["CS", "CMA", "MBA Finance", "CFA"]
-                    }
-                ]
-            },
-            education: {
-                title: "Education & Research",
-                professions: [
-                    {
-                        id: "professor",
-                        title: "University Professor",
-                        image: "https://kimi-web-img.moonshot.cn/img/akm-img-a-in.tosshub.com/6e7483ac0a038c682407468f772bd283a4739bca.jpg",
-                        description: "Teach at university level, conduct research, and guide doctoral students.",
-                        whatTheyDo: "Teaching, research publication, curriculum development, academic administration.",
-                        eligibility: "Post-graduation + NET/SET qualified. PhD preferred.",
-                        exams: "UGC-NET, SET, GATE for IITs.",
-                        roadmap: ["Masters degree", "NET/SET qualification", "PhD (recommended)", "Assistant Professor", "Associate → Professor"],
-                        skills: ["Subject expertise", "Research", "Teaching", "Mentoring", "Academic writing"],
-                        salary: "₹60,000 - ₹2,50,000+ (7th Pay Commission + AGP)",
-                        progression: "Assistant Prof → Associate Prof → Professor → HOD → Dean → VC",
-                        pros: ["Academic freedom", "Research opportunities", "Job security", "Long vacations"],
-                        cons: ["Long PhD process", "Publish or perish pressure", "Lower initial salary", "Bureaucracy"],
-                        risks: "Contractual appointments, funding cuts",
-                        alternatives: ["School Teacher", "EdTech", "Corporate Training", "Research Labs"]
-                    }
-                ]
-            },
-            arts: {
-                title: "Arts & Creative",
-                professions: [
-                    {
-                        id: "designer",
-                        title: "Product Designer",
-                        image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80",
-                        description: "Design user-centric products combining aesthetics with functionality.",
-                        whatTheyDo: "User research, prototyping, visual design, UX research, design systems.",
-                        eligibility: "B.Des from NID/NIFT or similar. Portfolio required.",
-                        exams: "NID-DAT, NIFT, CEED, UCEED.",
-                        roadmap: ["10+2", "Design school entrance", "B.Des (4 years)", "Internships", "Junior Designer → Senior → Lead"],
-                        skills: ["Design thinking", "Figma/Adobe", "User research", "Prototyping", "Communication"],
-                        salary: "₹6 LPA - ₹40+ LPA (Top tech companies pay premium)",
-                        progression: "Designer → Senior → Lead → Design Manager → VP Design",
-                        pros: ["Creative satisfaction", "Impact on users", "Diverse opportunities", "Remote work"],
-                        cons: ["Subjective field", "Client pressure", "Continuous learning", "Portfolio stress"],
-                        risks: "AI design tools, market saturation",
-                        alternatives: ["UX Researcher", "Graphic Designer", "Design Strategist"]
-                    }
-                ]
-            },
-            traditional: {
-                title: "Traditional & Cultural",
-                professions: [
-                    {
-                        id: "ayurveda",
-                        title: "Ayurvedic Doctor (Vaidya)",
-                        image: "https://kimi-web-img.moonshot.cn/img/cdn.dollsofindia.com/f95f1c094d40871bfb3bcb3afcb7fab11e873598.jpg",
-                        description: "Practice traditional Indian medicine system focusing on holistic healing.",
-                        whatTheyDo: "Diagnosis through pulse/nadi, herbal treatment, Panchakarma, lifestyle counseling.",
-                        eligibility: "10+2 PCB. BAMS (5.5 years). NEET required.",
-                        exams: "NEET-UG for BAMS.",
-                        roadmap: ["10+2 PCB", "NEET", "BAMS (4.5+1 year)", "Internship", "Registration", "Practice/Hospital"],
-                        skills: ["Sanskrit", "Herbal knowledge", "Diagnostic skills", "Holistic approach", "Patience"],
-                        salary: "₹4 LPA - ₹20 LPA (Own practice can earn more)",
-                        progression: "Medical Officer → Senior Consultant → Chief Medical Officer → Own Hospital",
-                        pros: ["Holistic healing", "Growing global demand", "No side effects focus", "Cultural connection"],
-                        cons: ["Lower initial salary than MBBS", "Limited emergency practice", "Skepticism from modern medicine"],
-                        risks: "Regulatory changes, standardization issues",
-                        alternatives: ["Homeopathy", "Unani", "Naturopathy", "Wellness Industry"]
-                    }
-                ]
-            }
-        };
+// ═══════════════════════════════════
+// BUILD UI
+// ═══════════════════════════════════
+const $ = id => document.getElementById(id);
 
-        // GSAP Animations
-        gsap.registerPlugin(ScrollTrigger);
-        
-        gsap.utils.toArray('.milestone').forEach((milestone, i) => {
-            gsap.to(milestone, {
-                opacity: 1,
-                y: 0,
-                duration: 1,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: milestone,
-                    start: "top 80%",
-                    toggleActions: "play none none reverse"
-                }
-            });
-        });
+// Background slides
+const bgEl=$('bg');
+SECTORS.forEach((s,i)=>{
+  const d=document.createElement('div');
+  d.className='bg-slide'+(i===0?' active':'');
+  d.style.backgroundImage=`url(${s.bg})`;
+  bgEl.appendChild(d);
+});
+const bgSlides=document.querySelectorAll('.bg-slide');
+let activeBg=0;
 
-        function startJourney() {
-            document.getElementById('pathway').scrollIntoView({ behavior: 'smooth' });
-        }
+// Progress dots
+const progEl=$('progress');
+SECTORS.forEach((s,i)=>{
+  const b=document.createElement('button');
+  b.className='pd'+(i===0?' active':'');
+  b.title=s.name;b.setAttribute('aria-label',s.name);
+  b.onclick=()=>document.querySelectorAll('.sn')[i]?.scrollIntoView({behavior:'smooth',block:'center'});
+  progEl.appendChild(b);
+});
+const pDots=document.querySelectorAll('.pd');
 
-        function openSector(sectorId) {
-            const sector = careerData[sectorId];
-            if (!sector) return;
-            
-            document.getElementById('treeTitle').textContent = sector.title;
-            const container = document.getElementById('treeContainer');
-            container.innerHTML = '';
-            
-            // Create tree layout
-            sector.professions.forEach((prof, index) => {
-                const node = document.createElement('div');
-                node.className = 'tree-node';
-                node.style.left = `${(index % 3) * 350 + 50}px`;
-                node.style.top = `${Math.floor(index / 3) * 300 + 50}px`;
-                node.onclick = () => openCareer(sectorId, index);
-                
-                node.innerHTML = `
-                    <img src="${prof.image}" alt="${prof.title}">
-                    <h3 class="font-bold text-lg mb-2 text-[#d4af37]">${prof.title}</h3>
-                    <p class="text-sm text-gray-300 line-clamp-2">${prof.description}</p>
-                    <div class="mt-3 flex items-center gap-2 text-xs text-[#d4af37]">
-                        <span>View Roadmap</span>
-                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                    </div>
-                `;
-                
-                container.appendChild(node);
-            });
-            
-            document.getElementById('professionTree').style.display = 'block';
-            document.body.style.overflow = 'hidden';
-            lucide.createIcons();
-        }
+// Timeline sector nodes
+const tl=$('timeline');
+SECTORS.forEach((s,i)=>{
+  const total=s.sub.reduce((a,c)=>a+c.p.length,0);
+  const isRight=i%2===1; // even index → left, odd index → right
 
-        function closeSector() {
-            document.getElementById('professionTree').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
+  const n=document.createElement('div');
+  n.className='sn';n.dataset.i=i;
 
-        function openCareer(sectorId, profIndex) {
-            const career = careerData[sectorId].professions[profIndex];
-            const modal = document.getElementById('careerModal');
-            const content = document.getElementById('careerContent');
-            
-            content.innerHTML = `
-                <div class="mb-8">
-                    <span class="text-[#d4af37] text-sm tracking-widest uppercase">Career Roadmap</span>
-                    <h1 class="text-5xl font-bold mt-2 mb-4 text-white cinzel">${career.title}</h1>
-                    <p class="text-xl text-gray-300 leading-relaxed">${career.description}</p>
-                </div>
-                
-                <div class="grid md:grid-cols-3 gap-6 mb-8">
-                    <div class="info-card text-center">
-                        <i data-lucide="wallet" class="w-8 h-8 text-[#d4af37] mx-auto mb-3"></i>
-                        <h4 class="text-sm text-gray-400 mb-1">Salary Range</h4>
-                        <p class="text-lg font-semibold">${career.salary}</p>
-                    </div>
-                    <div class="info-card text-center">
-                        <i data-lucide="clock" class="w-8 h-8 text-[#d4af37] mx-auto mb-3"></i>
-                        <h4 class="text-sm text-gray-400 mb-1">Training Period</h4>
-                        <p class="text-lg font-semibold">${career.roadmap.length} Major Steps</p>
-                    </div>
-                    <div class="info-card text-center">
-                        <i data-lucide="trending-up" class="w-8 h-8 text-[#d4af37] mx-auto mb-3"></i>
-                        <h4 class="text-sm text-gray-400 mb-1">Growth</h4>
-                        <p class="text-lg font-semibold">High</p>
-                    </div>
-                </div>
-                
-                <div class="space-y-8">
-                    <section>
-                        <h3 class="text-2xl font-bold mb-4 text-[#d4af37] flex items-center gap-3">
-                            <i data-lucide="briefcase" class="w-6 h-6"></i> What They Do
-                        </h3>
-                        <p class="text-gray-300 leading-relaxed text-lg">${career.whatTheyDo}</p>
-                    </section>
-                    
-                    <section>
-                        <h3 class="text-2xl font-bold mb-4 text-[#d4af37] flex items-center gap-3">
-                            <i data-lucide="list-checks" class="w-6 h-6"></i> Eligibility & Exams
-                        </h3>
-                        <div class="bg-[#2d0a0f] border border-[#722f37] rounded-lg p-6">
-                            <p class="mb-4"><strong class="text-white">Eligibility:</strong> ${career.eligibility}</p>
-                            <p><strong class="text-white">Exams:</strong> ${career.exams}</p>
-                        </div>
-                    </section>
-                    
-                    <section>
-                        <h3 class="text-2xl font-bold mb-6 text-[#d4af37] flex items-center gap-3">
-                            <i data-lucide="map" class="w-6 h-6"></i> Step-by-Step Roadmap
-                        </h3>
-                        <div class="space-y-0">
-                            ${career.roadmap.map((step, i) => `
-                                <div class="roadmap-step">
-                                    <h4 class="font-bold text-white mb-1">Step ${i + 1}</h4>
-                                    <p class="text-gray-300">${step}</p>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </section>
-                    
-                    <section>
-                        <h3 class="text-2xl font-bold mb-4 text-[#d4af37] flex items-center gap-3">
-                            <i data-lucide="brain" class="w-6 h-6"></i> Skills Required
-                        </h3>
-                        <div class="flex flex-wrap gap-3">
-                            ${career.skills.map(skill => `
-                                <span class="px-4 py-2 bg-[#722f37]/30 border border-[#722f37] rounded-full text-sm">${skill}</span>
-                            `).join('')}
-                        </div>
-                    </section>
-                    
-                    <section>
-                        <h3 class="text-2xl font-bold mb-4 text-[#d4af37] flex items-center gap-3">
-                            <i data-lucide="award" class="w-6 h-6"></i> Career Progression
-                        </h3>
-                        <div class="bg-gradient-to-r from-[#722f37]/20 to-transparent border-l-4 border-[#d4af37] p-6 rounded-r-lg">
-                            <p class="text-lg text-gray-200">${career.progression}</p>
-                        </div>
-                    </section>
-                    
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <section class="info-card border-green-500/30">
-                            <h3 class="text-xl font-bold mb-4 text-green-400 flex items-center gap-2">
-                                <i data-lucide="thumbs-up" class="w-5 h-5"></i> Pros
-                            </h3>
-                            <ul class="space-y-2">
-                                ${career.pros.map(pro => `<li class="flex items-start gap-2 text-gray-300"><span class="text-green-400 mt-1">•</span>${pro}</li>`).join('')}
-                            </ul>
-                        </section>
-                        
-                        <section class="info-card border-red-500/30">
-                            <h3 class="text-xl font-bold mb-4 text-red-400 flex items-center gap-2">
-                                <i data-lucide="alert-triangle" class="w-5 h-5"></i> Cons & Risks
-                            </h3>
-                            <ul class="space-y-2">
-                                ${career.cons.map(con => `<li class="flex items-start gap-2 text-gray-300"><span class="text-red-400 mt-1">•</span>${con}</li>`).join('')}
-                            </ul>
-                            <div class="mt-4 pt-4 border-t border-red-500/20">
-                                <p class="text-sm text-red-300"><strong>Risks:</strong> ${career.risks}</p>
-                            </div>
-                        </section>
-                    </div>
-                    
-                    <section class="info-card bg-[#d4af37]/10 border-[#d4af37]/30">
-                        <h3 class="text-xl font-bold mb-3 text-[#d4af37] flex items-center gap-2">
-                            <i data-lucide="git-branch" class="w-5 h-5"></i> Alternative Paths
-                        </h3>
-                        <p class="text-gray-300">If this primary path doesn't work out, consider: <strong class="text-white">${career.alternatives.join(", ")}</strong></p>
-                    </section>
-                </div>
-            `;
-            
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-            lucide.createIcons();
-        }
+  const leftHTML=`
+    <div class="sn-left${isRight?' sn-empty':''}">
+      ${!isRight?`<div class="sn-content">
+        <span class="sn-icon">${s.icon}</span>
+        <div class="sn-num">Sector ${String(i+1).padStart(2,'0')}</div>
+        <div class="sn-name">${s.name}</div>
+        <div class="sn-desc">${s.desc}</div>
+        <div class="sn-meta"><span>${total}</span> careers · <span>${s.sub.length}</span> specializations</div>
+        <button class="explore-btn" data-idx="${i}">Explore Careers <span>→</span></button>
+        <div class="connector-h"></div>
+      </div>`:''}
+    </div>`;
+  const rightHTML=`
+    <div class="sn-right${!isRight?' sn-empty':''}">
+      ${isRight?`<div class="sn-content">
+        <span class="sn-icon">${s.icon}</span>
+        <div class="sn-num">Sector ${String(i+1).padStart(2,'0')}</div>
+        <div class="sn-name">${s.name}</div>
+        <div class="sn-desc">${s.desc}</div>
+        <div class="sn-meta"><span>${total}</span> careers · <span>${s.sub.length}</span> specializations</div>
+        <button class="explore-btn" data-idx="${i}">Explore Careers <span>→</span></button>
+        <div class="connector-h"></div>
+      </div>`:''}
+    </div>`;
 
-        function closeCareer() {
-            document.getElementById('careerModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
+  // Pip decorations
+  const pips=[...Array(4)].map(()=>{
+    const t=Math.random()*60+20;
+    const d=Math.random()*2;
+    return `<div class="sn-pip" style="position:absolute;top:${t}%;animation-delay:${d}s"></div>`;
+  }).join('');
 
-        // Chatbot Functions
-        function toggleChat() {
-            const chatWindow = document.getElementById('chatWindow');
-            chatWindow.style.display = chatWindow.style.display === 'block' ? 'none' : 'block';
-        }
+  n.innerHTML=`
+    ${leftHTML}
+    <div class="sn-dot-col" style="position:relative">${pips}<div class="sn-dot" data-idx="${i}"></div></div>
+    ${rightHTML}
+  `;
+  tl.appendChild(n);
+});
 
-        function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const message = input.value.trim();
-            if (!message) return;
-            
-            const messagesDiv = document.getElementById('chatMessages');
-            
-            // User message
-            const userMsg = document.createElement('div');
-            userMsg.className = 'message user';
-            userMsg.textContent = message;
-            messagesDiv.appendChild(userMsg);
-            
-            input.value = '';
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            
-            // Bot response simulation
-            setTimeout(() => {
-                const botMsg = document.createElement('div');
-                botMsg.className = 'message bot';
-                botMsg.innerHTML = generateBotResponse(message);
-                messagesDiv.appendChild(botMsg);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }, 1000);
-        }
+// Click handlers on dots and explore btns
+document.querySelectorAll('.sn-dot,[class*="explore-btn"]').forEach(el=>{
+  el.addEventListener('click',()=>openTree(parseInt(el.dataset.idx)));
+});
 
-        function generateBotResponse(message) {
-            const lower = message.toLowerCase();
-            if (lower.includes('upsc') || lower.includes('ias')) {
-                return "UPSC is India's toughest exam! Start with NCERTs (6th-12th), read The Hindu daily, and practice answer writing. Would you like a detailed 1-year strategy?";
-            } else if (lower.includes('salary') || lower.includes('money') || lower.includes('pay')) {
-                return "Government jobs follow the 7th Pay Commission (₹56,100 starting for Group A). Private sector varies: Freshers ₹6-20 LPA, experienced professionals can earn ₹50+ LPA. Which sector interests you?";
-            } else if (lower.includes('defense') || lower.includes('army') || lower.includes('nda')) {
-                return "Defense careers require clearing NDA/CDS followed by 5-day SSB interview. Physical fitness is crucial: running, push-ups, and medical standards. Start preparing after 10th for best results!";
-            } else if (lower.includes('software') || lower.includes('coding') || lower.includes('it')) {
-                return "Tech careers need strong DSA (Data Structures) skills. Start with Python/Java, practice on LeetCode, and build projects. JEE helps get into top colleges, but off-campus opportunities are plenty too!";
-            } else if (lower.includes('medical') || lower.includes('doctor') || lower.includes('neet')) {
-                return "Medical careers require clearing NEET-UG for MBBS (5.5 years). It's highly competitive (1M+ students). Alternative: BDS, BAMS, BHMS, or B.Sc Nursing if MBBS doesn't work out.";
-            } else {
-                return "That's an interesting question! I can help you explore specific careers, exam preparation strategies, or eligibility criteria. Try asking about UPSC, Software Engineering, Medical careers, or Defense services!";
-            }
-        }
+// Intersection observer — background + animations
+let curBg=0;
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting) return;
+    const i=parseInt(e.target.dataset.i);
+    e.target.classList.add('visible');
+    if(i!==curBg){
+      bgSlides[curBg].classList.remove('active');
+      bgSlides[i].classList.add('active');
+      curBg=i;
+      pDots.forEach((d,j)=>d.classList.toggle('active',j===i));
+    }
+  });
+},{threshold:.28});
+document.querySelectorAll('.sn').forEach(n=>io.observe(n));
 
-        function toggleFaq(element) {
-            const answer = element.querySelector('p');
-            const icon = element.querySelector('[data-lucide="chevron-down"]');
-            answer.classList.toggle('hidden');
-            if (answer.classList.contains('hidden')) {
-                icon.style.transform = 'rotate(0deg)';
-            } else {
-                icon.style.transform = 'rotate(180deg)';
-            }
-        }
+// Parallax on hero
+document.addEventListener('mousemove',e=>{
+  const dx=(e.clientX/innerWidth-.5)*18;
+  const dy=(e.clientY/innerHeight-.5)*10;
+  const hi=$('heroInner');
+  if(hi) hi.style.transform=`translate(${dx}px,${dy}px)`;
+});
 
-        function switchMode(mode) {
-            if (mode === 'sectors') {
-                document.getElementById('pathway').scrollIntoView({ behavior: 'smooth' });
-            } else {
-                alert('Adventure Mode (Land, Space, Air, Marine) coming soon! Explore the sectors for now.');
-            }
-        }
+// ═══════════════════════════════════
+// TREE OVERLAY
+// ═══════════════════════════════════
+let curSector=null;
 
-        // Close modals on escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeSector();
-                closeCareer();
-            }
-        });
-    </script>
+function openTree(idx){
+  curSector=SECTORS[idx];
+  const total=curSector.sub.reduce((a,c)=>a+c.p.length,0);
+  $('ovTitle').innerHTML=`<span>${curSector.icon}</span> ${curSector.name}`;
+  $('ovMeta').textContent=`${total} career paths`;
+
+  // Build tabs
+  const tabs=$('ovTabs');
+  tabs.innerHTML='';
+  const all=document.createElement('button');
+  all.className='tab active';all.textContent='All';
+  all.onclick=()=>selectTab(-1,all);
+  tabs.appendChild(all);
+  curSector.sub.forEach((s,i)=>{
+    const b=document.createElement('button');
+    b.className='tab';b.textContent=`${s.e} ${s.n}`;
+    b.onclick=()=>selectTab(i,b);
+    tabs.appendChild(b);
+  });
+
+  renderCards(-1);
+  $('overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function selectTab(idx,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderCards(idx);
+}
+
+function renderCards(subcatIdx){
+  const grid=$('cardsGrid');
+  grid.innerHTML='';
+  const list=[];
+  if(subcatIdx===-1){
+    curSector.sub.forEach(s=>s.p.forEach(p=>list.push({name:p,e:s.e,sub:s.n})));
+  } else {
+    const s=curSector.sub[subcatIdx];
+    s.p.forEach(p=>list.push({name:p,e:s.e,sub:s.n}));
+  }
+  list.forEach((p,i)=>{
+    const c=document.createElement('div');
+    c.className='cc';
+    c.style.animationDelay=(i*.028)+'s';
+    c.innerHTML=`<span class="cc-icon">${p.e}</span><div class="cc-title">${p.name}</div><div class="cc-tag">${p.sub}</div>`;
+    grid.appendChild(c);
+  });
+  if(!list.length) grid.innerHTML='<div class="no-results">No careers found</div>';
+}
+
+$('ovClose').onclick=()=>{
+  $('overlay').classList.remove('open');
+  document.body.style.overflow='';
+};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('ovClose').onclick()});
+
+// ═══════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════
+$('searchInput').addEventListener('input',e=>{
+  const q=e.target.value.trim().toLowerCase();
+  if(!q){$('overlay').classList.remove('open');document.body.style.overflow='';return;}
+
+  const results=[];
+  SECTORS.forEach(sec=>{
+    sec.sub.forEach(sub=>{
+      sub.p.forEach(p=>{
+        if(p.toLowerCase().includes(q)||sub.n.toLowerCase().includes(q)||sec.name.toLowerCase().includes(q))
+          results.push({name:p,e:sub.e,sub:`${sec.name} — ${sub.n}`});
+      });
+    });
+  });
+
+  $('ovTitle').innerHTML=`🔍 "${e.target.value}"`;
+  $('ovMeta').textContent=`${results.length} result${results.length!==1?'s':''}`;
+  $('ovTabs').innerHTML='';
+  const grid=$('cardsGrid');grid.innerHTML='';
+  if(!results.length){grid.innerHTML='<div class="no-results">No careers match your search</div>';}
+  else results.forEach((p,i)=>{
+    const c=document.createElement('div');
+    c.className='cc';c.style.animationDelay=(i*.022)+'s';
+    c.innerHTML=`<span class="cc-icon">${p.e}</span><div class="cc-title">${p.name}</div><div class="cc-tag">${p.sub}</div>`;
+    grid.appendChild(c);
+  });
+  curSector={name:'Search'};
+  $('overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+});
+
+// ═══════════════════════════════════
+// STAT COUNTERS
+// ═══════════════════════════════════
+const statsIO=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting)return;
+    const el=e.target;
+    const target=+el.dataset.count;
+    let n=0;const step=target/55;
+    const t=setInterval(()=>{n=Math.min(n+step,target);el.textContent=Math.round(n).toLocaleString();if(n>=target)clearInterval(t);},16);
+    statsIO.unobserve(el);
+  });
+},{threshold:.5});
+document.querySelectorAll('.stat-n').forEach(el=>statsIO.observe(el));
+</script>
 </body>
 </html>
