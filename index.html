@@ -1,81 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Career Tree</title>
-
-<style>
-body {
-  margin: 0;
-  background: radial-gradient(circle, #1a0005, #0d0d0d);
-  font-family: Arial;
-  overflow: hidden;
-}
-
-#canvas {
-  width: 100vw;
-  height: 100vh;
-  overflow: auto;
-}
-
-.node {
-  position: absolute;
-  padding: 4px 8px;
-  background: rgba(255,77,109,0.1);
-  border: 1px solid rgba(255,77,109,0.3);
-  border-radius: 6px;
-  font-size: 10px;
-  color: white;
-  white-space: nowrap;
-}
-</style>
+  <script src="https://unpkg.com/3d-force-graph"></script>
+  <style>
+    body { margin: 0; background: black; }
+  </style>
 </head>
-
 <body>
 
-<div id="canvas"></div>
+<div id="3d-graph"></div>
 
 <script>
+const Graph = ForceGraph3D()(document.getElementById('3d-graph'));
 
-// 🔥 PASTE YOUR FULL 1020 JOBS HERE
-const jobs = [
-"Software Engineer",
-"Senior Software Engineer",
-"Full Stack Developer",
-"Backend Developer",
-"Frontend Developer",
-// 👉 PASTE ALL YOUR 1000 JOBS HERE
-];
+const data = {
+  nodes: [
+    { id: 'Careers' },
+    { id: 'Tech' },
+    { id: 'Finance' },
+    { id: 'Creative' },
 
-// 🚀 AUTO-GRID (TREE-LIKE FLOW)
-const canvas = document.getElementById("canvas");
+    { id: 'Software Engineer' },
+    { id: 'AI Engineer' },
+    { id: 'Data Scientist' },
 
-let x = 50;
-let y = 50;
-let col = 0;
+    { id: 'Investment Banker' },
+    { id: 'Financial Analyst' },
 
-jobs.forEach((job, i) => {
+    { id: 'Actor' },
+    { id: 'Designer' }
+  ],
+  links: [
+    { source: 'Careers', target: 'Tech' },
+    { source: 'Careers', target: 'Finance' },
+    { source: 'Careers', target: 'Creative' },
 
-  const div = document.createElement("div");
-  div.className = "node";
-  div.innerText = job;
+    { source: 'Tech', target: 'Software Engineer' },
+    { source: 'Tech', target: 'AI Engineer' },
+    { source: 'Tech', target: 'Data Scientist' },
 
-  div.style.left = x + "px";
-  div.style.top = y + "px";
+    { source: 'Finance', target: 'Investment Banker' },
+    { source: 'Finance', target: 'Financial Analyst' },
 
-  canvas.appendChild(div);
+    { source: 'Creative', target: 'Actor' },
+    { source: 'Creative', target: 'Designer' }
+  ]
+};
 
-  y += 30;
-  col++;
-
-  // NEW COLUMN (like branches)
-  if (col > 40) {
-    col = 0;
-    y = 50;
-    x += 180;
-  }
-
-});
+Graph
+  .graphData(data)
+  .nodeAutoColorBy('id')
+  .nodeLabel('id')
+  .linkOpacity(0.4);
 </script>
 
 </body>
