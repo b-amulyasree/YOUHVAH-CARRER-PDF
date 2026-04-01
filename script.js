@@ -123,3 +123,6 @@ setInterval(() => {
   })
   angle += 0.002
 }, 20)
+Graph
+  .enableNodeDrag(true)
+  .enableNavigationControls(true)
