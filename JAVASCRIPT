@@ -1,0 +1,7 @@
+"💻 Tech": [
+  "Software Engineer",
+  "Senior Software Engineer",
+  "Full Stack Developer",
+  "Backend Developer",
+  ...
+]
