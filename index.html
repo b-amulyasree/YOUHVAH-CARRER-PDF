@@ -1,123 +1,187 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
-  <script src="https://unpkg.com/3d-force-graph"></script>
+<meta charset="UTF-8">
+<title>Career Roadmap</title>
 
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: radial-gradient(circle at center, #2b0a12, #0a0003 80%);
-      font-family: 'Poppins', sans-serif;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: black;
+  color: white;
+  overflow-x: hidden;
+}
 
-    #title {
-      position: absolute;
-      top: 20px;
-      width: 100%;
-      text-align: center;
-      color: #ff4d6d;
-      font-size: 28px;
-      letter-spacing: 2px;
-      text-shadow: 0 0 20px rgba(255,77,109,0.8);
-      z-index: 10;
-    }
-  </style>
+/* BACKGROUND IMAGE */
+.bg {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  transition: opacity 1s ease;
+}
+
+/* CENTER LINE */
+.line {
+  position: fixed;
+  left: 50%;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(#3b0000, #ff4d6d);
+}
+
+/* SECTIONS */
+.section {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* SECTOR BUTTON */
+.node {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 15px 30px;
+  border-radius: 30px;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.node:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 20px rgba(255,0,80,0.7);
+}
+
+/* JOB GRID */
+.jobs {
+  display: none;
+  position: absolute;
+  top: 60%;
+  width: 80%;
+  left: 10%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* JOB CARD */
+.card {
+  width: 220px;
+  height: 150px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: 0.3s;
+}
+
+.card img {
+  width: 100%;
+  height: 60%;
+  object-fit: cover;
+}
+
+.card p {
+  text-align: center;
+  font-size: 12px;
+  padding: 5px;
+}
+
+.card:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px red;
+}
+</style>
 </head>
+
 <body>
 
-<div id="title">CAREER UNIVERSE</div>
-<div id="3d-graph"></div>
+<img id="bgImage" class="bg" src="https://images.unsplash.com/photo-1518770660439-4636190af475">
+
+<div class="line"></div>
+
+<!-- TECH -->
+<div class="section" data-img="https://images.unsplash.com/photo-1518770660439-4636190af475">
+  <div class="node" onclick="toggleJobs('techJobs')">TECH</div>
+  <div class="jobs" id="techJobs">
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c">
+      <p>Software Engineer</p>
+    </div>
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c">
+      <p>AI Engineer</p>
+    </div>
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1504639725590-34d0984388bd">
+      <p>Data Scientist</p>
+    </div>
+  </div>
+</div>
+
+<!-- FINANCE -->
+<div class="section" data-img="https://images.unsplash.com/photo-1569025690938-a00729c9e1d9">
+  <div class="node" onclick="toggleJobs('financeJobs')">FINANCE</div>
+  <div class="jobs" id="financeJobs">
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f">
+      <p>Investment Banker</p>
+    </div>
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40">
+      <p>Financial Analyst</p>
+    </div>
+  </div>
+</div>
+
+<!-- MEDICAL -->
+<div class="section" data-img="https://images.unsplash.com/photo-1581093458791-9f3c3900b7b6">
+  <div class="node" onclick="toggleJobs('medicalJobs')">MEDICAL</div>
+  <div class="jobs" id="medicalJobs">
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1582750433449-648ed127bb54">
+      <p>Surgeon</p>
+    </div>
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1538108149393-fbbd81895907">
+      <p>Cardiologist</p>
+    </div>
+  </div>
+</div>
 
 <script>
-const Graph = ForceGraph3D()(document.getElementById('3d-graph'));
-
-// FULL JOB LIST (sample expandable, you will extend)
-const jobTree = {
-  "Careers": ["Tech", "Finance", "Creative"],
-
-  "Tech": [
-    "Software Engineer","AI Engineer","Data Scientist","Backend Developer","Frontend Developer"
-  ],
-
-  "Finance": [
-    "Investment Banker","Financial Analyst","Portfolio Manager","Quantitative Trader"
-  ],
-
-  "Creative": [
-    "Actor","Designer","Photographer","Video Editor"
-  ]
-};
-
-let nodes = [{ id: 'Careers', level: 0 }];
-let links = [];
-
-function updateGraph() {
-  Graph.graphData({ nodes, links });
+// CLICK SHOW JOBS
+function toggleJobs(id) {
+  const el = document.getElementById(id);
+  el.style.display = (el.style.display === "flex") ? "none" : "flex";
 }
 
-function addChildren(node) {
-  const children = jobTree[node.id];
-  if (!children) return;
+// BACKGROUND FADE ON SCROLL
+const sections = document.querySelectorAll('.section');
+const bg = document.getElementById('bgImage');
 
-  children.forEach(child => {
-    if (!nodes.find(n => n.id === child)) {
-      nodes.push({ id: child, level: node.level + 1 });
-      links.push({ source: node.id, target: child });
-    }
+window.addEventListener('scroll', () => {
+  let index = 0;
+  sections.forEach((sec, i) => {
+    const rect = sec.getBoundingClientRect();
+    if (rect.top <= window.innerHeight / 2) index = i;
   });
 
-  updateGraph();
-}
-
-Graph
-  .graphData({ nodes, links })
-  .nodeLabel('id')
-  .nodeAutoColorBy('level')
-
-  .nodeThreeObject(node => {
-    const sprite = new THREE.Sprite(
-      new THREE.SpriteMaterial({
-        color: node.level === 0 ? 0xff1e56 : node.level === 1 ? 0xff4d6d : 0xff8fa3,
-        transparent: true,
-        opacity: 0.95
-      })
-    );
-
-    sprite.scale.set(4, 4, 1);
-    return sprite;
-  })
-
-  .onNodeClick(node => {
-    addChildren(node);
-
-    // zoom to clicked node
-    const distance = 40;
-    const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
-
-    Graph.cameraPosition(
-      { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio },
-      node,
-      1000
-    );
-  })
-
-  .linkWidth(1.5)
-  .linkColor(() => '#ff4d6d')
-  .linkOpacity(0.4)
-  .backgroundColor('#0a0003');
-
-Graph.cameraPosition({ z: 120 });
-Graph.d3VelocityDecay(0.3);
-
-// INITIAL ROOT EXPAND
-addChildren({ id: 'Careers', level: 0 });
-
-// TESTS
-console.assert(typeof THREE !== 'undefined', 'THREE loaded');
-console.assert(nodes.length > 0, 'Nodes exist');
-
+  const newImg = sections[index].getAttribute('data-img');
+  if (bg.src !== newImg) {
+    bg.style.opacity = 0;
+    setTimeout(() => {
+      bg.src = newImg;
+      bg.style.opacity = 1;
+    }, 300);
+  }
+});
 </script>
 
 </body>
