@@ -1,347 +1,798 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Wine Dust Career Explorer</title>
-  <style>
-    /* === GLOBALS === */
-    :root {
-      --bg-wine-dust: #5b3445;
-      --bg-deep: #3a242e;
-      --bg-night: #221a20;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareerVerse — Explore Every Career Path</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg0:#07000a;--bg1:#120010;--wine:#5c001a;--crimson:#b01030;--cr-glow:rgba(176,16,48,.45);
+  --gold:#c9943a;--gold-lt:#e8c070;--ivory:#f2e2cc;--ivory-d:rgba(242,226,204,.65);
+  --line:1px solid rgba(176,16,48,.25);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg0);color:var(--ivory);
+  font-family:'Jost',sans-serif;font-weight:300;overflow-x:hidden;
+}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg0)}
+::-webkit-scrollbar-thumb{background:var(--wine)}::-webkit-scrollbar-thumb:hover{background:var(--crimson)}
 
-      --glow-light: #e0d0c0;
-      --glow-accent: #c89a9a;
+/* ─── GRAIN ─── */
+#grain{
+  position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:300px;animation:grainShift 8s steps(10) infinite;
+}
+@keyframes grainShift{0%{background-position:0 0}100%{background-position:300px 300px}}
 
-      --card-bg: rgba(34, 26, 32, 0.85);
-      --card-border: rgba(190, 140, 140, 0.3);
-      --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    }
+/* ─── BACKGROUND ─── */
+#bg{position:fixed;inset:0;z-index:0}
+.bg-slide{
+  position:absolute;inset:0;background-size:cover;background-position:center;
+  opacity:0;transition:opacity 2s cubic-bezier(.4,0,.2,1);
+}
+.bg-slide.active{opacity:.14}
+#bg::after{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 80% at 15% 50%,rgba(92,0,26,.35) 0%,transparent 70%),
+    linear-gradient(180deg,rgba(7,0,10,.92) 0%,rgba(18,0,16,.5) 40%,rgba(7,0,10,.92) 100%);
+  z-index:1;
+}
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+/* ─── HEADER ─── */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  padding:22px 48px;display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(to bottom,rgba(7,0,10,.95) 60%,transparent);
+}
+.logo{
+  font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:300;
+  letter-spacing:.18em;color:var(--ivory);text-shadow:0 0 30px var(--cr-glow);
+}
+.logo b{color:var(--crimson);font-weight:400}
+.hdr-search{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(176,16,48,.3);padding:9px 18px;
+  backdrop-filter:blur(12px);transition:border-color .3s;
+}
+.hdr-search:focus-within{border-color:var(--crimson)}
+.hdr-search input{
+  background:none;border:none;outline:none;color:var(--ivory);
+  font-family:'Jost',sans-serif;font-size:.78rem;letter-spacing:.12em;width:200px;
+}
+.hdr-search input::placeholder{color:rgba(242,226,204,.3)}
+.hdr-tag{font-size:.65rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);opacity:.75}
 
-    body {
-      background: linear-gradient(
-        135deg,
-        var(--bg-wine-dust) 0%,
-        var(--bg-deep) 60%,
-        var(--bg-night) 100%
-      );
-      color: var(--glow-light);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-      scroll-behavior: smooth;
-    }
+/* ─── PROGRESS ─── */
+#progress{
+  position:fixed;right:28px;top:50%;transform:translateY(-50%);
+  z-index:400;display:flex;flex-direction:column;gap:9px;
+}
+.pd{
+  width:5px;height:5px;border-radius:50%;background:rgba(242,226,204,.2);
+  cursor:pointer;transition:all .35s;border:none;padding:0;
+}
+.pd.active,.pd:hover{background:var(--gold);box-shadow:0 0 10px rgba(201,148,58,.6);transform:scale(1.4)}
 
-    /* === HEADER === */
-    header {
-      padding: 1.5rem 2rem;
-      background: rgba(30, 20, 25, 0.7);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid var(--card-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
-    }
+/* ─── HERO ─── */
+#hero{
+  height:100vh;display:flex;align-items:center;justify-content:center;
+  text-align:center;position:relative;z-index:2;
+}
+.hero-inner{position:relative}
+.hero-eyebrow{
+  font-size:.65rem;letter-spacing:.5em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:2rem;opacity:.8;
+}
+.hero-h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(3.2rem,9vw,7.5rem);font-weight:300;
+  line-height:1.05;letter-spacing:-.01em;margin-bottom:1.8rem;
+}
+.hero-h1 em{font-style:italic;color:var(--crimson);text-shadow:0 0 60px var(--cr-glow)}
+.hero-sub{
+  font-size:.8rem;letter-spacing:.35em;text-transform:uppercase;
+  color:var(--ivory-d);margin-bottom:3.5rem;
+}
+.scroll-hint{
+  display:inline-flex;flex-direction:column;align-items:center;gap:14px;
+  color:var(--gold);font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;
+}
+.scroll-line{
+  width:1px;height:65px;
+  background:linear-gradient(to bottom,var(--gold),transparent);
+  animation:linePulse 2.2s ease-in-out infinite;
+}
+@keyframes linePulse{0%,100%{opacity:.25;transform:scaleY(.7)}60%{opacity:1;transform:scaleY(1)}}
 
-    header h1 {
-      font-size: 1.8rem;
-      letter-spacing: 0.5px;
-      font-weight: 700;
-      text-shadow: 0 0 10px rgba(220, 180, 200, 0.6);
-    }
+/* ─── STATS ─── */
+.stats{
+  position:relative;z-index:2;display:flex;justify-content:center;gap:80px;
+  padding:60px 48px;border-top:var(--line);border-bottom:var(--line);
+}
+.stat{text-align:center}
+.stat-n{
+  display:block;font-family:'Cormorant Garamond',serif;font-size:3.2rem;
+  font-weight:300;color:var(--gold);line-height:1;margin-bottom:10px;
+}
+.stat-l{font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;color:var(--ivory-d);opacity:.5}
 
-    header p {
-      font-size: 0.95rem;
-      opacity: 0.8;
-      margin-top: 0.3rem;
-    }
+/* ─── TIMELINE ─── */
+#timeline{position:relative;z-index:2;padding-bottom:220px}
+.central-line{
+  position:absolute;left:50%;top:0;bottom:0;width:1px;transform:translateX(-50%);
+  background:linear-gradient(to bottom,transparent 2%,var(--wine) 8%,var(--crimson) 30%,var(--gold) 55%,var(--crimson) 80%,var(--wine) 95%,transparent);
+  box-shadow:0 0 18px var(--cr-glow);
+}
 
-    /* === MAIN SCROLL LINE === */
-    main {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem 1rem;
-    }
+/* ─── SECTOR NODE ─── */
+.sn{
+  display:grid;grid-template-columns:1fr 56px 1fr;
+  align-items:center;min-height:380px;padding:60px 0;position:relative;
+}
+.sn-dot-col{
+  display:flex;flex-direction:column;align-items:center;
+  position:relative;gap:6px;z-index:3;
+}
+.sn-dot{
+  width:18px;height:18px;border-radius:50%;
+  background:radial-gradient(circle,var(--crimson) 0%,var(--wine) 100%);
+  border:2px solid var(--gold);cursor:pointer;
+  box-shadow:0 0 18px var(--cr-glow),0 0 40px rgba(176,16,48,.18);
+  transition:all .35s;flex-shrink:0;
+}
+.sn-dot:hover{transform:scale(1.5);box-shadow:0 0 30px var(--cr-glow),0 0 70px rgba(176,16,48,.3)}
+.sn-pip{
+  width:3px;height:3px;border-radius:50%;background:var(--gold);
+  box-shadow:0 0 6px var(--gold);opacity:.4;
+  animation:pipPulse 3s ease-in-out infinite;
+}
+@keyframes pipPulse{0%,100%{opacity:.2}50%{opacity:.9}}
 
-    .scroll-line {
-      position: relative;
-      width: 4px;
-      height: 100%;
-      background: linear-gradient(
-        to bottom,
-        rgba(220, 200, 190, 0.2),
-        rgba(190, 160, 160, 0.4),
-        rgba(220, 200, 190, 0.2)
-      );
-      border-radius: 999px;
-      flex-shrink: 0;
-      margin: 0 1.5rem;
-    }
+.sn-left{padding-right:52px;text-align:right}
+.sn-right{padding-left:52px;text-align:left}
+.sn-empty{opacity:0;pointer-events:none}
 
-    .section {
-      display: flex;
-      position: relative;
-      width: 100%;
-      max-width: 1000px;
-      margin: 3rem 0;
-      opacity: 0.8;
-      transition: opacity 0.6s ease;
-      padding-left: 3rem;
-      padding-right: 1.5rem;
-    }
+.sn-content{opacity:0;transition:opacity .9s ease,transform .9s cubic-bezier(.4,0,.2,1)}
+.sn-left .sn-content{transform:translateX(-28px)}
+.sn-right .sn-content{transform:translateX(28px)}
+.sn.visible .sn-content{opacity:1;transform:translateX(0)}
 
-    .section.visible {
-      opacity: 1;
-    }
+.sn-icon{display:block;font-size:2.2rem;margin-bottom:14px}
+.sn-num{
+  font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;
+  color:var(--gold);opacity:.55;margin-bottom:6px;
+}
+.sn-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.8rem,3.5vw,3rem);font-weight:300;
+  letter-spacing:.04em;line-height:1.1;margin-bottom:14px;
+}
+.sn-desc{
+  font-size:.82rem;color:var(--ivory-d);line-height:1.85;
+  letter-spacing:.04em;margin-bottom:18px;
+}
+.sn-meta{
+  font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--gold);opacity:.6;margin-bottom:20px;
+}
+.sn-meta span{color:var(--crimson);opacity:1}
+.explore-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:9px 22px;border:1px solid rgba(176,16,48,.4);
+  background:rgba(176,16,48,.07);color:var(--ivory);
+  font-family:'Jost',sans-serif;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;
+  cursor:pointer;transition:all .3s;backdrop-filter:blur(6px);
+}
+.explore-btn:hover{
+  background:rgba(176,16,48,.2);border-color:var(--crimson);
+  box-shadow:0 0 24px rgba(176,16,48,.2),0 6px 24px rgba(0,0,0,.3);
+}
+.connector-h{
+  position:absolute;top:50%;height:1px;
+  background:linear-gradient(to right,transparent,rgba(176,16,48,.3),transparent);
+}
+.sn-left .connector-h{right:56px;width:calc(50% - 56px - 48px);transform:translateY(-50%)}
+.sn-right .connector-h{left:56px;width:calc(50% - 56px - 48px);transform:translateY(-50%)}
 
-    .section-title {
-      font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      text-shadow: 0 0 10px rgba(220, 180, 200, 0.6);
-    }
+/* ─── TREE OVERLAY ─── */
+#overlay{
+  position:fixed;inset:0;z-index:1000;
+  background:rgba(7,0,10,.97);backdrop-filter:blur(24px);
+  display:none;flex-direction:column;overflow:hidden;
+}
+#overlay.open{display:flex;animation:overlayIn .4s cubic-bezier(.4,0,.2,1)}
+@keyframes overlayIn{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
 
-    .section-subtitle {
-      font-size: 1rem;
-      opacity: 0.8;
-      margin-bottom: 1.5rem;
-    }
+.ov-head{
+  padding:26px 48px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:var(--line);flex-shrink:0;
+  background:linear-gradient(to right,rgba(92,0,26,.1),transparent);
+}
+.ov-title-sup{font-size:.58rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);opacity:.6;margin-bottom:6px}
+.ov-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.85rem;font-weight:300;letter-spacing:.08em;
+}
+.ov-title span{color:var(--crimson)}
+.ov-meta{font-size:.65rem;letter-spacing:.2em;color:var(--ivory-d);opacity:.5}
+.ov-close{
+  width:42px;height:42px;border:1px solid rgba(176,16,48,.3);
+  background:none;color:var(--ivory);font-size:1.1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .3s;
+}
+.ov-close:hover{background:rgba(176,16,48,.15);border-color:var(--crimson)}
 
-    .jobs-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1rem;
-    }
+/* Tabs */
+.ov-tabs{
+  display:flex;gap:2px;padding:0 48px;overflow-x:auto;
+  flex-shrink:0;padding-top:22px;padding-bottom:22px;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  scrollbar-width:none;
+}
+.ov-tabs::-webkit-scrollbar{display:none}
+.tab{
+  padding:9px 18px;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ivory-d);cursor:pointer;border:1px solid transparent;
+  white-space:nowrap;transition:all .25s;background:none;
+  font-family:'Jost',sans-serif;flex-shrink:0;
+}
+.tab:hover{color:var(--ivory);border-color:rgba(176,16,48,.3);background:rgba(176,16,48,.06)}
+.tab.active{color:var(--gold-lt);border-color:var(--crimson);background:rgba(176,16,48,.1)}
 
-    /* === JOB CARD === */
-    .job-card {
-      position: relative;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 1.2rem 1rem;
-      text-align: center;
-      box-shadow: var(--card-shadow);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      cursor: pointer;
-    }
+/* Cards */
+.ov-body{flex:1;overflow-y:auto;padding:36px 48px}
+.cards-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;
+}
+.cc{
+  background:linear-gradient(135deg,rgba(92,0,26,.15),rgba(7,0,10,.7));
+  border:1px solid rgba(176,16,48,.12);padding:26px 22px;
+  cursor:pointer;transition:all .38s cubic-bezier(.4,0,.2,1);
+  opacity:0;transform:translateY(16px);
+  animation:cardIn .45s cubic-bezier(.4,0,.2,1) forwards;
+  position:relative;overflow:hidden;backdrop-filter:blur(6px);
+}
+.cc::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--crimson),var(--gold));
+  opacity:0;transition:opacity .3s;
+}
+.cc:hover{
+  border-color:var(--crimson);transform:translateY(-5px) scale(1.025);
+  box-shadow:0 18px 40px rgba(0,0,0,.45),0 0 28px rgba(176,16,48,.18);
+}
+.cc:hover::after{opacity:.04}
+@keyframes cardIn{to{opacity:1;transform:translateY(0)}}
+.cc-icon{font-size:1.9rem;display:block;margin-bottom:14px;position:relative;z-index:1}
+.cc-title{
+  font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400;
+  letter-spacing:.03em;line-height:1.3;position:relative;z-index:1;margin-bottom:7px;
+}
+.cc-tag{
+  font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold);opacity:.6;position:relative;z-index:1;
+}
 
-    .job-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
-    }
+/* ─── SEARCH RESULTS ─── */
+.no-results{
+  text-align:center;padding:80px 20px;
+  font-family:'Cormorant Garamond',serif;font-size:1.5rem;
+  color:var(--ivory-d);opacity:.4;font-style:italic;
+}
 
-    .job-icon {
-      width: 50px;
-      height: 50px;
-      margin: 0 auto 0.8rem;
-      background: radial-gradient(
-        circle,
-        var(--glow-accent),
-        #9a6a7a
-      );
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #180e12;
-      font-weight: 700;
-      font-size: 0.9rem;
-    }
+/* ─── FOOTER ─── */
+footer{
+  position:relative;z-index:2;text-align:center;padding:64px;
+  border-top:var(--line);
+}
+.ft{
+  font-family:'Cormorant Garamond',serif;font-size:.75rem;
+  letter-spacing:.3em;color:var(--ivory-d);opacity:.3;font-style:italic;
+}
 
-    .job-title {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-      word-wrap: break-word;
-    }
-
-    .job-tag {
-      font-size: 0.75rem;
-      opacity: 0.7;
-    }
-
-    /* === FADE‑IN ON SCROLL === */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* === RESPONSIVE === */
-    @media (max-width: 600px) {
-      .section {
-        padding: 0 1rem;
-        margin: 2rem 0;
-      }
-      .section-title {
-        font-size: 1.5rem;
-      }
-      .jobs-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      }
-    }
-  </style>
+/* ─── RESPONSIVE ─── */
+@media(max-width:700px){
+  header{padding:18px 20px}
+  .hdr-search,.hdr-tag{display:none}
+  .sn{grid-template-columns:32px 1fr;padding:40px 0}
+  .sn-dot-col{position:absolute;left:0}
+  .sn-left,.sn-right{grid-column:2;padding:0 20px 0 36px;text-align:left}
+  .sn-left .sn-content,.sn-right .sn-content{transform:translateX(-20px)}
+  .connector-h{display:none}
+  .central-line{left:16px}
+  #progress{display:none}
+  .stats{gap:40px;flex-wrap:wrap;padding:40px 20px}
+  .ov-head,.ov-tabs,.ov-body{padding-left:20px;padding-right:20px}
+  .sn-left{order:2}.sn-dot-col{order:1}
+}
+</style>
 </head>
 <body>
-  <header>
-    <h1>Wine Dust Career Explorer</h1>
-    <p>Scroll to discover careers, click to explore.</p>
-  </header>
 
-  <main>
-    <!-- Central vertical line -->
-    <div class="scroll-line"></div>
+<div id="grain"></div>
+<div id="bg"></div>
 
-    <!-- SECTOR 1: Tech -->
-    <section class="section fade-in" id="sector-tech">
-      <div class="section-content">
-        <h2 class="section-title">Technology</h2>
-        <p class="section-subtitle">
-          Explore modern tech roles from software to data and AI.
-        </p>
-        <div class="jobs-grid">
-          <div class="job-card">
-            <div class="job-icon">F</div>
-            <div class="job-title">Frontend Developer</div>
-            <div class="job-tag">Web & UI</div>
-          </div>
-          <div class="job-card">
-            <div class="job-icon">B</div>
-            <div class="job-title">Backend Developer</div>
-            <div class="job-tag">API & Services</div>
-          </div>
-          <div class="job-card">
-            <div class="job-icon">D</div>
-            <div class="job-title">Data Scientist</div>
-            <div class="job-tag">Analytics & ML</div>
-          </div>
-          <div class="job-card">
-            <div class="job-icon">A</div>
-            <div class="job-title">AI Engineer</div>
-            <div class="job-tag">Machine Learning</div>
-          </div>
-          <div class="job-card">
-            <div class="job-icon">S</div>
-            <div class="job-title">DevOps Engineer</div>
-            <div class="job-tag">Infra & CI/CD</div>
-          </div>
-        </div>
-      </div>
-    </section>
+<!-- HEADER -->
+<header>
+  <div class="logo">Career<b>Verse</b></div>
+  <div class="hdr-search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:.4;flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="searchInput" placeholder="Search any career or sector…">
+  </div>
+  <div class="hdr-tag">1,141 Careers Mapped</div>
+</header>
 
-    <!-- SECTOR 2: Finance -->
-    <section class="section fade-in" id="sector-finance">
-      <div class="section-content">
-        <h2 class="section-title">Finance & Business</h2>
-        <p class="section-subtitle">
-          Banking, trading, analysis, and management careers.
-        </p>
-        <div class="jobs-grid">
-          <div class="job-card">
-            <div class="job-icon">R</div>
-            <div class="job-title">Risk Analyst</div>
-            <div class="job-tag">Banking</div>
-          </div>
-          <div class="job-card">
-            <div class="job-icon">A</div>
-            <div class="job-title">Accountant</div>
-            <div class="job-tag">Audit & Tax</div>
-          </div>
-          <div class="job-card">
-            <div class="job-icon">I</div>
-            <div class="job-title">Investment Analyst</div>
-            <div class="job-tag">Equities</div>
-          </div>
-          <div class="job-card">
-            <div class="job-icon">M</div>
-            <div class="job-title">Management Consultant</div>
-            <div class="job-tag">Strategy</div>
-          </div>
-          <div class="job-card">
-            <div class="job-icon">C</div>
-            <div class="job-title">Corporate Finance</div>
-            <div class="job-tag">M&A</div>
-          </div>
-        </div>
-      </div>
-    </section>
+<!-- PROGRESS -->
+<nav id="progress"></nav>
 
-    <!-- SECTOR 3: Medical -->
-    <section class="section fade-in" id="sector-medical">
-      <div class="section-content">
-        <h2 class="section-title">Medical & Health</h2>
-        <p class="section-subtitle">
-          Clinical, research, and support roles in healthcare.
-        </p>
-        <div class="jobs-grid">
-          <div class="job-card">
-            <div class="job-icon">D</div>
-            <div class="job-title">Doctor</div>
-            <div class="job-tag">Primary Care</div>
-          </div>
-          <div class="job-card">
-            <div class="job-icon">N</div>
-            <div class="job-title">Nurse</div>
-            <div class="job-tag">Hospital & ICU</div>
-          </div>
-          <div class="job-card">
-            <div class="job-icon">P</div>
-            <div class="job-title">Pharmacist</div>
-            <div class="job-tag">Drugs & Safety</div>
-          </div>
-          <div class="job-card">
-            <div class="job-icon">R</div>
-            <div class="job-title">Research Physician</div>
-            <div class="job-tag">Clinical Trials</div>
-          </div>
-          <div class="job-card">
-            <div class="job-icon">T</div>
-            <div class="job-title">Therapist</div>
-            <div class="job-tag">Mental Health</div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner" id="heroInner">
+    <p class="hero-eyebrow">A Universe of Career Paths</p>
+    <h1 class="hero-h1">Every <em>Path</em><br>Begins Here</h1>
+    <p class="hero-sub">1,141 Careers &nbsp;·&nbsp; 20 Sectors &nbsp;·&nbsp; 95 Specializations</p>
+    <div class="scroll-hint">
+      <span>Begin Your Journey</span>
+      <div class="scroll-line"></div>
+    </div>
+  </div>
+</section>
 
-  <script>
-    // Fade‑in elements as they enter view
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><span class="stat-n" data-count="1141">0</span><span class="stat-l">Career Paths</span></div>
+  <div class="stat"><span class="stat-n" data-count="20">0</span><span class="stat-l">Major Sectors</span></div>
+  <div class="stat"><span class="stat-n" data-count="95">0</span><span class="stat-l">Specializations</span></div>
+</div>
 
-    document.querySelectorAll('.fade-in').forEach((el) => {
-      observer.observe(el);
-    });
+<!-- TIMELINE -->
+<div id="timeline">
+  <div class="central-line"></div>
+</div>
 
-    // Add a light click interaction to job cards
-    document.querySelectorAll('.job-card').forEach((card) => {
-      card.addEventListener('click', () => {
-        alert('Card clicked: ' + card.querySelector('.job-title').textContent);
+<!-- FOOTER -->
+<footer><p class="ft">CareerVerse &nbsp;—&nbsp; Explore Every Horizon &nbsp;—&nbsp; © 2025</p></footer>
+
+<!-- TREE OVERLAY -->
+<div id="overlay">
+  <div class="ov-head">
+    <div>
+      <div class="ov-title-sup">Exploring Sector</div>
+      <div class="ov-title" id="ovTitle">Technology</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:20px">
+      <div class="ov-meta" id="ovMeta"></div>
+      <button class="ov-close" id="ovClose">✕</button>
+    </div>
+  </div>
+  <div class="ov-tabs" id="ovTabs"></div>
+  <div class="ov-body"><div class="cards-grid" id="cardsGrid"></div></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA  —  20 Sectors · 95 Subcategories · 1,141 Careers
+// ═══════════════════════════════════════════════════════
+const SECTORS=[
+{id:'tech',name:'Technology',icon:'⚡',
+ desc:'Architect the algorithms, platforms and digital systems powering tomorrow\'s civilization.',
+ bg:'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1920&q=80',
+ sub:[
+  {n:'Software Development',e:'💻',p:['Software Engineer','Frontend Developer','Backend Developer','Full Stack Developer','iOS Developer','Android Developer','DevOps Engineer','Site Reliability Engineer','Cloud Architect','Solutions Architect','Platform Engineer','Software Architect','Embedded Systems Engineer','Firmware Engineer','API Developer','SDK Developer']},
+  {n:'AI & Machine Learning',e:'🤖',p:['Machine Learning Engineer','Data Scientist','AI Researcher','NLP Engineer','Computer Vision Engineer','Deep Learning Engineer','MLOps Engineer','AI Ethicist','Reinforcement Learning Researcher','AI Product Manager','Prompt Engineer','AI Safety Researcher','Robotics AI Engineer','Speech Recognition Engineer','Recommendation Systems Engineer']},
+  {n:'Cybersecurity',e:'🔐',p:['Security Analyst','Penetration Tester','Security Engineer','CISO','Cryptographer','Digital Forensics Analyst','Threat Intelligence Analyst','Security Architect','Red Team Specialist','Blue Team Analyst','Malware Analyst','Bug Bounty Hunter','Security Consultant','Zero Trust Architect','Identity & Access Manager']},
+  {n:'Data Engineering',e:'📊',p:['Data Engineer','Data Analyst','BI Analyst','Database Administrator','Data Architect','Analytics Engineer','Data Pipeline Engineer','Hadoop Developer','Spark Developer','ETL Developer','Data Warehouse Architect','Real-time Analytics Engineer','Data Governance Specialist']},
+  {n:'Product & UX Design',e:'🎨',p:['Product Manager','UX Designer','UI Designer','UX Researcher','Product Designer','Interaction Designer','Information Architect','Design Systems Engineer','UX Writer','Accessibility Specialist','Growth PM','Technical PM','Enterprise Architect']},
+  {n:'Infrastructure & Cloud',e:'☁️',p:['Network Engineer','Systems Administrator','Cloud Engineer','IT Support Specialist','Cloud Security Engineer','Kubernetes Administrator','AWS Architect','Azure Architect','GCP Architect','Infrastructure Engineer','Network Architect','CDN Engineer','IT Project Manager']},
+  {n:'Emerging Technologies',e:'🚀',p:['Blockchain Developer','AR/VR Developer','Game Developer','Quantum Computing Researcher','IoT Engineer','Edge Computing Specialist','Digital Twin Engineer','Web3 Developer','Metaverse Architect','QA Engineer','Technical Writer']},
+]},
+{id:'finance',name:'Finance',icon:'💰',
+ desc:'Navigate capital flows, risk structures and the complex machinery of global markets.',
+ bg:'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1920&q=80',
+ sub:[
+  {n:'Investment Banking',e:'🏦',p:['Investment Banker','M&A Analyst','ECM Analyst','DCM Analyst','LBO Analyst','IPO Specialist','Restructuring Advisor','Financial Sponsor Coverage','Syndication Banker','Cross-border M&A Advisor']},
+  {n:'Trading & Markets',e:'📈',p:['Equity Trader','Forex Trader','Derivatives Trader','Portfolio Manager','Hedge Fund Manager','Market Maker','Proprietary Trader','Fixed Income Trader','Commodity Trader','Quantitative Trader','Algorithmic Trading Developer','High-Frequency Trader']},
+  {n:'Financial Analysis',e:'🔍',p:['Financial Analyst','Equity Research Analyst','Credit Rating Analyst','Risk Analyst','Quantitative Analyst','Valuation Analyst','Macro Economist','Sector Analyst','ESG Analyst','Thematic Research Analyst']},
+  {n:'Insurance & Actuarial',e:'🛡️',p:['Actuary','Insurance Underwriter','Claims Adjuster','Insurance Agent','Risk Manager','Reinsurance Analyst','Catastrophe Modeler','Life Insurance Consultant','P&C Underwriter','Health Insurance Actuary']},
+  {n:'Accounting & Tax',e:'📋',p:['CPA','Forensic Accountant','Tax Advisor','External Auditor','Controller','CFO','Bookkeeper','Payroll Specialist','Cost Accountant','Management Accountant','Tax Attorney','Transfer Pricing Specialist','Revenue Recognition Specialist']},
+  {n:'Wealth Management',e:'💎',p:['Financial Planner','Wealth Manager','Venture Capitalist','Private Equity Analyst','Family Office Advisor','Estate Planner','Trust Officer','Financial Coach','Retirement Planning Specialist','Impact Investing Analyst']},
+]},
+{id:'health',name:'Healthcare',icon:'⚕️',
+ desc:'Dedicate your expertise to healing, prevention and the relentless advancement of human health.',
+ bg:'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1920&q=80',
+ sub:[
+  {n:'Physicians & Surgeons',e:'👨‍⚕️',p:['General Practitioner','Cardiologist','Neurologist','Oncologist','Pediatrician','Orthopedic Surgeon','Dermatologist','Psychiatrist','Radiologist','Anesthesiologist','Emergency Physician','Ophthalmologist','Gastroenterologist','Endocrinologist','Nephrologist','Pulmonologist','Rheumatologist','Urologist','Hematologist','Geriatrician','Intensivist','Hospitalist','Infectious Disease Specialist']},
+  {n:'Nursing',e:'🏥',p:['Registered Nurse','Nurse Practitioner','Licensed Practical Nurse','Nurse Anesthetist','Midwife','Clinical Nurse Specialist','ICU Nurse','ER Nurse','Oncology Nurse','Pediatric Nurse','Psychiatric Nurse','Public Health Nurse','Travel Nurse']},
+  {n:'Allied Health',e:'🩺',p:['Physical Therapist','Occupational Therapist','Speech Therapist','Respiratory Therapist','Radiologic Technologist','MRI Technologist','Surgical Technologist','Medical Laboratory Scientist','Diagnostic Sonographer','Nuclear Medicine Technologist','Cardiovascular Technologist','Phlebotomist']},
+  {n:'Mental Health',e:'🧠',p:['Psychologist','Clinical Social Worker','Mental Health Counselor','Marriage & Family Therapist','Substance Abuse Counselor','Behavioral Analyst','Play Therapist','Art Therapist','Music Therapist','Neuropsychologist','Forensic Psychologist']},
+  {n:'Dental & Vision',e:'🦷',p:['Dentist','Orthodontist','Oral Surgeon','Dental Hygienist','Prosthodontist','Endodontist','Periodontist','Pediatric Dentist','Optometrist','Vision Therapist','Ocularist']},
+  {n:'Healthcare Operations',e:'🏨',p:['Healthcare Administrator','Medical Coder','EMT','Paramedic','Patient Care Coordinator','Medical Scribe','Clinical Research Coordinator','Hospital CEO','Chief Medical Officer','Health IT Manager','Medical Social Worker','Patient Advocate','Nutritionist','Dietitian']},
+]},
+{id:'edu',name:'Education',icon:'📚',
+ desc:'Shape the minds of generations through teaching, mentorship and intellectual leadership.',
+ bg:'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1920&q=80',
+ sub:[
+  {n:'K-12 Teaching',e:'🏫',p:['Kindergarten Teacher','Elementary Teacher','Middle School Teacher','High School Math Teacher','High School Science Teacher','High School English Teacher','High School History Teacher','PE Teacher','Special Education Teacher','ESL Teacher','Art Teacher','Music Teacher','Drama Teacher','Computer Science Teacher']},
+  {n:'Higher Education',e:'🎓',p:['University Professor','Adjunct Lecturer','Research Scientist','Academic Dean','Department Chair','University President','Postdoctoral Researcher','Graduate Teaching Assistant','Academic Advisor','Registrar','Financial Aid Officer','Admissions Counselor']},
+  {n:'Student Support',e:'🤝',p:['School Counselor','School Psychologist','Librarian','Media Specialist','Instructional Coach','Curriculum Developer','Behavior Interventionist','School Social Worker','Attendance Officer']},
+  {n:'Administration',e:'📝',p:['Principal','Vice Principal','Superintendent','School Board Member','District Curriculum Director','Assessment Coordinator','Special Education Director','Athletic Director']},
+  {n:'EdTech & Non-Traditional',e:'💡',p:['Online Course Creator','Corporate Trainer','Private Tutor','EdTech Specialist','Instructional Designer','eLearning Developer','Learning Experience Designer','Homeschool Educator','Museum Educator','STEM Education Specialist','Literacy Coach']},
+]},
+{id:'arts',name:'Creative Arts',icon:'🎭',
+ desc:'Channel human imagination and storytelling into culture-defining work across every medium.',
+ bg:'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1920&q=80',
+ sub:[
+  {n:'Visual Arts & Design',e:'🖌️',p:['Graphic Designer','Illustrator','Photographer','Videographer','Animator','3D Artist','Motion Graphics Designer','Art Director','Fine Artist','Sculptor','Conceptual Artist','Muralist','Digital Artist','Concept Artist','Environment Artist','Character Artist','VFX Artist']},
+  {n:'Music',e:'🎵',p:['Musician','Singer','Songwriter','Music Producer','Sound Engineer','DJ','Mixing Engineer','Mastering Engineer','Music Teacher','Conductor','Composer','Film Score Composer','Session Musician','Music Therapist','A&R Manager','Music Supervisor']},
+  {n:'Writing & Literature',e:'✍️',p:['Author','Copywriter','Content Writer','Screenwriter','Editor','Journalist','Technical Writer','Grant Writer','Ghostwriter','Literary Agent','Poet','Creative Writing Teacher','UX Writer','Fantasy Author','Travel Writer']},
+  {n:'Performance',e:'🎬',p:['Actor','Stand-Up Comedian','Stage Manager','Stage Director','Film Director','Theater Producer','Improv Artist','Circus Performer','Stunt Performer','Voice Actor','Casting Director','Choreographer','Ballet Dancer','Opera Singer']},
+  {n:'Architecture & Space Design',e:'🏛️',p:['Interior Designer','Fashion Designer','Industrial Designer','Landscape Architect','Set Designer','Production Designer','Costume Designer','Jewelry Designer','Furniture Designer','Typographer','Brand Identity Designer','Exhibition Designer']},
+]},
+{id:'eng',name:'Engineering',icon:'⚙️',
+ desc:'Solve civilization\'s grand challenges in infrastructure, materials and complex systems.',
+ bg:'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1920&q=80',
+ sub:[
+  {n:'Civil & Structural',e:'🏗️',p:['Civil Engineer','Structural Engineer','Geotechnical Engineer','Transportation Engineer','Water Resources Engineer','Environmental Engineer','Bridge Engineer','Tunnel Engineer','Highway Engineer','Urban Infrastructure Engineer','Coastal Engineer','Dam Engineer','Foundation Engineer']},
+  {n:'Mechanical',e:'🔧',p:['Mechanical Engineer','Automotive Engineer','Aerospace Engineer','HVAC Engineer','Manufacturing Engineer','Robotics Engineer','Thermal Engineer','Fluid Mechanics Engineer','Mechatronics Engineer','Product Development Engineer','Tool & Die Engineer','Turbomachinery Engineer']},
+  {n:'Electrical & Electronic',e:'⚡',p:['Electrical Engineer','Electronics Engineer','Power Systems Engineer','Control Systems Engineer','Signal Processing Engineer','RF Engineer','Photonics Engineer','VLSI Design Engineer','PCB Designer','EMI/EMC Engineer','Power Electronics Engineer','Smart Grid Engineer']},
+  {n:'Chemical & Materials',e:'⚗️',p:['Chemical Engineer','Process Engineer','Petroleum Engineer','Materials Engineer','Polymer Engineer','Nanotechnology Engineer','Semiconductor Engineer','Metallurgical Engineer','Nuclear Engineer','Corrosion Engineer','Food Process Engineer','Pharmaceutical Process Engineer']},
+  {n:'Industrial & Systems',e:'🏭',p:['Industrial Engineer','Quality Engineer','Safety Engineer','Operations Research Analyst','Lean Manufacturing Specialist','Six Sigma Engineer','Supply Chain Engineer','Ergonomics Engineer','Systems Engineer','Reliability Engineer','Maintenance Engineer']},
+  {n:'Biomedical',e:'🔬',p:['Biomedical Engineer','Biomechanical Engineer','Clinical Engineer','Prosthetics Engineer','Medical Device Engineer','Tissue Engineer','Neural Engineer','Pharmaceutical Engineer','Bioinformatics Engineer','Lab Automation Engineer']},
+]},
+{id:'legal',name:'Law & Legal',icon:'⚖️',
+ desc:'Uphold justice, navigate regulatory complexity and protect the rights of individuals and institutions.',
+ bg:'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80',
+ sub:[
+  {n:'Practice Areas',e:'📜',p:['Corporate Lawyer','Criminal Defense Attorney','Prosecutor','Family Lawyer','Immigration Attorney','IP Attorney','Patent Attorney','Tax Attorney','Personal Injury Lawyer','Real Estate Attorney','Environmental Lawyer','Employment Lawyer','Bankruptcy Attorney','International Trade Lawyer','Human Rights Attorney','Antitrust Lawyer','Securities Lawyer','Healthcare Attorney']},
+  {n:'Legal Support',e:'📁',p:['Paralegal','Legal Secretary','Court Reporter','Bailiff','Law Clerk','Legal Researcher','Legal Aid Worker','E-Discovery Specialist','Jury Consultant','Process Server']},
+  {n:'Judiciary & ADR',e:'🔨',p:['Judge','Magistrate','Arbitrator','Mediator','Administrative Law Judge','Small Claims Adjudicator','Family Court Judge','Federal Circuit Judge']},
+  {n:'Corporate Legal',e:'🏢',p:['General Counsel','Deputy General Counsel','Compliance Officer','Legal Analyst','Contract Manager','Privacy Officer','Regulatory Affairs Specialist','In-house Litigation Manager','M&A Legal Counsel','Data Protection Officer']},
+]},
+{id:'biz',name:'Business',icon:'📊',
+ desc:'Drive strategy, markets and the commercial engines that shape economies worldwide.',
+ bg:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920&q=80',
+ sub:[
+  {n:'Executive Leadership',e:'👔',p:['CEO','COO','CFO','CMO','CTO','Chief People Officer','Chief Strategy Officer','President','General Manager','Business Unit Head','Managing Director','Partner']},
+  {n:'Operations & Management',e:'📋',p:['Operations Manager','Project Manager','Business Analyst','Program Manager','Process Improvement Manager','Logistics Manager','Supply Chain Manager','Procurement Manager','Facilities Manager','Administrative Director']},
+  {n:'Marketing & Growth',e:'📣',p:['Marketing Manager','Brand Strategist','Digital Marketing Specialist','SEO Specialist','Social Media Manager','Growth Hacker','Market Research Analyst','Content Strategist','Email Marketing Manager','Influencer Marketing Manager','Performance Marketing Analyst','PR Manager','Event Marketing Manager','Community Manager']},
+  {n:'Sales & BD',e:'🤝',p:['Sales Manager','Account Executive','Business Development Manager','Sales Engineer','SDR','Key Account Manager','Enterprise Sales Rep','Channel Sales Manager','VP of Sales','Customer Success Manager','Partnership Manager']},
+  {n:'Human Resources',e:'👥',p:['HR Manager','Recruiter','Talent Acquisition Specialist','Compensation Analyst','L&D Specialist','HR Business Partner','CHRO','Employee Relations Specialist','Benefits Administrator','Workforce Planning Analyst','OD Consultant']},
+  {n:'Entrepreneurship',e:'🚀',p:['Entrepreneur','Startup Founder','Franchise Owner','Angel Investor','Venture Partner','Startup Studio Operator','Incubator Manager','Social Entrepreneur','Serial Entrepreneur']},
+]},
+{id:'sci',name:'Science & Research',icon:'🔭',
+ desc:'Push the boundaries of human knowledge through rigorous inquiry, experiment and discovery.',
+ bg:'https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=1920&q=80',
+ sub:[
+  {n:'Life Sciences',e:'🧬',p:['Biologist','Microbiologist','Geneticist','Biochemist','Ecologist','Marine Biologist','Botanist','Zoologist','Neuroscientist','Immunologist','Parasitologist','Virologist','Cell Biologist','Structural Biologist','Evolutionary Biologist','Developmental Biologist']},
+  {n:'Physical Sciences',e:'⚛️',p:['Physicist','Chemist','Astronomer','Astrophysicist','Geologist','Meteorologist','Oceanographer','Seismologist','Mineralogist','Nuclear Physicist','Particle Physicist','Cosmologist','Plasma Physicist']},
+  {n:'Research Infrastructure',e:'🔬',p:['Research Scientist','Laboratory Technician','Clinical Research Coordinator','Science Writer','Postdoctoral Fellow','Principal Investigator','Lab Manager','Grants Coordinator','Science Communicator','Research Librarian']},
+  {n:'Applied Science',e:'🧪',p:['Environmental Scientist','Food Scientist','Materials Scientist','Forensic Scientist','Toxicologist','Pharmaceutical Scientist','Agricultural Scientist','Atmospheric Scientist','Remote Sensing Scientist','Conservation Scientist','Hydrologist']},
+]},
+{id:'gov',name:'Government & Public Service',icon:'🏛️',
+ desc:'Serve the public interest through policy, governance, national security and diplomacy.',
+ bg:'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=1920&q=80',
+ sub:[
+  {n:'Public Administration',e:'📋',p:['Policy Analyst','Government Administrator','City Manager','Urban Planner','Budget Analyst','Government Auditor','Legislative Assistant','Public Affairs Specialist','Parliamentary Secretary','Regional Governor','Municipal Manager']},
+  {n:'Elected Officials',e:'🗳️',p:['Mayor','Governor','Senator','Representative','Councilmember','President','Prime Minister','Ambassador','State Attorney General','Comptroller','Commissioner','School Board Trustee']},
+  {n:'Intelligence & Security',e:'🕵️',p:['FBI Agent','CIA Analyst','NSA Analyst','Border Patrol Agent','Secret Service Agent','DEA Agent','ATF Agent','Homeland Security Analyst','Counterintelligence Analyst','Cybersecurity Federal Analyst','Signals Intelligence Analyst']},
+  {n:'Regulatory & Compliance',e:'📜',p:['Regulatory Affairs Specialist','Inspector General','Customs Officer','FDA Reviewer','FTC Investigator','SEC Examiner','Health Inspector','Building Code Inspector','Environmental Inspector','Transportation Safety Inspector']},
+  {n:'International Affairs',e:'🌐',p:['Diplomat','Foreign Service Officer','International Development Specialist','UN Program Officer','World Bank Consultant','USAID Specialist','International Trade Negotiator','Cultural Attaché','Conflict Resolution Specialist','Peacekeeping Coordinator']},
+]},
+{id:'hosp',name:'Hospitality & Tourism',icon:'🏨',
+ desc:'Craft unforgettable experiences across hotels, restaurants, travel and world-class events.',
+ bg:'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1920&q=80',
+ sub:[
+  {n:'Hotels & Lodging',e:'🛎️',p:['Hotel General Manager','Front Desk Manager','Concierge','Revenue Manager','Housekeeping Supervisor','Guest Relations Manager','Hotel Controller','Reservations Manager','Hotel Marketing Manager','Spa Manager','F&B Director','Butler']},
+  {n:'Food & Beverage',e:'🍽️',p:['Executive Chef','Sous Chef','Pastry Chef','Line Cook','Bartender','Sommelier','Restaurant Manager','Catering Manager','Banquet Manager','Mixologist','Head Baker','Chocolatier','Sushi Chef','Butcher','Brew Master']},
+  {n:'Travel & Tourism',e:'✈️',p:['Travel Agent','Tour Guide','Tourism Manager','Travel Blogger','Destination Marketing Manager','Ecotourism Guide','River Cruise Director','Expedition Leader','Tourism Policy Analyst','Cruise Director','Airport Services Manager']},
+  {n:'Events & Entertainment',e:'🎉',p:['Event Planner','Wedding Planner','Conference Coordinator','Entertainment Manager','Casino Manager','Amusement Park Manager','Sports Venue Manager','Convention Services Manager','Corporate Events Director','Experience Designer','Live Production Manager']},
+]},
+{id:'const',name:'Construction & Architecture',icon:'🏗️',
+ desc:'Design and build the physical world — from skyscrapers to sustainable communities.',
+ bg:'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1920&q=80',
+ sub:[
+  {n:'Architecture & Design',e:'📐',p:['Architect','Interior Architect','Landscape Architect','Urban Designer','Sustainable Architect','Historic Preservation Architect','Healthcare Architect','Airport Architect','Residential Designer','BIM Manager','Architectural Illustrator']},
+  {n:'Skilled Trades',e:'🔨',p:['Carpenter','Electrician','Plumber','HVAC Technician','Welder','Mason','Ironworker','Painter','Roofer','Flooring Specialist','Tile Setter','Glazier','Insulation Worker','Drywall Installer','Pipefitter','Boilermaker']},
+  {n:'Construction Management',e:'🏢',p:['Construction Manager','Site Supervisor','Project Manager','Estimator','Construction Safety Officer','Quantity Surveyor','Procurement Manager','Subcontractor Manager','Commissioning Manager','Construction Claims Specialist']},
+  {n:'Inspection & Compliance',e:'📋',p:['Building Inspector','Code Enforcement Officer','Structural Inspector','Fire Inspector','Environmental Compliance Officer','Materials Testing Engineer','Home Inspector','Safety Inspector']},
+]},
+{id:'agri',name:'Agriculture & Food',icon:'🌾',
+ desc:'Feed the planet and steward natural resources through science, policy and skilled practice.',
+ bg:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80',
+ sub:[
+  {n:'Farming & Production',e:'🌱',p:['Farmer','Rancher','Crop Scientist','Soil Scientist','Agricultural Engineer','Precision Agriculture Specialist','Organic Farmer','Aquaculture Farmer','Beekeeping Specialist','Horticulturist','Viticulturist','Arborist']},
+  {n:'Food Science',e:'🥬',p:['Food Scientist','Food Technologist','Quality Control Inspector','Nutritionist','Dietitian','Food Safety Auditor','Flavor Chemist','Food Product Developer','Beverage Scientist','Sensory Analyst']},
+  {n:'Forestry & Wildlife',e:'🌲',p:['Forester','Park Ranger','Wildlife Biologist','Conservation Officer','Restoration Ecologist','Wildfire Firefighter','Wood Scientist','Watershed Manager','Recreation Manager','Wildlife Photographer']},
+  {n:'Veterinary Sciences',e:'🐾',p:['Veterinarian','Veterinary Technician','Animal Scientist','Zoologist','Wildlife Rehabilitator','Marine Mammal Trainer','Animal Shelter Manager','Livestock Inspector','Equine Veterinarian','Exotic Animal Specialist']},
+]},
+{id:'media',name:'Media & Communications',icon:'📡',
+ desc:'Inform, entertain and shape public discourse across every modern storytelling platform.',
+ bg:'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=1920&q=80',
+ sub:[
+  {n:'Journalism',e:'📰',p:['Reporter','Editor','Photojournalist','Broadcast Journalist','Investigative Journalist','Data Journalist','Foreign Correspondent','Science Journalist','Business Reporter','Political Reporter','Sports Journalist','Editorial Writer','Fact Checker','War Correspondent']},
+  {n:'Digital & Social Media',e:'📱',p:['Blogger','Podcaster','YouTuber','TikToker','Social Media Influencer','Content Creator','Newsletter Writer','Digital Storyteller','Online Community Manager','Streaming Personality','Digital Media Producer','Social Video Editor']},
+  {n:'Broadcasting',e:'📺',p:['TV Anchor','Radio Host','Sports Commentator','Weather Reporter','News Producer','Show Runner','Broadcast Engineer','Production Assistant','Floor Manager','Talk Show Host','Documentary Presenter']},
+  {n:'Film & Audio Production',e:'🎥',p:['Film Producer','Video Editor','Camera Operator','Sound Designer','Foley Artist','Boom Operator','Lighting Director','Color Grader','Post-Production Supervisor','VFX Supervisor','Storyboard Artist','Script Supervisor']},
+  {n:'Publishing',e:'📚',p:['Book Publisher','Magazine Editor','Literary Agent','Acquisitions Editor','Copy Editor','Proofreader','Book Cover Designer','Editorial Director','Self-Publishing Consultant','Rights Manager']},
+]},
+{id:'sport',name:'Sports & Athletics',icon:'🏆',
+ desc:'Compete, coach and operate at the apex of human physical performance and sports entertainment.',
+ bg:'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1920&q=80',
+ sub:[
+  {n:'Professional Athletes',e:'🏅',p:['Soccer Player','Basketball Player','Tennis Player','Swimmer','Sprinter','Gymnast','Boxer','MMA Fighter','Golfer','Baseball Player','Football Player','Cricket Player','Rugby Player','Volleyball Player','Cyclist','Triathlete','Esports Player','Race Car Driver']},
+  {n:'Coaching & Training',e:'🏋️',p:['Head Coach','Assistant Coach','Strength & Conditioning Coach','Defensive Coordinator','Pitching Coach','Personal Trainer','Sports Psychologist','Youth Sports Coach','Video Analyst','Tactical Analyst','Recruiting Coordinator']},
+  {n:'Sports Medicine & Science',e:'🩺',p:['Athletic Trainer','Sports Medicine Physician','Sports Physical Therapist','Sports Cardiologist','Team Physician','Sports Biomechanist','Performance Scientist','Wearable Tech Analyst','Sports Massage Therapist','Orthopedic Sports Surgeon']},
+  {n:'Sports Business',e:'💼',p:['Sports Agent','Sports Marketing Manager','Stadium Manager','Athletic Director','General Manager','Team Owner','Ticket Sales Director','Media Rights Negotiator','Sports Lawyer','Brand Partnership Manager','Sports Finance Analyst']},
+]},
+{id:'mil',name:'Military & Defense',icon:'🎖️',
+ desc:'Serve, protect and lead in the world\'s most demanding operational environments.',
+ bg:'https://images.unsplash.com/photo-1526649661456-89c7ed4d00b8?w=1920&q=80',
+ sub:[
+  {n:'Officers & Leadership',e:'⭐',p:['Army Officer','Navy Officer','Air Force Officer','Marine Corps Officer','Coast Guard Officer','Space Force Officer','Special Forces Commander','Battalion Commander','Intelligence Officer','Operations Officer','Logistics Officer','Judge Advocate (JAG)']},
+  {n:'Enlisted & Special Ops',e:'🎯',p:['Infantry Soldier','Special Forces Operator','Navy SEAL','Army Ranger','Paratrooper','Intelligence Analyst','Combat Medic','Military Police Officer','Bomb Disposal Technician','Drone Operator','Cyber Warfare Specialist','Signal Corps Specialist']},
+  {n:'Military Support Services',e:'🏥',p:['Military Doctor','Military Surgeon','Military Chaplain','Military Social Worker','Military Psychologist','Military Dentist','Military Pharmacist','Military Nurse','Flight Surgeon','Military Lawyer']},
+  {n:'Defense & Veterans',e:'🛡️',p:['Defense Contractor','Defense Analyst','Military Systems Engineer','Veteran Affairs Counselor','Defense Policy Analyst','Aerospace Defense Engineer','Defense Cybersecurity Specialist','Weapons Systems Engineer','Security Clearance Investigator']},
+]},
+{id:'env',name:'Environment & Sustainability',icon:'🌍',
+ desc:'Safeguard ecosystems, drive clean energy and engineer a livable future for our planet.',
+ bg:'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&q=80',
+ sub:[
+  {n:'Conservation & Ecology',e:'🌿',p:['Environmental Scientist','Conservation Biologist','Wildlife Conservationist','Marine Conservationist','Habitat Restoration Specialist','Wetland Scientist','Biodiversity Researcher','Environmental Planner','Ecotoxicologist','Marine Ecologist','Freshwater Ecologist','Urban Ecologist']},
+  {n:'Clean Energy',e:'☀️',p:['Renewable Energy Engineer','Solar Panel Installer','Wind Turbine Technician','Energy Auditor','Battery Technology Engineer','Hydrogen Fuel Cell Engineer','Smart Grid Engineer','Energy Storage Analyst','EV Infrastructure Planner','Offshore Wind Engineer','Geothermal Engineer','Tidal Energy Specialist']},
+  {n:'Sustainability & Climate',e:'🌡️',p:['Sustainability Consultant','Carbon Analyst','ESG Specialist','Climate Scientist','Climate Risk Analyst','Carbon Credit Trader','Circular Economy Designer','Life Cycle Assessment Analyst','Corporate Sustainability Manager','Net Zero Strategist','Green Building Certifier']},
+  {n:'Environmental Policy',e:'📜',p:['Environmental Policy Analyst','Conservation Officer','Environmental Lawyer','Regulatory Compliance Specialist','Environmental Economist','Climate Policy Advisor','International Environmental Negotiator','Environmental Impact Assessor','Pollution Control Officer']},
+]},
+{id:'fashion',name:'Fashion & Luxury',icon:'👗',
+ desc:'Define cultural aesthetics, craft luxury experiences and lead the global style economy.',
+ bg:'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=1920&q=80',
+ sub:[
+  {n:'Design & Creation',e:'✂️',p:['Fashion Designer','Textile Designer','Accessories Designer','Footwear Designer','Knitwear Designer','Womenswear Designer','Menswear Designer','Avant-garde Designer','Pattern Maker','Tailor','Embroidery Specialist','Print Designer']},
+  {n:'Fashion Business',e:'👜',p:['Fashion Buyer','Merchandise Planner','Retail Buyer','Fashion Brand Manager','Wholesale Manager','Licensing Manager','Fashion Finance Analyst','Retail Store Manager','Fashion Operations Manager','Supply Chain Manager (Fashion)']},
+  {n:'Styling & Production',e:'💄',p:['Fashion Stylist','Celebrity Stylist','Personal Shopper','Image Consultant','Fashion Show Producer','Wardrobe Manager','Costume Supervisor','Makeup Artist','Hair Stylist','Set Designer']},
+  {n:'Fashion Media & Marketing',e:'📸',p:['Fashion Photographer','Fashion Editor','Fashion Blogger','Fashion Journalist','Creative Director','Art Director (Fashion)','Fashion Social Media Manager','Fashion PR Manager','Fashion Content Creator','Trend Analyst','Fashion Forecaster']},
+]},
+{id:'avia',name:'Aviation & Aerospace',icon:'🛸',
+ desc:'Command the skies and pioneer the frontier of space exploration and aeronautical innovation.',
+ bg:'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1920&q=80',
+ sub:[
+  {n:'Flight Operations',e:'✈️',p:['Commercial Airline Pilot','First Officer','Flight Engineer','Corporate Pilot','Military Fighter Pilot','Helicopter Pilot','Test Pilot','Bush Pilot','Medevac Pilot','Cargo Pilot','Drone Pilot','UAS Operator','Glider Pilot']},
+  {n:'Air Traffic & Ground Ops',e:'🗼',p:['Air Traffic Controller','Airport Operations Manager','Flight Dispatcher','Airline Operations Coordinator','Ground Crew Manager','Ramp Agent','Cargo Operations Specialist','Airline Safety Manager','Aviation Security Manager','Airport CEO','Flight Planning Analyst']},
+  {n:'Aircraft Maintenance',e:'🔧',p:['Aircraft Mechanic','Avionics Technician','Aircraft Inspector','Structural Repair Technician','Engine Test Technician','Aircraft Painter','Interior Refurbishment Specialist','NDT Technician','Line Maintenance Technician','Heavy Maintenance Planner']},
+  {n:'Aerospace Engineering',e:'🚀',p:['Aerospace Engineer','Propulsion Engineer','Aerodynamics Engineer','Rocket Scientist','Satellite Engineer','Mission Controller','Spacecraft Systems Engineer','Launch Vehicle Engineer','Flight Dynamics Analyst','Orbital Mechanics Engineer','Space Habitat Designer','Planetary Scientist','Astronaut']},
+]},
+{id:'social',name:'Social Services',icon:'❤️',
+ desc:'Empower communities, uplift vulnerable populations and drive meaningful social change.',
+ bg:'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1920&q=80',
+ sub:[
+  {n:'Social Work',e:'🤲',p:['Social Worker','Child Protective Services Worker','Family Services Coordinator','Geriatric Social Worker','School Social Worker','Medical Social Worker','Homeless Services Coordinator','Refugee Resettlement Specialist','Foster Care Case Manager','Adoption Specialist','Crisis Intervention Specialist']},
+  {n:'Mental Health & Addiction',e:'💙',p:['Mental Health Counselor','Substance Abuse Counselor','Rehabilitation Specialist','Addiction Therapist','Trauma Counselor','Group Therapist','Co-occurring Disorders Specialist','Peer Support Specialist','Harm Reduction Coordinator','Recovery Coach']},
+  {n:'Nonprofits & NGOs',e:'🌍',p:['Nonprofit CEO','Program Director','Fundraiser','Grant Writer','Community Organizer','Volunteer Coordinator','Advocacy Director','Foundation Officer','Impact Evaluator','Corporate Giving Manager','Philanthropy Advisor','Field Operations Manager']},
+  {n:'Public Health',e:'🏥',p:['Public Health Officer','Epidemiologist','Health Educator','Community Health Worker','Biostatistician','Health Policy Analyst','Global Health Specialist','Disease Surveillance Officer','Vaccination Program Manager','Health Communications Specialist','Emergency Preparedness Planner']},
+]},
+];
+
+// ═══════════════════════════════════
+// BUILD UI
+// ═══════════════════════════════════
+const $ = id => document.getElementById(id);
+
+// Background slides
+const bgEl=$('bg');
+SECTORS.forEach((s,i)=>{
+  const d=document.createElement('div');
+  d.className='bg-slide'+(i===0?' active':'');
+  d.style.backgroundImage=`url(${s.bg})`;
+  bgEl.appendChild(d);
+});
+const bgSlides=document.querySelectorAll('.bg-slide');
+let activeBg=0;
+
+// Progress dots
+const progEl=$('progress');
+SECTORS.forEach((s,i)=>{
+  const b=document.createElement('button');
+  b.className='pd'+(i===0?' active':'');
+  b.title=s.name;b.setAttribute('aria-label',s.name);
+  b.onclick=()=>document.querySelectorAll('.sn')[i]?.scrollIntoView({behavior:'smooth',block:'center'});
+  progEl.appendChild(b);
+});
+const pDots=document.querySelectorAll('.pd');
+
+// Timeline sector nodes
+const tl=$('timeline');
+SECTORS.forEach((s,i)=>{
+  const total=s.sub.reduce((a,c)=>a+c.p.length,0);
+  const isRight=i%2===1; // even index → left, odd index → right
+
+  const n=document.createElement('div');
+  n.className='sn';n.dataset.i=i;
+
+  const leftHTML=`
+    <div class="sn-left${isRight?' sn-empty':''}">
+      ${!isRight?`<div class="sn-content">
+        <span class="sn-icon">${s.icon}</span>
+        <div class="sn-num">Sector ${String(i+1).padStart(2,'0')}</div>
+        <div class="sn-name">${s.name}</div>
+        <div class="sn-desc">${s.desc}</div>
+        <div class="sn-meta"><span>${total}</span> careers · <span>${s.sub.length}</span> specializations</div>
+        <button class="explore-btn" data-idx="${i}">Explore Careers <span>→</span></button>
+        <div class="connector-h"></div>
+      </div>`:''}
+    </div>`;
+  const rightHTML=`
+    <div class="sn-right${!isRight?' sn-empty':''}">
+      ${isRight?`<div class="sn-content">
+        <span class="sn-icon">${s.icon}</span>
+        <div class="sn-num">Sector ${String(i+1).padStart(2,'0')}</div>
+        <div class="sn-name">${s.name}</div>
+        <div class="sn-desc">${s.desc}</div>
+        <div class="sn-meta"><span>${total}</span> careers · <span>${s.sub.length}</span> specializations</div>
+        <button class="explore-btn" data-idx="${i}">Explore Careers <span>→</span></button>
+        <div class="connector-h"></div>
+      </div>`:''}
+    </div>`;
+
+  // Pip decorations
+  const pips=[...Array(4)].map(()=>{
+    const t=Math.random()*60+20;
+    const d=Math.random()*2;
+    return `<div class="sn-pip" style="position:absolute;top:${t}%;animation-delay:${d}s"></div>`;
+  }).join('');
+
+  n.innerHTML=`
+    ${leftHTML}
+    <div class="sn-dot-col" style="position:relative">${pips}<div class="sn-dot" data-idx="${i}"></div></div>
+    ${rightHTML}
+  `;
+  tl.appendChild(n);
+});
+
+// Click handlers on dots and explore btns
+document.querySelectorAll('.sn-dot,[class*="explore-btn"]').forEach(el=>{
+  el.addEventListener('click',()=>openTree(parseInt(el.dataset.idx)));
+});
+
+// Intersection observer — background + animations
+let curBg=0;
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting) return;
+    const i=parseInt(e.target.dataset.i);
+    e.target.classList.add('visible');
+    if(i!==curBg){
+      bgSlides[curBg].classList.remove('active');
+      bgSlides[i].classList.add('active');
+      curBg=i;
+      pDots.forEach((d,j)=>d.classList.toggle('active',j===i));
+    }
+  });
+},{threshold:.28});
+document.querySelectorAll('.sn').forEach(n=>io.observe(n));
+
+// Parallax on hero
+document.addEventListener('mousemove',e=>{
+  const dx=(e.clientX/innerWidth-.5)*18;
+  const dy=(e.clientY/innerHeight-.5)*10;
+  const hi=$('heroInner');
+  if(hi) hi.style.transform=`translate(${dx}px,${dy}px)`;
+});
+
+// ═══════════════════════════════════
+// TREE OVERLAY
+// ═══════════════════════════════════
+let curSector=null;
+
+function openTree(idx){
+  curSector=SECTORS[idx];
+  const total=curSector.sub.reduce((a,c)=>a+c.p.length,0);
+  $('ovTitle').innerHTML=`<span>${curSector.icon}</span> ${curSector.name}`;
+  $('ovMeta').textContent=`${total} career paths`;
+
+  // Build tabs
+  const tabs=$('ovTabs');
+  tabs.innerHTML='';
+  const all=document.createElement('button');
+  all.className='tab active';all.textContent='All';
+  all.onclick=()=>selectTab(-1,all);
+  tabs.appendChild(all);
+  curSector.sub.forEach((s,i)=>{
+    const b=document.createElement('button');
+    b.className='tab';b.textContent=`${s.e} ${s.n}`;
+    b.onclick=()=>selectTab(i,b);
+    tabs.appendChild(b);
+  });
+
+  renderCards(-1);
+  $('overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function selectTab(idx,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderCards(idx);
+}
+
+function renderCards(subcatIdx){
+  const grid=$('cardsGrid');
+  grid.innerHTML='';
+  const list=[];
+  if(subcatIdx===-1){
+    curSector.sub.forEach(s=>s.p.forEach(p=>list.push({name:p,e:s.e,sub:s.n})));
+  } else {
+    const s=curSector.sub[subcatIdx];
+    s.p.forEach(p=>list.push({name:p,e:s.e,sub:s.n}));
+  }
+  list.forEach((p,i)=>{
+    const c=document.createElement('div');
+    c.className='cc';
+    c.style.animationDelay=(i*.028)+'s';
+    c.innerHTML=`<span class="cc-icon">${p.e}</span><div class="cc-title">${p.name}</div><div class="cc-tag">${p.sub}</div>`;
+    grid.appendChild(c);
+  });
+  if(!list.length) grid.innerHTML='<div class="no-results">No careers found</div>';
+}
+
+$('ovClose').onclick=()=>{
+  $('overlay').classList.remove('open');
+  document.body.style.overflow='';
+};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('ovClose').onclick()});
+
+// ═══════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════
+$('searchInput').addEventListener('input',e=>{
+  const q=e.target.value.trim().toLowerCase();
+  if(!q){$('overlay').classList.remove('open');document.body.style.overflow='';return;}
+
+  const results=[];
+  SECTORS.forEach(sec=>{
+    sec.sub.forEach(sub=>{
+      sub.p.forEach(p=>{
+        if(p.toLowerCase().includes(q)||sub.n.toLowerCase().includes(q)||sec.name.toLowerCase().includes(q))
+          results.push({name:p,e:sub.e,sub:`${sec.name} — ${sub.n}`});
       });
     });
-  </script>
+  });
+
+  $('ovTitle').innerHTML=`🔍 "${e.target.value}"`;
+  $('ovMeta').textContent=`${results.length} result${results.length!==1?'s':''}`;
+  $('ovTabs').innerHTML='';
+  const grid=$('cardsGrid');grid.innerHTML='';
+  if(!results.length){grid.innerHTML='<div class="no-results">No careers match your search</div>';}
+  else results.forEach((p,i)=>{
+    const c=document.createElement('div');
+    c.className='cc';c.style.animationDelay=(i*.022)+'s';
+    c.innerHTML=`<span class="cc-icon">${p.e}</span><div class="cc-title">${p.name}</div><div class="cc-tag">${p.sub}</div>`;
+    grid.appendChild(c);
+  });
+  curSector={name:'Search'};
+  $('overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+});
+
+// ═══════════════════════════════════
+// STAT COUNTERS
+// ═══════════════════════════════════
+const statsIO=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting)return;
+    const el=e.target;
+    const target=+el.dataset.count;
+    let n=0;const step=target/55;
+    const t=setInterval(()=>{n=Math.min(n+step,target);el.textContent=Math.round(n).toLocaleString();if(n>=target)clearInterval(t);},16);
+    statsIO.unobserve(el);
+  });
+},{threshold:.5});
+document.querySelectorAll('.stat-n').forEach(el=>statsIO.observe(el));
+</script>
 </body>
 </html>
