@@ -2,20 +2,253 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Career Universe - Tree Explorer</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Career Universe - Explore High-Paying Jobs</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #2a0010, #140008, #000000);
+      font-family: 'Arial', sans-serif;
+      color: white;
+    }
+    canvas { display: block; }
+    #bg {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      opacity: 0.4;
+      transition: opacity 1.5s ease;
+    }
+    #overlay {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(120,0,40,0.2), rgba(10,0,0,0.9));
+      z-index: -1;
+    }
+    #tooltip {
+      position: absolute;
+      color: white;
+      background: rgba(0,0,0,0.9);
+      padding: 12px;
+      border-radius: 8px;
+      display: none;
+      font-size: 14px;
+      border: 1px solid rgba(255,255,255,0.2);
+      max-width: 300px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    #ui {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 100;
+      background: rgba(0,0,0,0.7);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    #ui h1 {
+      margin: 0 0 10px 0;
+      font-size: 24px;
+      text-shadow: 0 0 10px currentColor;
+    }
+    #instructions {
+      font-size: 14px;
+      opacity: 0.9;
+      line-height: 1.4;
+    }
+  </style>
 </head>
 <body>
-  <img id="bg" src="https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="Background">
+  <img id="bg" src="https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80">
   <div id="overlay"></div>
   <div id="tooltip"></div>
   <div id="ui">
-    <h1>🌳 Career Tree Universe</h1>
-    <p>Touch/click branches to expand sub-sectors & jobs (₹12LPA+)</p>
+    <h1>🌌 Career Universe</h1>
+    <div id="instructions">
+      Orbit/zoom to explore sectors.<br>
+      Click spheres for job lists (₹12LPA+).<br>
+      Hover for previews.
+    </div>
   </div>
+
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script src="https://unpkg.com/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
-  <script src="script.js"></script>
+
+  <script>
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+    camera.position.set(0, 200, 600);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Controls
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableZoom = true;
+    controls.zoomSpeed = 1.2;
+    controls.minDistance = 50;
+    controls.maxDistance = 2000;
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
+    scene.add(ambientLight);
+    const pointLight = new THREE.PointLight(0xff0040, 2, 2000);
+    pointLight.position.set(0, 0, 500);
+    scene.add(pointLight);
+
+    // Expanded Sectors Data (with job previews)
+    const sectors = [
+      { 
+        name: "Tech & IT", 
+        color: 0xff0040, 
+        jobs: ["AI Engineer (₹25L+)", "Data Scientist (₹20L+)", "Cloud Architect (₹30L+)"], 
+        bg: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+      },
+      { 
+        name: "Finance", 
+        color: 0xff6600, 
+        jobs: ["Investment Banker (₹40L+)", "Quant Analyst (₹35L+)", "Risk Manager (₹25L+)"], 
+        bg: "https://images.unsplash.com/photo-1599569455997-9e8a3e583c65?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+      },
+      { 
+        name: "Healthcare", 
+        color: 0x00ffcc, 
+        jobs: ["Surgeon (₹50L+)", "Radiologist (₹40L+)", "Pharma Manager (₹28L+)"], 
+        bg: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80"
+      },
+      { 
+        name: "Law", 
+        color: 0x9966ff, 
+        jobs: ["Corporate Lawyer (₹30L+)", "IP Specialist (₹25L+)", "Compliance Head (₹22L+)"], 
+        bg: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+      },
+      { 
+        name: "Engineering", 
+        color: 0xffff00, 
+        jobs: ["Petroleum Eng (₹25L+)", "Aerospace Eng (₹28L+)", "Renewable Eng (₹22L+)"], 
+        bg: "https://images.unsplash.com/photo-1558494949-ef0d38d3ab97?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+      },
+      { 
+        name: "Creative/Digital", 
+        color: 0xff00ff, 
+        jobs: ["Creative Director (₹25L+)", "VFX Lead (₹20L+)", "UX Strategist (₹18L+)"], 
+        bg: "https://images.unsplash.com/photo-1464925166535-5f31b62e8fb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+      },
+      { 
+        name: "Management", 
+        color: 0x00ffff, 
+        jobs: ["CEO (₹1Cr+)", "Consultant (₹35L+)", "Product Mgr (₹28L+)"], 
+        bg: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+      },
+      { 
+        name: "Futuristic", 
+        color: 0xffffff, 
+        jobs: ["Quantum Engineer (₹40L+)", "Space Analyst (₹30L+)", "Biohacker (₹25L+)"], 
+        bg: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+      }
+    ];
+
+    const nodes = [];
+    sectors.forEach((sector, i) => {
+      const geometry = new THREE.SphereGeometry(15, 32, 32);
+      const material = new THREE.MeshStandardMaterial({
+        color: sector.color,
+        emissive: sector.color,
+        emissiveIntensity: 0.6,
+        metalness: 0.3,
+        roughness: 0.2
+      });
+      const sphere = new THREE.Mesh(geometry, material);
+      sphere.position.set(
+        Math.sin(i * 0.8) * 200,
+        Math.cos(i * 0.8) * 100 - 100,
+        Math.sin(i * 1.2) * 150
+      );
+      sphere.userData = sector;
+      scene.add(sphere);
+      nodes.push(sphere);
+    });
+
+    // Background & Tooltip
+    const bg = document.getElementById("bg");
+    const tooltip = document.getElementById("tooltip");
+
+    function updateBackground(sectorIndex) {
+      const newImg = sectors[sectorIndex]?.bg || sectors[0].bg;
+      if (bg.src !== newImg) {
+        bg.style.opacity = 0;
+        setTimeout(() => {
+          bg.src = newImg;
+          bg.style.opacity = 0.4;
+        }, 700);
+      }
+    }
+
+    // Mouse Hover
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    window.addEventListener("mousemove", (event) => {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(nodes);
+      if (intersects.length > 0) {
+        const sector = intersects[0].object.userData;
+        tooltip.innerHTML = `<strong>${sector.name}</strong><br>${sector.jobs.join('<br>')}`;
+        tooltip.style.display = "block";
+        tooltip.style.left = event.clientX + 10 + "px";
+        tooltip.style.top = event.clientY + 10 + "px";
+        updateBackground(sectors.indexOf(sector));
+        intersects[0].object.scale.set(1.2, 1.2, 1.2);
+        intersects[0].object.material.emissiveIntensity = 1.0;
+      } else {
+        tooltip.style.display = "none";
+        nodes.forEach(n => {
+          n.scale.set(1, 1, 1);
+          n.material.emissiveIntensity = 0.6;
+        });
+      }
+    });
+
+    // Click for Alert/Expand
+    window.addEventListener("click", (event) => {
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(nodes);
+      if (intersects.length > 0) {
+        const sector = intersects[0].object.userData;
+        alert(`🚀 Top Jobs in ${sector.name}:\n\n${sector.jobs.join('\n')}\n\n(₹12LPA+ | Explore our Career Lists!)`);
+        intersects[0].object.scale.set(1.5, 1.5, 1.5);
+        setTimeout(() => intersects[0].object.scale.set(1, 1, 1), 300);
+      }
+    });
+
+    // Animation
+    function animate() {
+      requestAnimationFrame(animate);
+      nodes.forEach((n, i) => {
+        n.rotation.y += 0.008 + i * 0.002;
+        n.rotation.x += 0.003;
+        n.position.y += Math.sin(Date.now() * 0.001 + i) * 0.5;
+      });
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Resize
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
 </body>
 </html>
