@@ -114,15 +114,3 @@ function getColor(group) {
   return colors[group] || "#ffffff"
 }
 
-/* AUTO ROTATION (INSANE EFFECT) */
-let angle = 0
-setInterval(() => {
-  Graph.cameraPosition({
-    x: 300 * Math.sin(angle),
-    z: 300 * Math.cos(angle)
-  })
-  angle += 0.002
-}, 20)
-Graph
-  .enableNodeDrag(true)
-  .enableNavigationControls(true)
