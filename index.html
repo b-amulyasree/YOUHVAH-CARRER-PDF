@@ -1,253 +1,346 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Career Universe - Explore High-Paying Jobs</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wine Dust Career Explorer</title>
   <style>
-    body {
+    /* === GLOBALS === */
+    :root {
+      --bg-wine-dust: #5b3445;
+      --bg-deep: #3a242e;
+      --bg-night: #221a20;
+
+      --glow-light: #e0d0c0;
+      --glow-accent: #c89a9a;
+
+      --card-bg: rgba(34, 26, 32, 0.85);
+      --card-border: rgba(190, 140, 140, 0.3);
+      --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
-      overflow: hidden;
-      background: radial-gradient(circle at center, #2a0010, #140008, #000000);
-      font-family: 'Arial', sans-serif;
-      color: white;
+      padding: 0;
     }
-    canvas { display: block; }
-    #bg {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: -1;
-      opacity: 0.4;
-      transition: opacity 1.5s ease;
+
+    body {
+      background: linear-gradient(
+        135deg,
+        var(--bg-wine-dust) 0%,
+        var(--bg-deep) 60%,
+        var(--bg-night) 100%
+      );
+      color: var(--glow-light);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
     }
-    #overlay {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at center, rgba(120,0,40,0.2), rgba(10,0,0,0.9));
-      z-index: -1;
-    }
-    #tooltip {
-      position: absolute;
-      color: white;
-      background: rgba(0,0,0,0.9);
-      padding: 12px;
-      border-radius: 8px;
-      display: none;
-      font-size: 14px;
-      border: 1px solid rgba(255,255,255,0.2);
-      max-width: 300px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    }
-    #ui {
-      position: absolute;
-      top: 20px;
-      left: 20px;
+
+    /* === HEADER === */
+    header {
+      padding: 1.5rem 2rem;
+      background: rgba(30, 20, 25, 0.7);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
       z-index: 100;
-      background: rgba(0,0,0,0.7);
-      padding: 20px;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(220, 180, 200, 0.6);
+    }
+
+    header p {
+      font-size: 0.95rem;
+      opacity: 0.8;
+      margin-top: 0.3rem;
+    }
+
+    /* === MAIN SCROLL LINE === */
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    .scroll-line {
+      position: relative;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(
+        to bottom,
+        rgba(220, 200, 190, 0.2),
+        rgba(190, 160, 160, 0.4),
+        rgba(220, 200, 190, 0.2)
+      );
+      border-radius: 999px;
+      flex-shrink: 0;
+      margin: 0 1.5rem;
+    }
+
+    .section {
+      display: flex;
+      position: relative;
+      width: 100%;
+      max-width: 1000px;
+      margin: 3rem 0;
+      opacity: 0.8;
+      transition: opacity 0.6s ease;
+      padding-left: 3rem;
+      padding-right: 1.5rem;
+    }
+
+    .section.visible {
+      opacity: 1;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 10px rgba(220, 180, 200, 0.6);
+    }
+
+    .section-subtitle {
+      font-size: 1rem;
+      opacity: 0.8;
+      margin-bottom: 1.5rem;
+    }
+
+    .jobs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    /* === JOB CARD === */
+    .job-card {
+      position: relative;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
       border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.1);
+      padding: 1.2rem 1rem;
+      text-align: center;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
     }
-    #ui h1 {
-      margin: 0 0 10px 0;
-      font-size: 24px;
-      text-shadow: 0 0 10px currentColor;
+
+    .job-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
     }
-    #instructions {
-      font-size: 14px;
-      opacity: 0.9;
-      line-height: 1.4;
+
+    .job-icon {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 0.8rem;
+      background: radial-gradient(
+        circle,
+        var(--glow-accent),
+        #9a6a7a
+      );
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #180e12;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .job-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      word-wrap: break-word;
+    }
+
+    .job-tag {
+      font-size: 0.75rem;
+      opacity: 0.7;
+    }
+
+    /* === FADE‑IN ON SCROLL === */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 600px) {
+      .section {
+        padding: 0 1rem;
+        margin: 2rem 0;
+      }
+      .section-title {
+        font-size: 1.5rem;
+      }
+      .jobs-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
     }
   </style>
 </head>
 <body>
-  <img id="bg" src="https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80">
-  <div id="overlay"></div>
-  <div id="tooltip"></div>
-  <div id="ui">
-    <h1>🌌 Career Universe</h1>
-    <div id="instructions">
-      Orbit/zoom to explore sectors.<br>
-      Click spheres for job lists (₹12LPA+).<br>
-      Hover for previews.
-    </div>
-  </div>
+  <header>
+    <h1>Wine Dust Career Explorer</h1>
+    <p>Scroll to discover careers, click to explore.</p>
+  </header>
 
-  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-  <script src="https://unpkg.com/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+  <main>
+    <!-- Central vertical line -->
+    <div class="scroll-line"></div>
+
+    <!-- SECTOR 1: Tech -->
+    <section class="section fade-in" id="sector-tech">
+      <div class="section-content">
+        <h2 class="section-title">Technology</h2>
+        <p class="section-subtitle">
+          Explore modern tech roles from software to data and AI.
+        </p>
+        <div class="jobs-grid">
+          <div class="job-card">
+            <div class="job-icon">F</div>
+            <div class="job-title">Frontend Developer</div>
+            <div class="job-tag">Web & UI</div>
+          </div>
+          <div class="job-card">
+            <div class="job-icon">B</div>
+            <div class="job-title">Backend Developer</div>
+            <div class="job-tag">API & Services</div>
+          </div>
+          <div class="job-card">
+            <div class="job-icon">D</div>
+            <div class="job-title">Data Scientist</div>
+            <div class="job-tag">Analytics & ML</div>
+          </div>
+          <div class="job-card">
+            <div class="job-icon">A</div>
+            <div class="job-title">AI Engineer</div>
+            <div class="job-tag">Machine Learning</div>
+          </div>
+          <div class="job-card">
+            <div class="job-icon">S</div>
+            <div class="job-title">DevOps Engineer</div>
+            <div class="job-tag">Infra & CI/CD</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTOR 2: Finance -->
+    <section class="section fade-in" id="sector-finance">
+      <div class="section-content">
+        <h2 class="section-title">Finance & Business</h2>
+        <p class="section-subtitle">
+          Banking, trading, analysis, and management careers.
+        </p>
+        <div class="jobs-grid">
+          <div class="job-card">
+            <div class="job-icon">R</div>
+            <div class="job-title">Risk Analyst</div>
+            <div class="job-tag">Banking</div>
+          </div>
+          <div class="job-card">
+            <div class="job-icon">A</div>
+            <div class="job-title">Accountant</div>
+            <div class="job-tag">Audit & Tax</div>
+          </div>
+          <div class="job-card">
+            <div class="job-icon">I</div>
+            <div class="job-title">Investment Analyst</div>
+            <div class="job-tag">Equities</div>
+          </div>
+          <div class="job-card">
+            <div class="job-icon">M</div>
+            <div class="job-title">Management Consultant</div>
+            <div class="job-tag">Strategy</div>
+          </div>
+          <div class="job-card">
+            <div class="job-icon">C</div>
+            <div class="job-title">Corporate Finance</div>
+            <div class="job-tag">M&A</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTOR 3: Medical -->
+    <section class="section fade-in" id="sector-medical">
+      <div class="section-content">
+        <h2 class="section-title">Medical & Health</h2>
+        <p class="section-subtitle">
+          Clinical, research, and support roles in healthcare.
+        </p>
+        <div class="jobs-grid">
+          <div class="job-card">
+            <div class="job-icon">D</div>
+            <div class="job-title">Doctor</div>
+            <div class="job-tag">Primary Care</div>
+          </div>
+          <div class="job-card">
+            <div class="job-icon">N</div>
+            <div class="job-title">Nurse</div>
+            <div class="job-tag">Hospital & ICU</div>
+          </div>
+          <div class="job-card">
+            <div class="job-icon">P</div>
+            <div class="job-title">Pharmacist</div>
+            <div class="job-tag">Drugs & Safety</div>
+          </div>
+          <div class="job-card">
+            <div class="job-icon">R</div>
+            <div class="job-title">Research Physician</div>
+            <div class="job-tag">Clinical Trials</div>
+          </div>
+          <div class="job-card">
+            <div class="job-icon">T</div>
+            <div class="job-title">Therapist</div>
+            <div class="job-tag">Mental Health</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <script>
-    const scene = new THREE.Scene();
-
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
-    camera.position.set(0, 200, 600);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
-
-    // Controls
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableZoom = true;
-    controls.zoomSpeed = 1.2;
-    controls.minDistance = 50;
-    controls.maxDistance = 2000;
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
-    scene.add(ambientLight);
-    const pointLight = new THREE.PointLight(0xff0040, 2, 2000);
-    pointLight.position.set(0, 0, 500);
-    scene.add(pointLight);
-
-    // Expanded Sectors Data (with job previews)
-    const sectors = [
-      { 
-        name: "Tech & IT", 
-        color: 0xff0040, 
-        jobs: ["AI Engineer (₹25L+)", "Data Scientist (₹20L+)", "Cloud Architect (₹30L+)"], 
-        bg: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-      },
-      { 
-        name: "Finance", 
-        color: 0xff6600, 
-        jobs: ["Investment Banker (₹40L+)", "Quant Analyst (₹35L+)", "Risk Manager (₹25L+)"], 
-        bg: "https://images.unsplash.com/photo-1599569455997-9e8a3e583c65?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-      },
-      { 
-        name: "Healthcare", 
-        color: 0x00ffcc, 
-        jobs: ["Surgeon (₹50L+)", "Radiologist (₹40L+)", "Pharma Manager (₹28L+)"], 
-        bg: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80"
-      },
-      { 
-        name: "Law", 
-        color: 0x9966ff, 
-        jobs: ["Corporate Lawyer (₹30L+)", "IP Specialist (₹25L+)", "Compliance Head (₹22L+)"], 
-        bg: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-      },
-      { 
-        name: "Engineering", 
-        color: 0xffff00, 
-        jobs: ["Petroleum Eng (₹25L+)", "Aerospace Eng (₹28L+)", "Renewable Eng (₹22L+)"], 
-        bg: "https://images.unsplash.com/photo-1558494949-ef0d38d3ab97?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-      },
-      { 
-        name: "Creative/Digital", 
-        color: 0xff00ff, 
-        jobs: ["Creative Director (₹25L+)", "VFX Lead (₹20L+)", "UX Strategist (₹18L+)"], 
-        bg: "https://images.unsplash.com/photo-1464925166535-5f31b62e8fb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-      },
-      { 
-        name: "Management", 
-        color: 0x00ffff, 
-        jobs: ["CEO (₹1Cr+)", "Consultant (₹35L+)", "Product Mgr (₹28L+)"], 
-        bg: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-      },
-      { 
-        name: "Futuristic", 
-        color: 0xffffff, 
-        jobs: ["Quantum Engineer (₹40L+)", "Space Analyst (₹30L+)", "Biohacker (₹25L+)"], 
-        bg: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-      }
-    ];
-
-    const nodes = [];
-    sectors.forEach((sector, i) => {
-      const geometry = new THREE.SphereGeometry(15, 32, 32);
-      const material = new THREE.MeshStandardMaterial({
-        color: sector.color,
-        emissive: sector.color,
-        emissiveIntensity: 0.6,
-        metalness: 0.3,
-        roughness: 0.2
-      });
-      const sphere = new THREE.Mesh(geometry, material);
-      sphere.position.set(
-        Math.sin(i * 0.8) * 200,
-        Math.cos(i * 0.8) * 100 - 100,
-        Math.sin(i * 1.2) * 150
-      );
-      sphere.userData = sector;
-      scene.add(sphere);
-      nodes.push(sphere);
-    });
-
-    // Background & Tooltip
-    const bg = document.getElementById("bg");
-    const tooltip = document.getElementById("tooltip");
-
-    function updateBackground(sectorIndex) {
-      const newImg = sectors[sectorIndex]?.bg || sectors[0].bg;
-      if (bg.src !== newImg) {
-        bg.style.opacity = 0;
-        setTimeout(() => {
-          bg.src = newImg;
-          bg.style.opacity = 0.4;
-        }, 700);
-      }
-    }
-
-    // Mouse Hover
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-    window.addEventListener("mousemove", (event) => {
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(nodes);
-      if (intersects.length > 0) {
-        const sector = intersects[0].object.userData;
-        tooltip.innerHTML = `<strong>${sector.name}</strong><br>${sector.jobs.join('<br>')}`;
-        tooltip.style.display = "block";
-        tooltip.style.left = event.clientX + 10 + "px";
-        tooltip.style.top = event.clientY + 10 + "px";
-        updateBackground(sectors.indexOf(sector));
-        intersects[0].object.scale.set(1.2, 1.2, 1.2);
-        intersects[0].object.material.emissiveIntensity = 1.0;
-      } else {
-        tooltip.style.display = "none";
-        nodes.forEach(n => {
-          n.scale.set(1, 1, 1);
-          n.material.emissiveIntensity = 0.6;
+    // Fade‑in elements as they enter view
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
         });
-      }
+      },
+      { threshold: 0.1 }
+    );
+
+    document.querySelectorAll('.fade-in').forEach((el) => {
+      observer.observe(el);
     });
 
-    // Click for Alert/Expand
-    window.addEventListener("click", (event) => {
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(nodes);
-      if (intersects.length > 0) {
-        const sector = intersects[0].object.userData;
-        alert(`🚀 Top Jobs in ${sector.name}:\n\n${sector.jobs.join('\n')}\n\n(₹12LPA+ | Explore our Career Lists!)`);
-        intersects[0].object.scale.set(1.5, 1.5, 1.5);
-        setTimeout(() => intersects[0].object.scale.set(1, 1, 1), 300);
-      }
-    });
-
-    // Animation
-    function animate() {
-      requestAnimationFrame(animate);
-      nodes.forEach((n, i) => {
-        n.rotation.y += 0.008 + i * 0.002;
-        n.rotation.x += 0.003;
-        n.position.y += Math.sin(Date.now() * 0.001 + i) * 0.5;
+    // Add a light click interaction to job cards
+    document.querySelectorAll('.job-card').forEach((card) => {
+      card.addEventListener('click', () => {
+        alert('Card clicked: ' + card.querySelector('.job-title').textContent);
       });
-      controls.update();
-      renderer.render(scene, camera);
-    }
-    animate();
-
-    // Resize
-    window.addEventListener("resize", () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
     });
   </script>
 </body>
