@@ -6,59 +6,59 @@ body {
   color: white;
 }
 
-/* BACKGROUND */
-#bg {
+/* BACKGROUND LAYERS (for smooth morph) */
+#bg-layer1, #bg-layer2 {
   position: fixed;
   width: 100%;
   height: 100%;
   background-size: cover;
   background-position: center;
-  z-index: -1;
+  z-index: -2;
   transition: opacity 1.5s ease, transform 3s ease;
-  opacity: 1;
 }
 
-/* TIMELINE */
-.timeline {
-  width: 100%;
+#bg-layer2 {
+  z-index: -3;
 }
 
+/* CENTER LINE */
+.timeline-line {
+  position: fixed;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(to bottom, #ff0066, transparent);
+  z-index: 1;
+}
+
+/* SECTIONS */
 .section {
   height: 100vh;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-
-  background: linear-gradient(
-    to bottom,
-    rgba(40,0,20,0.6),
-    rgba(0,0,0,0.8)
-  );
-
-  backdrop-filter: blur(8px);
+  justify-content: center;
+  position: relative;
 }
 
-/* TITLE */
+/* GLASS CARD */
 .section h1 {
   font-size: 4rem;
-  letter-spacing: 5px;
-  text-shadow: 0 0 20px rgba(255,0,100,0.7);
+  padding: 20px 40px;
+
+  background: rgba(50, 0, 25, 0.4);
+  backdrop-filter: blur(12px);
+
+  border-radius: 20px;
+  box-shadow: 0 0 40px rgba(255, 0, 100, 0.5);
+
+  transition: transform 0.4s ease;
 }
 
-/* BUTTON */
-button {
-  margin-top: 20px;
-  padding: 12px 25px;
-  border: none;
-  background: linear-gradient(45deg, #6a0f2e, #b3125d);
-  color: white;
-  border-radius: 25px;
-  cursor: pointer;
-  box-shadow: 0 0 15px rgba(255,0,100,0.6);
+.section h1:hover {
+  transform: scale(1.1) rotateY(10deg);
 }
 
-/* JOB GRID */
+/* JOB CONTAINER */
 #jobsContainer {
   position: fixed;
   bottom: 0;
@@ -66,27 +66,36 @@ button {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  background: rgba(0,0,0,0.85);
   padding: 20px;
-  max-height: 50%;
-  overflow-y: auto;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(10px);
 }
 
 /* JOB CARD */
 .job {
-  width: 200px;
-  height: 120px;
+  width: 220px;
+  height: 140px;
   margin: 10px;
+
   background: linear-gradient(135deg, #3a0d1f, #8a1c4a);
   border-radius: 15px;
+
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  box-shadow: 0 0 20px rgba(255,0,100,0.4);
-  transition: transform 0.3s;
+
+  box-shadow: 0 10px 30px rgba(255,0,100,0.4);
+
+  transform: translateY(50px) scale(0.8);
+  opacity: 0;
+
+  animation: pop 0.6s forwards;
 }
 
-.job:hover {
-  transform: scale(1.1);
+@keyframes pop {
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
