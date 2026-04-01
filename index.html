@@ -1,35 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- FIX: Load THREE.js explicitly BEFORE 3d-force-graph -->
+  <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
   <script src="https://unpkg.com/3d-force-graph"></script>
+
   <style>
-    body { margin: 0; background: black; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #2b0a12, #0a0003 80%);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    #title {
+      position: absolute;
+      top: 20px;
+      width: 100%;
+      text-align: center;
+      color: #ff4d6d;
+      font-size: 28px;
+      letter-spacing: 2px;
+      text-shadow: 0 0 20px rgba(255,77,109,0.8);
+      z-index: 10;
+    }
   </style>
 </head>
 <body>
 
+<div id="title">CAREER UNIVERSE</div>
 <div id="3d-graph"></div>
 
 <script>
+// Ensure THREE is loaded
+if (typeof THREE === 'undefined') {
+  console.error('THREE.js failed to load');
+}
+
 const Graph = ForceGraph3D()(document.getElementById('3d-graph'));
 
 const data = {
   nodes: [
-    { id: 'Careers' },
-    { id: 'Tech' },
-    { id: 'Finance' },
-    { id: 'Creative' },
+    { id: 'Careers', level: 0 },
+    { id: 'Tech', level: 1 },
+    { id: 'Finance', level: 1 },
+    { id: 'Creative', level: 1 },
 
-    { id: 'Software Engineer' },
-    { id: 'AI Engineer' },
-    { id: 'Data Scientist' },
+    { id: 'Software Engineer', level: 2 },
+    { id: 'AI Engineer', level: 2 },
+    { id: 'Data Scientist', level: 2 },
 
-    { id: 'Investment Banker' },
-    { id: 'Financial Analyst' },
+    { id: 'Investment Banker', level: 2 },
+    { id: 'Financial Analyst', level: 2 },
 
-    { id: 'Actor' },
-    { id: 'Designer' }
+    { id: 'Actor', level: 2 },
+    { id: 'Designer', level: 2 }
   ],
+
   links: [
     { source: 'Careers', target: 'Tech' },
     { source: 'Careers', target: 'Finance' },
@@ -49,9 +76,46 @@ const data = {
 
 Graph
   .graphData(data)
-  .nodeAutoColorBy('id')
   .nodeLabel('id')
-  .linkOpacity(0.4);
+  .nodeAutoColorBy('level')
+  .nodeThreeObject(node => {
+    const sprite = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        color: node.level === 0 ? 0xff1e56 : node.level === 1 ? 0xff4d6d : 0xff8fa3,
+        transparent: true,
+        opacity: 0.9
+      })
+    );
+
+    sprite.scale.set(4, 4, 1);
+    return sprite;
+  })
+  .linkWidth(1.5)
+  .linkColor(() => '#ff4d6d')
+  .linkOpacity(0.4)
+  .backgroundColor('#0a0003');
+
+// Glow renderer config
+Graph.renderer().setClearColor(0x0a0003, 1);
+
+// Camera
+Graph.cameraPosition({ z: 120 });
+
+// Smooth physics
+Graph.d3VelocityDecay(0.3);
+
+// Resize handler
+window.addEventListener('resize', () => {
+  Graph.width(window.innerWidth);
+  Graph.height(window.innerHeight);
+});
+
+// TEST CASES (console)
+console.assert(typeof THREE !== 'undefined', 'THREE should be loaded');
+console.assert(typeof ForceGraph3D !== 'undefined', 'ForceGraph3D should be loaded');
+console.assert(data.nodes.length > 0, 'Graph should have nodes');
+console.assert(data.links.length > 0, 'Graph should have links');
+
 </script>
 
 </body>
