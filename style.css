@@ -1,196 +1,92 @@
-const jobTree = {
-  "Careers": ["Tech", "Finance", "Medical", "Creative", "Engineering", "Law", "Business"],
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+  background: black;
+  color: white;
+}
 
-  // ================= TECH =================
-  "Tech": ["Software", "Data & AI", "Infrastructure", "Security", "Emerging Tech"],
+/* BACKGROUND */
+#bg {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+  transition: opacity 1.5s ease, transform 3s ease;
+  opacity: 1;
+}
 
-  "Software": [
-    "Software Engineer",
-    "Senior Software Engineer",
-    "Full Stack Developer",
-    "Backend Developer",
-    "Frontend Developer",
-    "Mobile App Developer",
-    "Game Developer",
-    "API Developer"
-  ],
+/* TIMELINE */
+.timeline {
+  width: 100%;
+}
 
-  "Data & AI": [
-    "Data Scientist",
-    "Data Engineer",
-    "Machine Learning Engineer",
-    "AI Engineer",
-    "NLP Engineer",
-    "Computer Vision Engineer",
-    "MLOps Engineer",
-    "Prompt Engineer"
-  ],
+.section {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
-  "Infrastructure": [
-    "DevOps Engineer",
-    "Cloud Engineer",
-    "Cloud Architect",
-    "Platform Engineer",
-    "Site Reliability Engineer",
-    "Database Administrator",
-    "Big Data Engineer"
-  ],
+  background: linear-gradient(
+    to bottom,
+    rgba(40,0,20,0.6),
+    rgba(0,0,0,0.8)
+  );
 
-  "Security": [
-    "Cybersecurity Analyst",
-    "Ethical Hacker",
-    "Security Architect",
-    "Threat Intelligence Analyst",
-    "Fraud Analyst",
-    "Cyber Warfare Specialist"
-  ],
+  backdrop-filter: blur(8px);
+}
 
-  "Emerging Tech": [
-    "Blockchain Developer",
-    "AR VR Developer",
-    "Metaverse Architect",
-    "IoT Solutions Architect",
-    "Edge Computing Specialist",
-    "Quantum Computing Engineer",
-    "Neuromorphic Computing Engineer",
-    "Digital Twin Engineer",
-    "Autonomous Systems Architect",
-    "Swarm Robotics Engineer"
-  ],
+/* TITLE */
+.section h1 {
+  font-size: 4rem;
+  letter-spacing: 5px;
+  text-shadow: 0 0 20px rgba(255,0,100,0.7);
+}
 
-  // ================= FINANCE =================
-  "Finance": ["Core Finance", "Markets", "Advanced Finance"],
+/* BUTTON */
+button {
+  margin-top: 20px;
+  padding: 12px 25px;
+  border: none;
+  background: linear-gradient(45deg, #6a0f2e, #b3125d);
+  color: white;
+  border-radius: 25px;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(255,0,100,0.6);
+}
 
-  "Core Finance": [
-    "Investment Banker",
-    "Financial Analyst",
-    "Chartered Accountant",
-    "Auditor",
-    "Tax Consultant",
-    "Compliance Officer"
-  ],
+/* JOB GRID */
+#jobsContainer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  background: rgba(0,0,0,0.85);
+  padding: 20px;
+  max-height: 50%;
+  overflow-y: auto;
+}
 
-  "Markets": [
-    "Equity Research Analyst",
-    "Portfolio Manager",
-    "Quantitative Trader",
-    "Forex Trader",
-    "Derivatives Specialist",
-    "Wealth Manager"
-  ],
+/* JOB CARD */
+.job {
+  width: 200px;
+  height: 120px;
+  margin: 10px;
+  background: linear-gradient(135deg, #3a0d1f, #8a1c4a);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(255,0,100,0.4);
+  transition: transform 0.3s;
+}
 
-  "Advanced Finance": [
-    "Private Equity Analyst",
-    "Venture Capital Analyst",
-    "Structured Products Analyst",
-    "Distressed Assets Investor",
-    "Credit Derivatives Trader",
-    "Macro Hedge Fund Strategist"
-  ],
-
-  // ================= MEDICAL =================
-  "Medical": ["Doctors", "Research", "Specialists"],
-
-  "Doctors": [
-    "Surgeon",
-    "Cardiologist",
-    "Neurologist",
-    "Radiologist",
-    "Orthopedic Doctor",
-    "Dermatologist",
-    "Psychiatrist"
-  ],
-
-  "Research": [
-    "Clinical Research Scientist",
-    "Geneticist",
-    "Epidemiologist"
-  ],
-
-  "Specialists": [
-    "Anesthesiologist",
-    "Cosmetic Surgeon",
-    "Sports Medicine Doctor",
-    "Perfusionist",
-    "Embryologist"
-  ],
-
-  // ================= CREATIVE =================
-  "Creative": ["Design", "Media", "Entertainment"],
-
-  "Design": [
-    "UX Designer",
-    "UI Designer",
-    "Product Designer",
-    "Creative Director",
-    "Art Director"
-  ],
-
-  "Media": [
-    "Content Strategist",
-    "Digital Marketing Manager",
-    "SEO Manager",
-    "Social Media Manager",
-    "Video Editor",
-    "Photographer"
-  ],
-
-  "Entertainment": [
-    "Actor",
-    "Singer",
-    "Dancer",
-    "Choreographer",
-    "DJ",
-    "Stand-up Comedian",
-    "Magician"
-  ],
-
-  // ================= ENGINEERING =================
-  "Engineering": ["Core", "Advanced"],
-
-  "Core": [
-    "Mechanical Engineer",
-    "Civil Engineer",
-    "Electrical Engineer",
-    "Chemical Engineer",
-    "Industrial Engineer"
-  ],
-
-  "Advanced": [
-    "Robotics Engineer",
-    "Aerospace Engineer",
-    "Petroleum Engineer",
-    "Automobile Engineer",
-    "Structural Engineer"
-  ],
-
-  // ================= LAW =================
-  "Law": [
-    "Corporate Lawyer",
-    "Litigation Lawyer",
-    "Criminal Lawyer",
-    "IP Lawyer",
-    "Cyber Law Expert",
-    "Tax Lawyer",
-    "AI Policy Lawyer",
-    "Data Privacy Officer"
-  ],
-
-  // ================= BUSINESS =================
-  "Business": ["Strategy", "Modern Economy"],
-
-  "Strategy": [
-    "Business Analyst",
-    "Market Entry Consultant",
-    "Pricing Strategist",
-    "Turnaround Specialist",
-    "Mergers Integration Manager"
-  ],
-
-  "Modern Economy": [
-    "Creator Economy Strategist",
-    "NFT Architect",
-    "Web3 Game Economist",
-    "Digital Asset Manager"
-  ]
-};
+.job:hover {
+  transform: scale(1.1);
+}
