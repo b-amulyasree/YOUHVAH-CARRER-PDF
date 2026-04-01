@@ -12,123 +12,70 @@ body {
   overflow: hidden;
 }
 
-svg {
+#canvas {
   width: 100vw;
   height: 100vh;
+  overflow: auto;
 }
 
-/* NODE STYLE */
 .node {
-  fill: #ff4d6d;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.node:hover {
-  fill: #ff99aa;
-}
-
-/* TEXT */
-text {
-  fill: white;
-  font-size: 12px;
-  pointer-events: none;
-}
-
-/* LINKS */
-.link {
-  stroke: rgba(255,77,109,0.5);
-  stroke-width: 2;
+  position: absolute;
+  padding: 4px 8px;
+  background: rgba(255,77,109,0.1);
+  border: 1px solid rgba(255,77,109,0.3);
+  border-radius: 6px;
+  font-size: 10px;
+  color: white;
+  white-space: nowrap;
 }
 </style>
 </head>
 
 <body>
 
-<svg id="tree"></svg>
+<div id="canvas"></div>
 
 <script>
 
-// 🌳 DATA (you can expand this to 1000 jobs)
-const data = {
-  name: "Careers",
-  children: [
-    {
-      name: "Tech",
-      children: [
-        { name: "Software Engineer" },
-        { name: "AI Engineer" },
-        { name: "Data Scientist" }
-      ]
-    },
-    {
-      name: "Finance",
-      children: [
-        { name: "Investment Banker" },
-        { name: "Quant Trader" }
-      ]
-    },
-    {
-      name: "Creative",
-      children: [
-        { name: "YouTuber" },
-        { name: "Photographer" }
-      ]
-    }
-  ]
-};
+// 🔥 PASTE YOUR FULL 1020 JOBS HERE
+const jobs = [
+"Software Engineer",
+"Senior Software Engineer",
+"Full Stack Developer",
+"Backend Developer",
+"Frontend Developer",
+// 👉 PASTE ALL YOUR 1000 JOBS HERE
+];
 
-// BASIC TREE LAYOUT
-const svg = document.getElementById("tree");
-let nodes = [];
-let links = [];
+// 🚀 AUTO-GRID (TREE-LIKE FLOW)
+const canvas = document.getElementById("canvas");
 
-function layout(node, depth=0, x=500, y=100, spread=200) {
-  nodes.push({ ...node, x, y });
+let x = 50;
+let y = 50;
+let col = 0;
 
-  if (node.children) {
-    let step = spread / node.children.length;
-    node.children.forEach((child, i) => {
-      let newX = x - spread/2 + i * step + step/2;
-      let newY = y + 120;
+jobs.forEach((job, i) => {
 
-      links.push({ x1: x, y1: y, x2: newX, y2: newY });
+  const div = document.createElement("div");
+  div.className = "node";
+  div.innerText = job;
 
-      layout(child, depth+1, newX, newY, spread/1.5);
-    });
+  div.style.left = x + "px";
+  div.style.top = y + "px";
+
+  canvas.appendChild(div);
+
+  y += 30;
+  col++;
+
+  // NEW COLUMN (like branches)
+  if (col > 40) {
+    col = 0;
+    y = 50;
+    x += 180;
   }
-}
 
-layout(data);
-
-// DRAW LINKS
-links.forEach(l => {
-  const line = document.createElementNS("http://www.w3.org/2000/svg","line");
-  line.setAttribute("x1", l.x1);
-  line.setAttribute("y1", l.y1);
-  line.setAttribute("x2", l.x2);
-  line.setAttribute("y2", l.y2);
-  line.setAttribute("class", "link");
-  svg.appendChild(line);
 });
-
-// DRAW NODES
-nodes.forEach(n => {
-  const circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
-  circle.setAttribute("cx", n.x);
-  circle.setAttribute("cy", n.y);
-  circle.setAttribute("r", 8);
-  circle.setAttribute("class", "node");
-
-  const label = document.createElementNS("http://www.w3.org/2000/svg","text");
-  label.setAttribute("x", n.x + 10);
-  label.setAttribute("y", n.y + 4);
-  label.textContent = n.name;
-
-  svg.appendChild(circle);
-  svg.appendChild(label);
-});
-
 </script>
 
 </body>
