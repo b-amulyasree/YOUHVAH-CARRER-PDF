@@ -1,1 +1,196 @@
+const jobTree = {
+  "Careers": ["Tech", "Finance", "Medical", "Creative", "Engineering", "Law", "Business"],
 
+  // ================= TECH =================
+  "Tech": ["Software", "Data & AI", "Infrastructure", "Security", "Emerging Tech"],
+
+  "Software": [
+    "Software Engineer",
+    "Senior Software Engineer",
+    "Full Stack Developer",
+    "Backend Developer",
+    "Frontend Developer",
+    "Mobile App Developer",
+    "Game Developer",
+    "API Developer"
+  ],
+
+  "Data & AI": [
+    "Data Scientist",
+    "Data Engineer",
+    "Machine Learning Engineer",
+    "AI Engineer",
+    "NLP Engineer",
+    "Computer Vision Engineer",
+    "MLOps Engineer",
+    "Prompt Engineer"
+  ],
+
+  "Infrastructure": [
+    "DevOps Engineer",
+    "Cloud Engineer",
+    "Cloud Architect",
+    "Platform Engineer",
+    "Site Reliability Engineer",
+    "Database Administrator",
+    "Big Data Engineer"
+  ],
+
+  "Security": [
+    "Cybersecurity Analyst",
+    "Ethical Hacker",
+    "Security Architect",
+    "Threat Intelligence Analyst",
+    "Fraud Analyst",
+    "Cyber Warfare Specialist"
+  ],
+
+  "Emerging Tech": [
+    "Blockchain Developer",
+    "AR VR Developer",
+    "Metaverse Architect",
+    "IoT Solutions Architect",
+    "Edge Computing Specialist",
+    "Quantum Computing Engineer",
+    "Neuromorphic Computing Engineer",
+    "Digital Twin Engineer",
+    "Autonomous Systems Architect",
+    "Swarm Robotics Engineer"
+  ],
+
+  // ================= FINANCE =================
+  "Finance": ["Core Finance", "Markets", "Advanced Finance"],
+
+  "Core Finance": [
+    "Investment Banker",
+    "Financial Analyst",
+    "Chartered Accountant",
+    "Auditor",
+    "Tax Consultant",
+    "Compliance Officer"
+  ],
+
+  "Markets": [
+    "Equity Research Analyst",
+    "Portfolio Manager",
+    "Quantitative Trader",
+    "Forex Trader",
+    "Derivatives Specialist",
+    "Wealth Manager"
+  ],
+
+  "Advanced Finance": [
+    "Private Equity Analyst",
+    "Venture Capital Analyst",
+    "Structured Products Analyst",
+    "Distressed Assets Investor",
+    "Credit Derivatives Trader",
+    "Macro Hedge Fund Strategist"
+  ],
+
+  // ================= MEDICAL =================
+  "Medical": ["Doctors", "Research", "Specialists"],
+
+  "Doctors": [
+    "Surgeon",
+    "Cardiologist",
+    "Neurologist",
+    "Radiologist",
+    "Orthopedic Doctor",
+    "Dermatologist",
+    "Psychiatrist"
+  ],
+
+  "Research": [
+    "Clinical Research Scientist",
+    "Geneticist",
+    "Epidemiologist"
+  ],
+
+  "Specialists": [
+    "Anesthesiologist",
+    "Cosmetic Surgeon",
+    "Sports Medicine Doctor",
+    "Perfusionist",
+    "Embryologist"
+  ],
+
+  // ================= CREATIVE =================
+  "Creative": ["Design", "Media", "Entertainment"],
+
+  "Design": [
+    "UX Designer",
+    "UI Designer",
+    "Product Designer",
+    "Creative Director",
+    "Art Director"
+  ],
+
+  "Media": [
+    "Content Strategist",
+    "Digital Marketing Manager",
+    "SEO Manager",
+    "Social Media Manager",
+    "Video Editor",
+    "Photographer"
+  ],
+
+  "Entertainment": [
+    "Actor",
+    "Singer",
+    "Dancer",
+    "Choreographer",
+    "DJ",
+    "Stand-up Comedian",
+    "Magician"
+  ],
+
+  // ================= ENGINEERING =================
+  "Engineering": ["Core", "Advanced"],
+
+  "Core": [
+    "Mechanical Engineer",
+    "Civil Engineer",
+    "Electrical Engineer",
+    "Chemical Engineer",
+    "Industrial Engineer"
+  ],
+
+  "Advanced": [
+    "Robotics Engineer",
+    "Aerospace Engineer",
+    "Petroleum Engineer",
+    "Automobile Engineer",
+    "Structural Engineer"
+  ],
+
+  // ================= LAW =================
+  "Law": [
+    "Corporate Lawyer",
+    "Litigation Lawyer",
+    "Criminal Lawyer",
+    "IP Lawyer",
+    "Cyber Law Expert",
+    "Tax Lawyer",
+    "AI Policy Lawyer",
+    "Data Privacy Officer"
+  ],
+
+  // ================= BUSINESS =================
+  "Business": ["Strategy", "Modern Economy"],
+
+  "Strategy": [
+    "Business Analyst",
+    "Market Entry Consultant",
+    "Pricing Strategist",
+    "Turnaround Specialist",
+    "Mergers Integration Manager"
+  ],
+
+  "Modern Economy": [
+    "Creator Economy Strategist",
+    "NFT Architect",
+    "Web3 Game Economist",
+    "Digital Asset Manager"
+  ]
+};
