@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- FIX: Load THREE.js explicitly BEFORE 3d-force-graph -->
   <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
   <script src="https://unpkg.com/3d-force-graph"></script>
 
@@ -32,89 +31,92 @@
 <div id="3d-graph"></div>
 
 <script>
-// Ensure THREE is loaded
-if (typeof THREE === 'undefined') {
-  console.error('THREE.js failed to load');
-}
-
 const Graph = ForceGraph3D()(document.getElementById('3d-graph'));
 
-const data = {
-  nodes: [
-    { id: 'Careers', level: 0 },
-    { id: 'Tech', level: 1 },
-    { id: 'Finance', level: 1 },
-    { id: 'Creative', level: 1 },
+// FULL JOB LIST (sample expandable, you will extend)
+const jobTree = {
+  "Careers": ["Tech", "Finance", "Creative"],
 
-    { id: 'Software Engineer', level: 2 },
-    { id: 'AI Engineer', level: 2 },
-    { id: 'Data Scientist', level: 2 },
-
-    { id: 'Investment Banker', level: 2 },
-    { id: 'Financial Analyst', level: 2 },
-
-    { id: 'Actor', level: 2 },
-    { id: 'Designer', level: 2 }
+  "Tech": [
+    "Software Engineer","AI Engineer","Data Scientist","Backend Developer","Frontend Developer"
   ],
 
-  links: [
-    { source: 'Careers', target: 'Tech' },
-    { source: 'Careers', target: 'Finance' },
-    { source: 'Careers', target: 'Creative' },
+  "Finance": [
+    "Investment Banker","Financial Analyst","Portfolio Manager","Quantitative Trader"
+  ],
 
-    { source: 'Tech', target: 'Software Engineer' },
-    { source: 'Tech', target: 'AI Engineer' },
-    { source: 'Tech', target: 'Data Scientist' },
-
-    { source: 'Finance', target: 'Investment Banker' },
-    { source: 'Finance', target: 'Financial Analyst' },
-
-    { source: 'Creative', target: 'Actor' },
-    { source: 'Creative', target: 'Designer' }
+  "Creative": [
+    "Actor","Designer","Photographer","Video Editor"
   ]
 };
 
+let nodes = [{ id: 'Careers', level: 0 }];
+let links = [];
+
+function updateGraph() {
+  Graph.graphData({ nodes, links });
+}
+
+function addChildren(node) {
+  const children = jobTree[node.id];
+  if (!children) return;
+
+  children.forEach(child => {
+    if (!nodes.find(n => n.id === child)) {
+      nodes.push({ id: child, level: node.level + 1 });
+      links.push({ source: node.id, target: child });
+    }
+  });
+
+  updateGraph();
+}
+
 Graph
-  .graphData(data)
+  .graphData({ nodes, links })
   .nodeLabel('id')
   .nodeAutoColorBy('level')
+
   .nodeThreeObject(node => {
     const sprite = new THREE.Sprite(
       new THREE.SpriteMaterial({
         color: node.level === 0 ? 0xff1e56 : node.level === 1 ? 0xff4d6d : 0xff8fa3,
         transparent: true,
-        opacity: 0.9
+        opacity: 0.95
       })
     );
 
     sprite.scale.set(4, 4, 1);
     return sprite;
   })
+
+  .onNodeClick(node => {
+    addChildren(node);
+
+    // zoom to clicked node
+    const distance = 40;
+    const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
+
+    Graph.cameraPosition(
+      { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio },
+      node,
+      1000
+    );
+  })
+
   .linkWidth(1.5)
   .linkColor(() => '#ff4d6d')
   .linkOpacity(0.4)
   .backgroundColor('#0a0003');
 
-// Glow renderer config
-Graph.renderer().setClearColor(0x0a0003, 1);
-
-// Camera
 Graph.cameraPosition({ z: 120 });
-
-// Smooth physics
 Graph.d3VelocityDecay(0.3);
 
-// Resize handler
-window.addEventListener('resize', () => {
-  Graph.width(window.innerWidth);
-  Graph.height(window.innerHeight);
-});
+// INITIAL ROOT EXPAND
+addChildren({ id: 'Careers', level: 0 });
 
-// TEST CASES (console)
-console.assert(typeof THREE !== 'undefined', 'THREE should be loaded');
-console.assert(typeof ForceGraph3D !== 'undefined', 'ForceGraph3D should be loaded');
-console.assert(data.nodes.length > 0, 'Graph should have nodes');
-console.assert(data.links.length > 0, 'Graph should have links');
+// TESTS
+console.assert(typeof THREE !== 'undefined', 'THREE loaded');
+console.assert(nodes.length > 0, 'Nodes exist');
 
 </script>
 
