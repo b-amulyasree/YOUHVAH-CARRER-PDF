@@ -1,44 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Career Universe</title>
-<link rel="stylesheet" href="style.css">
+  <title>3D Career Tree</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: black; }
+    #graph { width: 100vw; height: 100vh; }
+  </style>
 </head>
 
 <body>
 
-<div id="bg-layer1"></div>
-<div id="bg-layer2"></div>
+<div id="graph"></div>
 
-<div class="timeline-line"></div>
+<!-- LOAD THREE FIRST -->
+<script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
 
-<div class="timeline">
-
-  <section class="section" data-bg="images/tech.jpg">
-    <h1>TECH</h1>
-  </section>
-
-  <section class="section" data-bg="images/finance.jpg">
-    <h1>FINANCE</h1>
-  </section>
-
-  <section class="section" data-bg="images/medical.jpg">
-    <h1>MEDICAL</h1>
-  </section>
-
-  <section class="section" data-bg="images/law.jpg">
-    <h1>LAW</h1>
-  </section>
-
-  <section class="section" data-bg="images/engineering.jpg">
-    <h1>ENGINEERING</h1>
-  </section>
-
-</div>
-
-<div id="jobsContainer"></div>
+<!-- THEN FORCE GRAPH -->
+<script src="https://unpkg.com/3d-force-graph"></script>
 
 <script src="script.js"></script>
+
 </body>
 </html>
