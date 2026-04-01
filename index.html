@@ -2,153 +2,131 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Career Roadmap</title>
+<title>Career Tree</title>
 
 <style>
 body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  color: white;
-  background: linear-gradient(180deg, #1a0005, #3b0a1a, #0d0d0d);
+  background: radial-gradient(circle, #1a0005, #0d0d0d);
+  font-family: Arial;
+  overflow: hidden;
 }
 
-/* HEADER */
-h1 {
-  text-align: center;
-  padding: 30px;
-  font-size: 42px;
-  letter-spacing: 2px;
+svg {
+  width: 100vw;
+  height: 100vh;
 }
 
-/* SECTION */
-.section {
-  margin: 20px;
-  padding: 15px;
-  border-radius: 15px;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-}
-
-/* TITLE */
-.section h2 {
+/* NODE STYLE */
+.node {
+  fill: #ff4d6d;
   cursor: pointer;
-  color: #ff4d6d;
+  transition: 0.3s;
 }
 
-/* JOB LIST */
-.jobs {
-  display: none;
-  margin-top: 10px;
-  flex-wrap: wrap;
-  gap: 6px;
+.node:hover {
+  fill: #ff99aa;
 }
 
-.job {
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 6px;
-  background: rgba(255, 77, 109, 0.1);
-  border: 1px solid rgba(255, 77, 109, 0.3);
+/* TEXT */
+text {
+  fill: white;
+  font-size: 12px;
+  pointer-events: none;
 }
 
-.job:hover {
-  background: #ff4d6d;
-  color: black;
+/* LINKS */
+.link {
+  stroke: rgba(255,77,109,0.5);
+  stroke-width: 2;
 }
 </style>
-
 </head>
 
 <body>
 
-<h1>🍷 Career Roadmap</h1>
-
-<div id="container"></div>
+<svg id="tree"></svg>
 
 <script>
 
-// 🔥 YOUR JOB DATA (AUTO SYSTEM)
+// 🌳 DATA (you can expand this to 1000 jobs)
 const data = {
-  "💻 Tech": [
-    "Software Engineer","AI Engineer","Data Scientist","Machine Learning Engineer",
-    "Blockchain Developer","Cybersecurity Analyst","Cloud Architect","DevOps Engineer",
-    "Game Developer","Quantum Computing Engineer"
-  ],
-
-  "💰 Finance": [
-    "Investment Banker","Financial Analyst","Quantitative Trader",
-    "Portfolio Manager","Wealth Manager","Risk Manager","Actuary"
-  ],
-
-  "🏥 Medical": [
-    "Surgeon","Cardiologist","Neurologist","Radiologist",
-    "Psychiatrist","Geneticist","Epidemiologist"
-  ],
-
-  "⚖️ Law": [
-    "Corporate Lawyer","Criminal Lawyer","Cyber Law Expert","Tax Lawyer"
-  ],
-
-  "⚙️ Engineering": [
-    "Mechanical Engineer","Civil Engineer","Electrical Engineer",
-    "Robotics Engineer","Aerospace Engineer"
-  ],
-
-  "🎨 Creative": [
-    "YouTuber","Photographer","Animator","DJ","Actor","Filmmaker"
-  ],
-
-  "🚀 Space": [
-    "Rocket Propulsion Engineer","Astrodynamics Specialist",
-    "Space Data Analyst","Planetary Scientist"
-  ],
-
-  "🌊 Marine": [
-    "Marine Engineer","Oceanographer","Naval Architect"
-  ],
-
-  "✈️ Sky": [
-    "Pilot","Flight Attendant","Drone Pilot"
-  ],
-
-  "🧠 Niche": [
-    "Perfusionist","Embryologist","Flavor Chemist",
-    "Foley Artist","Ballistics Expert"
+  name: "Careers",
+  children: [
+    {
+      name: "Tech",
+      children: [
+        { name: "Software Engineer" },
+        { name: "AI Engineer" },
+        { name: "Data Scientist" }
+      ]
+    },
+    {
+      name: "Finance",
+      children: [
+        { name: "Investment Banker" },
+        { name: "Quant Trader" }
+      ]
+    },
+    {
+      name: "Creative",
+      children: [
+        { name: "YouTuber" },
+        { name: "Photographer" }
+      ]
+    }
   ]
 };
 
+// BASIC TREE LAYOUT
+const svg = document.getElementById("tree");
+let nodes = [];
+let links = [];
 
-// 🚀 RENDER SYSTEM
-const container = document.getElementById("container");
+function layout(node, depth=0, x=500, y=100, spread=200) {
+  nodes.push({ ...node, x, y });
 
-Object.keys(data).forEach(category => {
+  if (node.children) {
+    let step = spread / node.children.length;
+    node.children.forEach((child, i) => {
+      let newX = x - spread/2 + i * step + step/2;
+      let newY = y + 120;
 
-  const section = document.createElement("div");
-  section.className = "section";
+      links.push({ x1: x, y1: y, x2: newX, y2: newY });
 
-  const title = document.createElement("h2");
-  title.innerText = category;
+      layout(child, depth+1, newX, newY, spread/1.5);
+    });
+  }
+}
 
-  const jobsDiv = document.createElement("div");
-  jobsDiv.className = "jobs";
+layout(data);
 
-  data[category].forEach(job => {
-    const span = document.createElement("span");
-    span.className = "job";
-    span.innerText = job;
-    jobsDiv.appendChild(span);
-  });
+// DRAW LINKS
+links.forEach(l => {
+  const line = document.createElementNS("http://www.w3.org/2000/svg","line");
+  line.setAttribute("x1", l.x1);
+  line.setAttribute("y1", l.y1);
+  line.setAttribute("x2", l.x2);
+  line.setAttribute("y2", l.y2);
+  line.setAttribute("class", "link");
+  svg.appendChild(line);
+});
 
-  // TOGGLE
-  title.onclick = () => {
-    jobsDiv.style.display =
-      jobsDiv.style.display === "flex" ? "none" : "flex";
-  };
+// DRAW NODES
+nodes.forEach(n => {
+  const circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
+  circle.setAttribute("cx", n.x);
+  circle.setAttribute("cy", n.y);
+  circle.setAttribute("r", 8);
+  circle.setAttribute("class", "node");
 
-  section.appendChild(title);
-  section.appendChild(jobsDiv);
-  container.appendChild(section);
+  const label = document.createElementNS("http://www.w3.org/2000/svg","text");
+  label.setAttribute("x", n.x + 10);
+  label.setAttribute("y", n.y + 4);
+  label.textContent = n.name;
 
+  svg.appendChild(circle);
+  svg.appendChild(label);
 });
 
 </script>
