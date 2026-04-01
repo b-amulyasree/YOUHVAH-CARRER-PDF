@@ -5,3 +5,6 @@
   "Backend Developer",
   ...
 ]
+children: [
+  { name: "Software Engineer" }
+]
