@@ -1,75 +1,68 @@
-const bg = document.getElementById("bg");
 const sections = document.querySelectorAll(".section");
 
+const bg1 = document.getElementById("bg-layer1");
+const bg2 = document.getElementById("bg-layer2");
+
+let activeLayer = 1;
 let currentBg = "";
 
-/* BACKGROUND SMOOTH TRANSITION */
+/* SMOOTH BACKGROUND MORPH */
 window.addEventListener("scroll", () => {
+
   sections.forEach(section => {
     const rect = section.getBoundingClientRect();
 
     if (rect.top < window.innerHeight / 2 &&
         rect.bottom > window.innerHeight / 2) {
 
-      const newBg = section.getAttribute("data-bg");
+      const newBg = section.dataset.bg;
 
       if (newBg !== currentBg) {
-        bg.style.opacity = 0;
 
-        setTimeout(() => {
-          bg.style.backgroundImage = `url(${newBg})`;
-          bg.style.transform = "scale(1.1)";
-          bg.style.opacity = 1;
+        if (activeLayer === 1) {
+          bg2.style.backgroundImage = `url(${newBg})`;
+          bg2.style.opacity = 1;
+          bg1.style.opacity = 0;
+          activeLayer = 2;
+        } else {
+          bg1.style.backgroundImage = `url(${newBg})`;
+          bg1.style.opacity = 1;
+          bg2.style.opacity = 0;
+          activeLayer = 1;
+        }
 
-          setTimeout(() => {
-            bg.style.transform = "scale(1)";
-          }, 300);
-
-          currentBg = newBg;
-        }, 600);
+        currentBg = newBg;
       }
     }
   });
+
+});
+
+/* PARALLAX DEPTH */
+window.addEventListener("scroll", () => {
+  let scrollY = window.scrollY;
+
+  bg1.style.transform = `scale(1.1) translateY(${scrollY * 0.05}px)`;
+  bg2.style.transform = `scale(1.15) translateY(${scrollY * 0.08}px)`;
 });
 
 /* JOB DATA */
 const jobs = {
-  tech: [
-    "Software Engineer",
-    "AI Engineer",
-    "Cloud Architect",
-    "Blockchain Developer",
-    "Data Scientist"
-  ],
-
-  finance: [
-    "Investment Banker",
-    "Financial Analyst",
-    "Quant Trader",
-    "Wealth Manager"
-  ],
-
-  medical: [
-    "Surgeon",
-    "Cardiologist",
-    "Neurologist",
-    "Radiologist"
-  ],
-
-  law: [
-    "Corporate Lawyer",
-    "Criminal Lawyer",
-    "IP Lawyer"
-  ],
-
-  engineering: [
-    "Mechanical Engineer",
-    "Civil Engineer",
-    "Aerospace Engineer"
-  ]
+  tech: ["Software Engineer","AI Engineer","Cloud Architect","Blockchain Developer","Data Scientist"],
+  finance: ["Investment Banker","Quant Trader","Wealth Manager"],
+  medical: ["Surgeon","Cardiologist","Neurologist"],
+  law: ["Corporate Lawyer","IP Lawyer","Criminal Lawyer"],
+  engineering: ["Mechanical Engineer","Civil Engineer","Aerospace Engineer"]
 };
 
-/* SHOW JOBS */
+/* CLICK TO SHOW JOBS */
+sections.forEach(section => {
+  section.addEventListener("click", () => {
+    const key = section.querySelector("h1").innerText.toLowerCase();
+    showJobs(key);
+  });
+});
+
 function showJobs(category) {
   const container = document.getElementById("jobsContainer");
   container.innerHTML = "";
