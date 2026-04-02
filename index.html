@@ -1,798 +1,1441 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YOUHVAH — Explore Every Career Path</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<title>Youhvah — Find Your Path</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg0:#07000a;--bg1:#120010;--wine:#5c001a;--crimson:#b01030;--cr-glow:rgba(176,16,48,.45);
-  --gold:#c9943a;--gold-lt:#e8c070;--ivory:#f2e2cc;--ivory-d:rgba(242,226,204,.65);
-  --line:1px solid rgba(176,16,48,.25);
+/* ═══════════════════════════════════════════
+   CSS VARIABLES — LIGHT & DARK MODE
+═══════════════════════════════════════════ */
+:root {
+  --bg:#f0e8d8;--bg2:#e8dcc8;--bg3:#ddd0b8;
+  --surface:#fffdf8;--surface2:rgba(255,252,248,0.85);
+  --text:#1a1228;--text2:#4a3f5c;--text3:rgba(26,18,40,0.45);
+  --accent:#7a1428;--accent2:#a01830;--accent-glow:rgba(122,20,40,0.2);
+  --gold:#8b6420;--gold2:#b8892a;
+  --border:rgba(122,20,40,0.15);--border2:rgba(122,20,40,0.08);
+  --shadow:0 4px 24px rgba(26,18,40,0.1);--shadow2:0 12px 48px rgba(26,18,40,0.15);
+  --card:rgba(255,253,248,0.9);--card-border:rgba(122,20,40,0.12);
+  --input-bg:rgba(255,253,248,0.95);
+  --overlay:rgba(240,232,216,0.98);
+  --grain:0.035;
+}
+html.dark {
+  --bg:#07000a;--bg2:#120010;--bg3:#1a0018;
+  --surface:rgba(92,0,26,0.12);--surface2:rgba(92,0,26,0.08);
+  --text:#f2e2cc;--text2:rgba(242,226,204,0.7);--text3:rgba(242,226,204,0.35);
+  --accent:#b01030;--accent2:#c81838;--accent-glow:rgba(176,16,48,0.35);
+  --gold:#c9943a;--gold2:#e8c070;
+  --border:rgba(176,16,48,0.22);--border2:rgba(176,16,48,0.1);
+  --shadow:0 4px 24px rgba(0,0,0,0.4);--shadow2:0 12px 48px rgba(0,0,0,0.5);
+  --card:rgba(92,0,26,0.12);--card-border:rgba(176,16,48,0.15);
+  --input-bg:rgba(18,0,16,0.8);
+  --overlay:rgba(7,0,10,0.98);
+  --grain:0.04;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
-  background:var(--bg0);color:var(--ivory);
-  font-family:'Jost',sans-serif;font-weight:300;overflow-x:hidden;
+  background:var(--bg);color:var(--text);
+  font-family:'Jost',sans-serif;font-weight:300;
+  overflow-x:hidden;transition:background .4s,color .4s;
+  min-height:100vh;
 }
-::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg0)}
-::-webkit-scrollbar-thumb{background:var(--wine)}::-webkit-scrollbar-thumb:hover{background:var(--crimson)}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px}
 
-/* ─── GRAIN ─── */
-#grain{
-  position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:.04;
+/* ── GRAIN ── */
+body::before{
+  content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
+  opacity:var(--grain);
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size:300px;animation:grainShift 8s steps(10) infinite;
+  background-size:300px;animation:grain 8s steps(10) infinite;
 }
-@keyframes grainShift{0%{background-position:0 0}100%{background-position:300px 300px}}
+@keyframes grain{0%{background-position:0 0}100%{background-position:300px 300px}}
 
-/* ─── BACKGROUND ─── */
-#bg{position:fixed;inset:0;z-index:0}
+/* ── UTILS ── */
+.hidden{display:none!important}
+button{cursor:pointer;font-family:'Jost',sans-serif;border:none;background:none}
+
+/* ═══════════════════════════════════════════
+   LANDING PAGE
+═══════════════════════════════════════════ */
+#landing{
+  position:fixed;inset:0;z-index:800;
+  background:var(--bg);
+  display:flex;flex-direction:column;
+  transition:opacity .6s cubic-bezier(.4,0,.2,1),transform .6s cubic-bezier(.4,0,.2,1);
+}
+#landing.exit{opacity:0;transform:translateY(-20px);pointer-events:none}
+
+.land-nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:24px 48px;
+}
+.land-logo{
+  font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:400;
+  letter-spacing:.12em;color:var(--text);
+}
+.land-nav-right{display:flex;align-items:center;gap:14px}
+.theme-toggle{
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid var(--border);background:var(--surface);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;transition:all .3s;color:var(--text);
+}
+.theme-toggle:hover{border-color:var(--accent);background:var(--bg2)}
+.sign-in-btn{
+  padding:9px 22px;border:1.5px solid var(--border);
+  background:var(--surface);color:var(--text);
+  font-size:.75rem;letter-spacing:.1em;border-radius:50px;
+  transition:all .3s;font-weight:400;
+}
+.sign-in-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--surface)}
+
+.land-body{
+  flex:1;display:flex;flex-direction:column;
+  justify-content:center;padding:0 48px;max-width:700px;
+}
+.land-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--bg2);border:1px solid var(--border);
+  padding:6px 16px;border-radius:50px;
+  font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:2.2rem;width:fit-content;
+}
+.land-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);animation:badgePulse 2s infinite}
+@keyframes badgePulse{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+
+.land-h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2.8rem,7vw,5.5rem);
+  font-weight:300;line-height:1.08;
+  color:var(--text);margin-bottom:1.4rem;
+  letter-spacing:-.02em;
+}
+.land-h1 em{font-style:italic;color:var(--accent)}
+.land-sub{
+  font-size:.88rem;color:var(--text2);line-height:1.8;
+  letter-spacing:.04em;margin-bottom:3rem;
+  max-width:480px;
+}
+.land-btns{display:flex;flex-direction:column;gap:12px;max-width:560px}
+.land-btn-primary{
+  padding:18px 32px;background:var(--text);color:var(--bg);
+  font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;
+  border-radius:12px;font-weight:500;transition:all .3s;
+  text-align:center;
+}
+.land-btn-primary:hover{background:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow2)}
+.land-btn-secondary{
+  padding:18px 32px;border:1.5px solid var(--border);
+  color:var(--text);font-size:.8rem;letter-spacing:.2em;
+  text-transform:uppercase;border-radius:12px;font-weight:400;
+  transition:all .3s;background:var(--surface);text-align:center;
+}
+.land-btn-secondary:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+
+.land-footer-note{
+  padding:24px 48px;font-size:.65rem;letter-spacing:.15em;
+  color:var(--text3);text-transform:uppercase;
+}
+
+/* ═══════════════════════════════════════════
+   AUTH MODAL
+═══════════════════════════════════════════ */
+#auth-modal{
+  position:fixed;inset:0;z-index:900;
+  background:rgba(0,0,0,0.5);backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+#auth-modal.open{opacity:1;pointer-events:all}
+.auth-box{
+  background:var(--surface);border:1px solid var(--border);
+  padding:48px;width:100%;max-width:440px;
+  box-shadow:var(--shadow2);
+  transform:translateY(20px);transition:transform .4s cubic-bezier(.4,0,.2,1);
+  border-radius:4px;position:relative;
+}
+#auth-modal.open .auth-box{transform:translateY(0)}
+.auth-close{
+  position:absolute;top:16px;right:16px;
+  width:32px;height:32px;border-radius:50%;
+  border:1px solid var(--border);color:var(--text3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;transition:all .2s;
+}
+.auth-close:hover{border-color:var(--accent);color:var(--accent)}
+.auth-logo{
+  font-family:'Cormorant Garamond',serif;font-size:1.6rem;
+  font-weight:300;letter-spacing:.15em;color:var(--text);
+  margin-bottom:6px;
+}
+.auth-sub{font-size:.72rem;color:var(--text3);letter-spacing:.1em;margin-bottom:32px}
+.auth-tabs{display:flex;gap:0;margin-bottom:28px;border-bottom:1px solid var(--border)}
+.auth-tab{
+  padding:10px 20px;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--text3);border-bottom:2px solid transparent;transition:all .25s;
+  margin-bottom:-1px;font-weight:400;
+}
+.auth-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.auth-form{display:flex;flex-direction:column;gap:14px}
+.auth-input{
+  padding:13px 16px;background:var(--input-bg);
+  border:1px solid var(--border);color:var(--text);
+  font-family:'Jost',sans-serif;font-size:.82rem;
+  letter-spacing:.05em;outline:none;
+  transition:border-color .25s;border-radius:6px;width:100%;
+}
+.auth-input:focus{border-color:var(--accent)}
+.auth-input::placeholder{color:var(--text3)}
+.auth-submit{
+  padding:14px;background:var(--accent);color:#fff;
+  font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;
+  font-weight:500;transition:all .3s;border-radius:6px;margin-top:6px;
+}
+.auth-submit:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:var(--shadow)}
+.auth-msg{font-size:.72rem;letter-spacing:.06em;padding:10px 14px;border-radius:4px;display:none}
+.auth-msg.error{background:rgba(180,20,20,.1);color:#c03030;border:1px solid rgba(180,20,20,.2);display:block}
+.auth-msg.success{background:rgba(20,140,60,.1);color:#148c3c;border:1px solid rgba(20,140,60,.2);display:block}
+.auth-divider{text-align:center;font-size:.62rem;letter-spacing:.2em;color:var(--text3);text-transform:uppercase;margin:4px 0}
+
+/* ═══════════════════════════════════════════
+   MAIN APP
+═══════════════════════════════════════════ */
+#main-app{opacity:0;transition:opacity .6s;pointer-events:none}
+#main-app.visible{opacity:1;pointer-events:all}
+
+/* Header */
+#app-header{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  padding:18px 48px;display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(to bottom,var(--bg) 60%,transparent);
+  backdrop-filter:blur(8px);
+}
+.app-logo{
+  font-family:'Cormorant Garamond',serif;font-size:1.35rem;
+  font-weight:400;letter-spacing:.15em;color:var(--text);
+}
+html.dark .app-logo{text-shadow:0 0 30px var(--accent-glow)}
+.hdr-center{
+  display:flex;align-items:center;gap:10px;
+  background:var(--surface2);border:1px solid var(--border);
+  padding:9px 18px;border-radius:50px;backdrop-filter:blur(12px);
+  transition:border-color .3s;
+}
+.hdr-center:focus-within{border-color:var(--accent)}
+.hdr-center input{
+  background:none;border:none;outline:none;color:var(--text);
+  font-family:'Jost',sans-serif;font-size:.78rem;letter-spacing:.08em;width:180px;
+}
+.hdr-center input::placeholder{color:var(--text3)}
+.hdr-right{display:flex;align-items:center;gap:12px}
+.hdr-btn{
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid var(--border);background:var(--surface);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;color:var(--text);transition:all .3s;
+}
+.hdr-btn:hover{border-color:var(--accent);color:var(--accent)}
+.hdr-user{
+  display:flex;align-items:center;gap:10px;
+  padding:7px 14px 7px 7px;border:1px solid var(--border);
+  background:var(--surface);border-radius:50px;
+  font-size:.7rem;letter-spacing:.1em;color:var(--text2);
+  transition:all .3s;
+}
+.hdr-user:hover{border-color:var(--accent)}
+.hdr-avatar{
+  width:26px;height:26px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--gold));
+  display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;color:#fff;font-weight:500;
+}
+
+/* Progress dots */
+#progress{
+  position:fixed;right:24px;top:50%;transform:translateY(-50%);
+  z-index:400;display:flex;flex-direction:column;gap:8px;
+}
+.pd{
+  width:5px;height:5px;border-radius:50%;background:var(--border2);
+  border:none;padding:0;transition:all .35s;
+}
+.pd.active,.pd:hover{background:var(--gold);box-shadow:0 0 8px var(--accent-glow);transform:scale(1.4)}
+
+/* BG for dark mode */
+#app-bg{position:fixed;inset:0;z-index:0;pointer-events:none}
 .bg-slide{
   position:absolute;inset:0;background-size:cover;background-position:center;
   opacity:0;transition:opacity 2s cubic-bezier(.4,0,.2,1);
 }
-.bg-slide.active{opacity:.14}
-#bg::after{
+html.dark .bg-slide.active{opacity:.13}
+html.light .bg-slide.active{opacity:.06}
+#app-bg::after{
   content:'';position:absolute;inset:0;
-  background:
-    radial-gradient(ellipse 60% 80% at 15% 50%,rgba(92,0,26,.35) 0%,transparent 70%),
-    linear-gradient(180deg,rgba(7,0,10,.92) 0%,rgba(18,0,16,.5) 40%,rgba(7,0,10,.92) 100%);
+  background:linear-gradient(180deg,var(--bg) 0%,transparent 30%,transparent 70%,var(--bg) 100%);
   z-index:1;
 }
 
-/* ─── HEADER ─── */
-header{
-  position:fixed;top:0;left:0;right:0;z-index:500;
-  padding:22px 48px;display:flex;align-items:center;justify-content:space-between;
-  background:linear-gradient(to bottom,rgba(7,0,10,.95) 60%,transparent);
-}
-.logo{
-  font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:300;
-  letter-spacing:.18em;color:var(--ivory);text-shadow:0 0 30px var(--cr-glow);
-}
-.logo b{color:var(--crimson);font-weight:400}
-.hdr-search{
-  display:flex;align-items:center;gap:10px;
-  background:rgba(255,255,255,.04);border:1px solid rgba(176,16,48,.3);padding:9px 18px;
-  backdrop-filter:blur(12px);transition:border-color .3s;
-}
-.hdr-search:focus-within{border-color:var(--crimson)}
-.hdr-search input{
-  background:none;border:none;outline:none;color:var(--ivory);
-  font-family:'Jost',sans-serif;font-size:.78rem;letter-spacing:.12em;width:200px;
-}
-.hdr-search input::placeholder{color:rgba(242,226,204,.3)}
-.hdr-tag{font-size:.65rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);opacity:.75}
-
-/* ─── PROGRESS ─── */
-#progress{
-  position:fixed;right:28px;top:50%;transform:translateY(-50%);
-  z-index:400;display:flex;flex-direction:column;gap:9px;
-}
-.pd{
-  width:5px;height:5px;border-radius:50%;background:rgba(242,226,204,.2);
-  cursor:pointer;transition:all .35s;border:none;padding:0;
-}
-.pd.active,.pd:hover{background:var(--gold);box-shadow:0 0 10px rgba(201,148,58,.6);transform:scale(1.4)}
-
-/* ─── HERO ─── */
+/* Hero */
 #hero{
   height:100vh;display:flex;align-items:center;justify-content:center;
-  text-align:center;position:relative;z-index:2;
+  text-align:center;position:relative;z-index:2;padding-top:80px;
 }
 .hero-inner{position:relative}
 .hero-eyebrow{
-  font-size:.65rem;letter-spacing:.5em;text-transform:uppercase;
-  color:var(--gold);margin-bottom:2rem;opacity:.8;
+  font-size:.62rem;letter-spacing:.5em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:1.8rem;opacity:.8;
 }
 .hero-h1{
   font-family:'Cormorant Garamond',serif;
-  font-size:clamp(3.2rem,9vw,7.5rem);font-weight:300;
-  line-height:1.05;letter-spacing:-.01em;margin-bottom:1.8rem;
+  font-size:clamp(3rem,8vw,6.5rem);font-weight:300;
+  line-height:1.05;letter-spacing:-.01em;margin-bottom:1.6rem;color:var(--text);
 }
-.hero-h1 em{font-style:italic;color:var(--crimson);text-shadow:0 0 60px var(--cr-glow)}
+.hero-h1 em{font-style:italic;color:var(--accent)}
+html.dark .hero-h1 em{text-shadow:0 0 50px var(--accent-glow)}
 .hero-sub{
-  font-size:.8rem;letter-spacing:.35em;text-transform:uppercase;
-  color:var(--ivory-d);margin-bottom:3.5rem;
+  font-size:.78rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:3rem;
 }
-.scroll-hint{
-  display:inline-flex;flex-direction:column;align-items:center;gap:14px;
-  color:var(--gold);font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;
-}
-.scroll-line{
-  width:1px;height:65px;
-  background:linear-gradient(to bottom,var(--gold),transparent);
-  animation:linePulse 2.2s ease-in-out infinite;
-}
-@keyframes linePulse{0%,100%{opacity:.25;transform:scaleY(.7)}60%{opacity:1;transform:scaleY(1)}}
+.scroll-cue{display:inline-flex;flex-direction:column;align-items:center;gap:12px;color:var(--gold);font-size:.62rem;letter-spacing:.3em;text-transform:uppercase}
+.scroll-line{width:1px;height:55px;background:linear-gradient(to bottom,var(--gold),transparent);animation:lineP 2.2s ease-in-out infinite}
+@keyframes lineP{0%,100%{opacity:.2;transform:scaleY(.6)}60%{opacity:1;transform:scaleY(1)}}
 
-/* ─── STATS ─── */
-.stats{
-  position:relative;z-index:2;display:flex;justify-content:center;gap:80px;
-  padding:60px 48px;border-top:var(--line);border-bottom:var(--line);
+/* Stats */
+.stats-bar{
+  position:relative;z-index:2;display:flex;justify-content:center;gap:72px;
+  padding:52px 48px;border-top:1px solid var(--border2);border-bottom:1px solid var(--border2);
 }
 .stat{text-align:center}
-.stat-n{
-  display:block;font-family:'Cormorant Garamond',serif;font-size:3.2rem;
-  font-weight:300;color:var(--gold);line-height:1;margin-bottom:10px;
-}
-.stat-l{font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;color:var(--ivory-d);opacity:.5}
+.stat-n{display:block;font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:300;color:var(--gold);line-height:1;margin-bottom:8px}
+.stat-l{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--text3)}
 
-/* ─── TIMELINE ─── */
-#timeline{position:relative;z-index:2;padding-bottom:220px}
+/* Timeline */
+#timeline{position:relative;z-index:2;padding-bottom:180px}
 .central-line{
   position:absolute;left:50%;top:0;bottom:0;width:1px;transform:translateX(-50%);
-  background:linear-gradient(to bottom,transparent 2%,var(--wine) 8%,var(--crimson) 30%,var(--gold) 55%,var(--crimson) 80%,var(--wine) 95%,transparent);
-  box-shadow:0 0 18px var(--cr-glow);
+  background:linear-gradient(to bottom,transparent 2%,var(--border) 8%,var(--accent) 30%,var(--gold) 55%,var(--accent) 80%,var(--border) 95%,transparent);
 }
+html.dark .central-line{box-shadow:0 0 14px var(--accent-glow)}
 
-/* ─── SECTOR NODE ─── */
-.sn{
-  display:grid;grid-template-columns:1fr 56px 1fr;
-  align-items:center;min-height:380px;padding:60px 0;position:relative;
-}
-.sn-dot-col{
-  display:flex;flex-direction:column;align-items:center;
-  position:relative;gap:6px;z-index:3;
-}
+/* Sector Node */
+.sn{display:grid;grid-template-columns:1fr 56px 1fr;align-items:center;min-height:360px;padding:50px 0;position:relative}
+.sn-dot-col{display:flex;flex-direction:column;align-items:center;position:relative;gap:5px;z-index:3}
 .sn-dot{
-  width:18px;height:18px;border-radius:50%;
-  background:radial-gradient(circle,var(--crimson) 0%,var(--wine) 100%);
+  width:16px;height:16px;border-radius:50%;flex-shrink:0;
+  background:radial-gradient(circle,var(--accent2),var(--accent));
   border:2px solid var(--gold);cursor:pointer;
-  box-shadow:0 0 18px var(--cr-glow),0 0 40px rgba(176,16,48,.18);
-  transition:all .35s;flex-shrink:0;
+  box-shadow:0 0 14px var(--accent-glow);transition:all .35s;
 }
-.sn-dot:hover{transform:scale(1.5);box-shadow:0 0 30px var(--cr-glow),0 0 70px rgba(176,16,48,.3)}
-.sn-pip{
-  width:3px;height:3px;border-radius:50%;background:var(--gold);
-  box-shadow:0 0 6px var(--gold);opacity:.4;
-  animation:pipPulse 3s ease-in-out infinite;
-}
-@keyframes pipPulse{0%,100%{opacity:.2}50%{opacity:.9}}
-
-.sn-left{padding-right:52px;text-align:right}
-.sn-right{padding-left:52px;text-align:left}
+.sn-dot:hover{transform:scale(1.5);box-shadow:0 0 24px var(--accent-glow)}
+.sn-pip{width:3px;height:3px;border-radius:50%;background:var(--gold);opacity:.35;animation:pipP 3s ease-in-out infinite}
+@keyframes pipP{0%,100%{opacity:.15}50%{opacity:.8}}
+.sn-left{padding-right:48px;text-align:right}
+.sn-right{padding-left:48px;text-align:left}
 .sn-empty{opacity:0;pointer-events:none}
-
 .sn-content{opacity:0;transition:opacity .9s ease,transform .9s cubic-bezier(.4,0,.2,1)}
-.sn-left .sn-content{transform:translateX(-28px)}
-.sn-right .sn-content{transform:translateX(28px)}
+.sn-left .sn-content{transform:translateX(-24px)}
+.sn-right .sn-content{transform:translateX(24px)}
 .sn.visible .sn-content{opacity:1;transform:translateX(0)}
-
-.sn-icon{display:block;font-size:2.2rem;margin-bottom:14px}
-.sn-num{
-  font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;
-  color:var(--gold);opacity:.55;margin-bottom:6px;
-}
-.sn-name{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(1.8rem,3.5vw,3rem);font-weight:300;
-  letter-spacing:.04em;line-height:1.1;margin-bottom:14px;
-}
-.sn-desc{
-  font-size:.82rem;color:var(--ivory-d);line-height:1.85;
-  letter-spacing:.04em;margin-bottom:18px;
-}
-.sn-meta{
-  font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
-  color:var(--gold);opacity:.6;margin-bottom:20px;
-}
-.sn-meta span{color:var(--crimson);opacity:1}
+.sn-icon{display:block;font-size:2rem;margin-bottom:12px}
+.sn-num{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);opacity:.55;margin-bottom:4px}
+.sn-name{font-family:'Cormorant Garamond',serif;font-size:clamp(1.6rem,3vw,2.6rem);font-weight:300;letter-spacing:.04em;line-height:1.1;margin-bottom:12px;color:var(--text)}
+.sn-desc{font-size:.8rem;color:var(--text2);line-height:1.85;letter-spacing:.03em;margin-bottom:14px}
+.sn-meta{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);opacity:.6;margin-bottom:18px}
+.sn-meta span{color:var(--accent);opacity:1}
 .explore-btn{
-  display:inline-flex;align-items:center;gap:10px;
-  padding:9px 22px;border:1px solid rgba(176,16,48,.4);
-  background:rgba(176,16,48,.07);color:var(--ivory);
-  font-family:'Jost',sans-serif;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;
-  cursor:pointer;transition:all .3s;backdrop-filter:blur(6px);
+  display:inline-flex;align-items:center;gap:8px;
+  padding:9px 20px;border:1px solid var(--border);
+  background:var(--surface2);color:var(--text);
+  font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;
+  transition:all .3s;border-radius:50px;backdrop-filter:blur(6px);
 }
-.explore-btn:hover{
-  background:rgba(176,16,48,.2);border-color:var(--crimson);
-  box-shadow:0 0 24px rgba(176,16,48,.2),0 6px 24px rgba(0,0,0,.3);
-}
-.connector-h{
-  position:absolute;top:50%;height:1px;
-  background:linear-gradient(to right,transparent,rgba(176,16,48,.3),transparent);
-}
-.sn-left .connector-h{right:56px;width:calc(50% - 56px - 48px);transform:translateY(-50%)}
-.sn-right .connector-h{left:56px;width:calc(50% - 56px - 48px);transform:translateY(-50%)}
+.explore-btn:hover{background:var(--accent);border-color:var(--accent);color:#fff;transform:translateY(-2px);box-shadow:var(--shadow)}
+.conn-h{position:absolute;top:50%;height:1px;background:linear-gradient(to right,transparent,var(--border),transparent)}
+.sn-left .conn-h{right:56px;width:calc(50% - 104px);transform:translateY(-50%)}
+.sn-right .conn-h{left:56px;width:calc(50% - 104px);transform:translateY(-50%)}
 
-/* ─── TREE OVERLAY ─── */
-#overlay{
-  position:fixed;inset:0;z-index:1000;
-  background:rgba(7,0,10,.97);backdrop-filter:blur(24px);
-  display:none;flex-direction:column;overflow:hidden;
-}
-#overlay.open{display:flex;animation:overlayIn .4s cubic-bezier(.4,0,.2,1)}
-@keyframes overlayIn{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
-
-.ov-head{
-  padding:26px 48px;
+/* ── FAQ ── */
+#faq{position:relative;z-index:2;padding:100px 0;border-top:1px solid var(--border2)}
+.section-wrap{max-width:760px;margin:0 auto;padding:0 48px}
+.section-eyebrow{font-size:.62rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;opacity:.8}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:300;color:var(--text);margin-bottom:48px;line-height:1.1}
+.faq-item{border-bottom:1px solid var(--border2);overflow:hidden}
+.faq-q{
+  width:100%;text-align:left;padding:20px 0;
   display:flex;align-items:center;justify-content:space-between;
-  border-bottom:var(--line);flex-shrink:0;
-  background:linear-gradient(to right,rgba(92,0,26,.1),transparent);
+  font-size:.88rem;letter-spacing:.06em;color:var(--text);
+  font-weight:400;transition:color .25s;
 }
-.ov-title-sup{font-size:.58rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);opacity:.6;margin-bottom:6px}
-.ov-title{
-  font-family:'Cormorant Garamond',serif;
-  font-size:1.85rem;font-weight:300;letter-spacing:.08em;
+.faq-q:hover{color:var(--accent)}
+.faq-icon{font-size:1.1rem;color:var(--accent);transition:transform .35s;flex-shrink:0}
+.faq-item.open .faq-icon{transform:rotate(45deg)}
+.faq-a{
+  max-height:0;overflow:hidden;
+  transition:max-height .45s cubic-bezier(.4,0,.2,1),padding .45s;
+  font-size:.8rem;line-height:1.9;color:var(--text2);letter-spacing:.04em;
 }
-.ov-title span{color:var(--crimson)}
-.ov-meta{font-size:.65rem;letter-spacing:.2em;color:var(--ivory-d);opacity:.5}
-.ov-close{
-  width:42px;height:42px;border:1px solid rgba(176,16,48,.3);
-  background:none;color:var(--ivory);font-size:1.1rem;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;transition:all .3s;
-}
-.ov-close:hover{background:rgba(176,16,48,.15);border-color:var(--crimson)}
+.faq-item.open .faq-a{max-height:200px;padding-bottom:20px}
 
-/* Tabs */
-.ov-tabs{
-  display:flex;gap:2px;padding:0 48px;overflow-x:auto;
-  flex-shrink:0;padding-top:22px;padding-bottom:22px;
-  border-bottom:1px solid rgba(255,255,255,.04);
-  scrollbar-width:none;
+/* ── CONTACT ── */
+#contact{position:relative;z-index:2;padding:80px 0 120px;border-top:1px solid var(--border2)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px}
+.contact-card{
+  padding:32px;border:1px solid var(--border);background:var(--card);
+  border-radius:4px;display:flex;align-items:center;gap:18px;
+  transition:all .3s;text-decoration:none;
 }
+.contact-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:var(--shadow2)}
+.contact-icon{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--gold));display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.contact-label{font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.contact-val{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--text);font-weight:400}
+
+/* ── FOOTER ── */
+footer{position:relative;z-index:2;text-align:center;padding:48px;border-top:1px solid var(--border2)}
+.ft{font-family:'Cormorant Garamond',serif;font-size:.72rem;letter-spacing:.28em;color:var(--text3);font-style:italic}
+
+/* ═══════════════════════════════════════════
+   CAREER OVERLAY
+═══════════════════════════════════════════ */
+#career-overlay{
+  position:fixed;inset:0;z-index:700;
+  background:var(--overlay);backdrop-filter:blur(20px);
+  display:none;flex-direction:column;
+}
+#career-overlay.open{display:flex;animation:overlayIn .4s cubic-bezier(.4,0,.2,1)}
+@keyframes overlayIn{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
+.ov-head{
+  padding:22px 48px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border2);flex-shrink:0;
+}
+.ov-title{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:300;color:var(--text)}
+.ov-title span{color:var(--accent)}
+.ov-meta{font-size:.62rem;letter-spacing:.2em;color:var(--text3);margin-top:4px}
+.ov-close{width:38px;height:38px;border:1px solid var(--border);color:var(--text);font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .3s;border-radius:50%}
+.ov-close:hover{border-color:var(--accent);color:var(--accent)}
+.ov-tabs{display:flex;gap:2px;padding:16px 48px;overflow-x:auto;flex-shrink:0;scrollbar-width:none;border-bottom:1px solid var(--border2)}
 .ov-tabs::-webkit-scrollbar{display:none}
-.tab{
-  padding:9px 18px;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;
-  color:var(--ivory-d);cursor:pointer;border:1px solid transparent;
-  white-space:nowrap;transition:all .25s;background:none;
-  font-family:'Jost',sans-serif;flex-shrink:0;
-}
-.tab:hover{color:var(--ivory);border-color:rgba(176,16,48,.3);background:rgba(176,16,48,.06)}
-.tab.active{color:var(--gold-lt);border-color:var(--crimson);background:rgba(176,16,48,.1)}
+.ov-tab{padding:8px 16px;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);border:1px solid transparent;white-space:nowrap;transition:all .25s;border-radius:50px}
+.ov-tab:hover{color:var(--text);border-color:var(--border)}
+.ov-tab.active{color:var(--accent);border-color:var(--accent);background:var(--surface2)}
+.ov-body{flex:1;overflow-y:auto;padding:32px 48px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
 
-/* Cards */
-.ov-body{flex:1;overflow-y:auto;padding:36px 48px}
-.cards-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;
-}
+/* Career Card */
 .cc{
-  background:linear-gradient(135deg,rgba(92,0,26,.15),rgba(7,0,10,.7));
-  border:1px solid rgba(176,16,48,.12);padding:26px 22px;
-  cursor:pointer;transition:all .38s cubic-bezier(.4,0,.2,1);
-  opacity:0;transform:translateY(16px);
-  animation:cardIn .45s cubic-bezier(.4,0,.2,1) forwards;
-  position:relative;overflow:hidden;backdrop-filter:blur(6px);
+  background:var(--card);border:1px solid var(--card-border);
+  padding:22px 18px;cursor:pointer;transition:all .38s cubic-bezier(.4,0,.2,1);
+  opacity:0;transform:translateY(14px);animation:cardIn .45s cubic-bezier(.4,0,.2,1) forwards;
+  position:relative;border-radius:6px;
 }
-.cc::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,var(--crimson),var(--gold));
-  opacity:0;transition:opacity .3s;
-}
-.cc:hover{
-  border-color:var(--crimson);transform:translateY(-5px) scale(1.025);
-  box-shadow:0 18px 40px rgba(0,0,0,.45),0 0 28px rgba(176,16,48,.18);
-}
-.cc:hover::after{opacity:.04}
+.cc:hover{border-color:var(--accent);transform:translateY(-5px);box-shadow:var(--shadow2)}
 @keyframes cardIn{to{opacity:1;transform:translateY(0)}}
-.cc-icon{font-size:1.9rem;display:block;margin-bottom:14px;position:relative;z-index:1}
-.cc-title{
-  font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400;
-  letter-spacing:.03em;line-height:1.3;position:relative;z-index:1;margin-bottom:7px;
+.cc-icon{font-size:1.7rem;display:block;margin-bottom:12px}
+.cc-title{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:400;letter-spacing:.02em;line-height:1.3;margin-bottom:6px;color:var(--text)}
+.cc-tag{font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);opacity:.7}
+.cc-like{
+  position:absolute;top:12px;right:12px;
+  width:28px;height:28px;border-radius:50%;
+  border:1px solid var(--border);background:var(--surface);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;transition:all .25s;color:var(--text3);
 }
-.cc-tag{
-  font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--gold);opacity:.6;position:relative;z-index:1;
-}
+.cc-like:hover{border-color:#e03030;color:#e03030}
+.cc-like.liked{border-color:#e03030;color:#e03030;background:rgba(224,48,48,.1)}
+.no-results{text-align:center;padding:80px 20px;font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--text3);font-style:italic}
 
-/* ─── SEARCH RESULTS ─── */
-.no-results{
-  text-align:center;padding:80px 20px;
-  font-family:'Cormorant Garamond',serif;font-size:1.5rem;
-  color:var(--ivory-d);opacity:.4;font-style:italic;
+/* ═══════════════════════════════════════════
+   CHATBOT PANEL
+═══════════════════════════════════════════ */
+#chat-fab{
+  position:fixed;bottom:32px;right:32px;z-index:600;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--gold));
+  box-shadow:0 8px 32px var(--accent-glow),0 4px 16px rgba(0,0,0,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;transition:all .3s;
+  animation:fabIn .6s cubic-bezier(.34,1.56,.64,1) 1s both;
 }
+@keyframes fabIn{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+#chat-fab:hover{transform:scale(1.1);box-shadow:0 12px 40px var(--accent-glow)}
+#chat-fab.hidden-fab{opacity:0;pointer-events:none;transform:scale(0)}
 
-/* ─── FOOTER ─── */
-footer{
-  position:relative;z-index:2;text-align:center;padding:64px;
-  border-top:var(--line);
+#chat-panel{
+  position:fixed;bottom:0;right:0;z-index:600;
+  width:380px;height:580px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px 16px 0 0;
+  display:flex;flex-direction:column;
+  transform:translateY(100%);transition:transform .45s cubic-bezier(.4,0,.2,1);
+  box-shadow:var(--shadow2);
 }
-.ft{
-  font-family:'Cormorant Garamond',serif;font-size:.75rem;
-  letter-spacing:.3em;color:var(--ivory-d);opacity:.3;font-style:italic;
+#chat-panel.open{transform:translateY(0)}
+.chat-head{
+  padding:16px 20px;border-bottom:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
 }
+.chat-head-left{display:flex;align-items:center;gap:12px}
+.chat-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--gold));
+  display:flex;align-items:center;justify-content:center;font-size:1rem;
+}
+.chat-name{font-size:.8rem;font-weight:500;letter-spacing:.06em;color:var(--text)}
+.chat-status{font-size:.62rem;color:var(--gold);letter-spacing:.08em}
+.chat-close-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);color:var(--text3);display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:all .2s}
+.chat-close-btn:hover{border-color:var(--accent);color:var(--accent)}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scrollbar-width:thin}
+.msg{max-width:85%;padding:10px 14px;border-radius:12px;font-size:.78rem;line-height:1.6;letter-spacing:.03em;animation:msgIn .3s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg.bot{background:var(--bg2);color:var(--text);border-radius:4px 12px 12px 12px;align-self:flex-start}
+.msg.user{background:var(--accent);color:#fff;border-radius:12px 4px 12px 12px;align-self:flex-end}
+.msg.typing{background:var(--bg2);border-radius:4px 12px 12px 12px;align-self:flex-start;padding:12px 16px}
+.typing-dots{display:flex;gap:4px}
+.typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:dotBounce 1.4s ease-in-out infinite}
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes dotBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+.chat-input-row{
+  display:flex;gap:8px;padding:12px 14px;
+  border-top:1px solid var(--border2);flex-shrink:0;
+}
+.chat-input{
+  flex:1;background:var(--bg2);border:1px solid var(--border);
+  padding:10px 14px;color:var(--text);font-family:'Jost',sans-serif;
+  font-size:.78rem;outline:none;transition:border-color .25s;border-radius:50px;
+  letter-spacing:.04em;
+}
+.chat-input:focus{border-color:var(--accent)}
+.chat-input::placeholder{color:var(--text3)}
+.chat-send{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--accent);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;flex-shrink:0;transition:all .2s;
+}
+.chat-send:hover{background:var(--accent2);transform:scale(1.1)}
+.chat-login-prompt{padding:20px;text-align:center;font-size:.75rem;color:var(--text2);line-height:1.7}
+.chat-login-prompt button{color:var(--accent);font-size:.75rem;text-decoration:underline;margin-top:8px}
 
-/* ─── RESPONSIVE ─── */
+/* ── LIKED JOBS PANEL ── */
+#liked-panel{
+  position:fixed;inset:0;z-index:750;
+  background:var(--overlay);backdrop-filter:blur(20px);
+  display:none;flex-direction:column;
+}
+#liked-panel.open{display:flex;animation:overlayIn .35s ease}
+.lp-head{padding:24px 48px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between}
+.lp-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--text)}
+.lp-body{flex:1;overflow-y:auto;padding:32px 48px}
+.liked-empty{text-align:center;padding:80px;font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--text3);font-style:italic}
+
+/* ── RESPONSIVE ── */
 @media(max-width:700px){
-  header{padding:18px 20px}
-  .hdr-search,.hdr-tag{display:none}
-  .sn{grid-template-columns:32px 1fr;padding:40px 0}
+  .land-nav,.land-body,.land-footer-note{padding-left:24px;padding-right:24px}
+  #app-header{padding:14px 20px}
+  .hdr-center{display:none}
+  .sn{grid-template-columns:32px 1fr;padding:36px 0}
   .sn-dot-col{position:absolute;left:0}
   .sn-left,.sn-right{grid-column:2;padding:0 20px 0 36px;text-align:left}
-  .sn-left .sn-content,.sn-right .sn-content{transform:translateX(-20px)}
-  .connector-h{display:none}
+  .sn-left .sn-content,.sn-right .sn-content{transform:translateX(-16px)}
+  .conn-h,.central-line~.conn-h{display:none}
   .central-line{left:16px}
   #progress{display:none}
-  .stats{gap:40px;flex-wrap:wrap;padding:40px 20px}
+  .stats-bar{gap:32px;flex-wrap:wrap;padding:36px 20px}
   .ov-head,.ov-tabs,.ov-body{padding-left:20px;padding-right:20px}
-  .sn-left{order:2}.sn-dot-col{order:1}
+  .section-wrap{padding:0 24px}
+  .contact-grid{grid-template-columns:1fr}
+  #chat-panel{width:100%;border-radius:16px 16px 0 0}
 }
 </style>
 </head>
 <body>
 
-<div id="grain"></div>
-<div id="bg"></div>
-
-<!-- HEADER -->
-<header>
-  <div class="logo">YOUHVAH<b></div>
-  <div class="hdr-search">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:.4;flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input type="text" id="searchInput" placeholder="Search any career or sector…">
-  </div>
-  <div class="hdr-tag">1,141 Careers Mapped</div>
-</header>
-
-<!-- PROGRESS -->
-<nav id="progress"></nav>
-
-<!-- HERO -->
-<section id="hero">
-  <div class="hero-inner" id="heroInner">
-    <p class="hero-eyebrow">A Universe of Career Paths</p>
-    <h1 class="hero-h1">Every <em>Path</em><br>Begins Here</h1>
-    <p class="hero-sub">1,141 Careers &nbsp;·&nbsp; 20 Sectors &nbsp;·&nbsp; 95 Specializations</p>
-    <div class="scroll-hint">
-      <span>Begin Your Journey</span>
-      <div class="scroll-line"></div>
+<!-- ═══════════════ LANDING PAGE ═══════════════ -->
+<section id="landing">
+  <nav class="land-nav">
+    <div class="land-logo">Youhvah</div>
+    <div class="land-nav-right">
+      <button class="theme-toggle" id="themeToggle" title="Toggle theme">🌙</button>
+      <button class="sign-in-btn" onclick="openAuth('signin')">Sign in</button>
+    </div>
+  </nav>
+  <div class="land-body">
+    <div class="land-badge">Career Guidance AI</div>
+    <h1 class="land-h1">Find your path.<br><em>Build your future.</em></h1>
+    <p class="land-sub">Tell us what you love — we'll show you where it leads. Explore 1,200+ careers across 21 sectors with AI-powered guidance built for you.</p>
+    <div class="land-btns">
+      <button class="land-btn-primary" onclick="enterApp()">Explore career options</button>
+      <button class="land-btn-secondary" onclick="enterApp();setTimeout(openChat,700)">Chat with Youhvah AI</button>
     </div>
   </div>
+  <div class="land-footer-note">1,200+ careers · 21 sectors · Indian & global paths</div>
 </section>
 
-<!-- STATS -->
-<div class="stats">
-  <div class="stat"><span class="stat-n" data-count="1141">0</span><span class="stat-l">Career Paths</span></div>
-  <div class="stat"><span class="stat-n" data-count="20">0</span><span class="stat-l">Major Sectors</span></div>
-  <div class="stat"><span class="stat-n" data-count="95">0</span><span class="stat-l">Specializations</span></div>
+<!-- ═══════════════ AUTH MODAL ═══════════════ -->
+<div id="auth-modal">
+  <div class="auth-box">
+    <button class="auth-close" onclick="closeAuth()">✕</button>
+    <div class="auth-logo">Youhvah</div>
+    <div class="auth-sub">Your career journey starts here</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('signin')">Sign In</button>
+      <button class="auth-tab" onclick="switchTab('signup')">Create Account</button>
+    </div>
+    <div id="auth-msg" class="auth-msg"></div>
+    <div class="auth-form">
+      <input class="auth-input" id="auth-email" type="email" placeholder="Email address">
+      <input class="auth-input" id="auth-pass" type="password" placeholder="Password">
+      <input class="auth-input hidden" id="auth-pass2" type="password" placeholder="Confirm password">
+      <input class="auth-input hidden" id="auth-name" type="text" placeholder="Your name">
+      <button class="auth-submit" id="auth-submit-btn" onclick="handleAuth()">Sign In</button>
+    </div>
+  </div>
 </div>
 
-<!-- TIMELINE -->
-<div id="timeline">
-  <div class="central-line"></div>
+<!-- ═══════════════ MAIN APP ═══════════════ -->
+<div id="main-app">
+  <div id="app-bg"></div>
+  <header id="app-header">
+    <div class="app-logo">Youhvah</div>
+    <div class="hdr-center">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:.4;flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" placeholder="Search any career…">
+    </div>
+    <div class="hdr-right">
+      <button class="hdr-btn" id="themeToggle2" title="Toggle theme">🌙</button>
+      <button class="hdr-btn" id="likedBtn" title="Saved careers" onclick="openLiked()" style="display:none">❤️</button>
+      <div id="user-area"></div>
+    </div>
+  </header>
+  <nav id="progress"></nav>
+
+  <!-- Hero -->
+  <section id="hero">
+    <div class="hero-inner" id="heroInner">
+      <p class="hero-eyebrow">A Universe of Career Paths</p>
+      <h1 class="hero-h1">Every <em>Path</em><br>Begins Here</h1>
+      <p class="hero-sub">1,200+ Careers &nbsp;·&nbsp; 21 Sectors &nbsp;·&nbsp; Indian & Global</p>
+      <div class="scroll-cue">
+        <span>Begin Your Journey</span>
+        <div class="scroll-line"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat"><span class="stat-n" data-count="1200">0</span><span class="stat-l">Career Paths</span></div>
+    <div class="stat"><span class="stat-n" data-count="21">0</span><span class="stat-l">Major Sectors</span></div>
+    <div class="stat"><span class="stat-n" data-count="100">0</span><span class="stat-l">Specializations</span></div>
+  </div>
+
+  <!-- Timeline -->
+  <div id="timeline"><div class="central-line"></div></div>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="section-wrap">
+      <p class="section-eyebrow">Got Questions?</p>
+      <h2 class="section-title">Frequently Asked<br><em style="font-style:italic;color:var(--accent)">Questions</em></h2>
+      <div id="faq-list"></div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact">
+    <div class="section-wrap">
+      <p class="section-eyebrow">Get In Touch</p>
+      <h2 class="section-title">Connect With <em style="font-style:italic;color:var(--accent)">Youhvah</em></h2>
+      <div class="contact-grid">
+        <a class="contact-card" href="mailto:youhvah@gmail.com">
+          <div class="contact-icon">✉️</div>
+          <div>
+            <div class="contact-label">Email Us</div>
+            <div class="contact-val">youhvah@gmail.com</div>
+          </div>
+        </a>
+        <a class="contact-card" href="https://instagram.com/youhvah" target="_blank">
+          <div class="contact-icon">📸</div>
+          <div>
+            <div class="contact-label">Instagram</div>
+            <div class="contact-val">@youhvah</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer><p class="ft">Youhvah — Find Your Path, Build Your Future — © 2025</p></footer>
 </div>
 
-<!-- FOOTER -->
-<footer><p class="ft">YOUHVAH &nbsp;—&nbsp; Explore Every Horizon &nbsp;—&nbsp; © 2026</p></footer>
-
-<!-- TREE OVERLAY -->
-<div id="overlay">
+<!-- ═══════════════ CAREER OVERLAY ═══════════════ -->
+<div id="career-overlay">
   <div class="ov-head">
     <div>
-      <div class="ov-title-sup">Exploring Sector</div>
-      <div class="ov-title" id="ovTitle">Technology</div>
-    </div>
-    <div style="display:flex;align-items:center;gap:20px">
+      <div class="ov-title" id="ovTitle"></div>
       <div class="ov-meta" id="ovMeta"></div>
-      <button class="ov-close" id="ovClose">✕</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px">
+      <button class="ov-close" onclick="closeOverlay()">✕</button>
     </div>
   </div>
   <div class="ov-tabs" id="ovTabs"></div>
   <div class="ov-body"><div class="cards-grid" id="cardsGrid"></div></div>
 </div>
 
+<!-- ═══════════════ LIKED PANEL ═══════════════ -->
+<div id="liked-panel">
+  <div class="lp-head">
+    <div class="lp-title">Saved Careers ❤️</div>
+    <button class="ov-close" onclick="closeLiked()">✕</button>
+  </div>
+  <div class="lp-body"><div class="cards-grid" id="likedGrid"></div></div>
+</div>
+
+<!-- ═══════════════ CHAT FAB + PANEL ═══════════════ -->
+<button id="chat-fab" onclick="openChat()" title="Chat with Youhvah AI">💬</button>
+<div id="chat-panel">
+  <div class="chat-head">
+    <div class="chat-head-left">
+      <div class="chat-avatar">✨</div>
+      <div>
+        <div class="chat-name">Youhvah AI</div>
+        <div class="chat-status">● Online — Career Guide</div>
+      </div>
+    </div>
+    <button class="chat-close-btn" onclick="closeChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div id="chat-footer">
+    <div class="chat-input-row">
+      <input class="chat-input" id="chatInput" placeholder="Ask me anything about careers…" onkeydown="if(event.key==='Enter')sendMsg()">
+      <button class="chat-send" onclick="sendMsg()">➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FIREBASE SDK ═══════════════ -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
 <script>
-// ═══════════════════════════════════════════════════════
-// DATA  —  20 Sectors · 95 Subcategories · 1,141 Careers
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// ⚠️  PASTE YOUR FIREBASE CONFIG BELOW (replace the placeholder)
+// ═══════════════════════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyAIdIcd3lZvhwe8SVTpLPwX4Lmszy_tZes",
+  authDomain: "youhvah-65b42.firebaseapp.com",
+  projectId: "youhvah-65b42",
+  storageBucket: "youhvah-65b42.firebasestorage.app",
+  messagingSenderId: "571229917621",
+  appId: "1:571229917621:web:388e1ac42c14c882ce89fc"
+};
+// ═══════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════
+// ⚠️  PASTE YOUR GROQ API KEY ON THE LINE BELOW
+// ═══════════════════════════════════════════════════════════════
+const GROQ_API_KEY = "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";
+// ═══════════════════════════════════════════════════════════════
+
+// Init Firebase
+let db, auth;
+try {
+  firebase.initializeApp(firebaseConfig);
+  auth = firebase.auth();
+  db = firebase.firestore();
+} catch(e) { console.warn("Firebase not configured yet:", e.message); }
+
+// ═══════════════════════════════════════════════
+// DATA — 21 SECTORS · 1200+ CAREERS (incl India)
+// ═══════════════════════════════════════════════
 const SECTORS=[
 {id:'tech',name:'Technology',icon:'⚡',
  desc:'Architect the algorithms, platforms and digital systems powering tomorrow\'s civilization.',
- bg:'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1920&q=80',
+ bg:'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&q=80',
  sub:[
-  {n:'Software Development',e:'💻',p:['Software Engineer','Frontend Developer','Backend Developer','Full Stack Developer','iOS Developer','Android Developer','DevOps Engineer','Site Reliability Engineer','Cloud Architect','Solutions Architect','Platform Engineer','Software Architect','Embedded Systems Engineer','Firmware Engineer','API Developer','SDK Developer']},
-  {n:'AI & Machine Learning',e:'🤖',p:['Machine Learning Engineer','Data Scientist','AI Researcher','NLP Engineer','Computer Vision Engineer','Deep Learning Engineer','MLOps Engineer','AI Ethicist','Reinforcement Learning Researcher','AI Product Manager','Prompt Engineer','AI Safety Researcher','Robotics AI Engineer','Speech Recognition Engineer','Recommendation Systems Engineer']},
-  {n:'Cybersecurity',e:'🔐',p:['Security Analyst','Penetration Tester','Security Engineer','CISO','Cryptographer','Digital Forensics Analyst','Threat Intelligence Analyst','Security Architect','Red Team Specialist','Blue Team Analyst','Malware Analyst','Bug Bounty Hunter','Security Consultant','Zero Trust Architect','Identity & Access Manager']},
-  {n:'Data Engineering',e:'📊',p:['Data Engineer','Data Analyst','BI Analyst','Database Administrator','Data Architect','Analytics Engineer','Data Pipeline Engineer','Hadoop Developer','Spark Developer','ETL Developer','Data Warehouse Architect','Real-time Analytics Engineer','Data Governance Specialist']},
-  {n:'Product & UX Design',e:'🎨',p:['Product Manager','UX Designer','UI Designer','UX Researcher','Product Designer','Interaction Designer','Information Architect','Design Systems Engineer','UX Writer','Accessibility Specialist','Growth PM','Technical PM','Enterprise Architect']},
-  {n:'Infrastructure & Cloud',e:'☁️',p:['Network Engineer','Systems Administrator','Cloud Engineer','IT Support Specialist','Cloud Security Engineer','Kubernetes Administrator','AWS Architect','Azure Architect','GCP Architect','Infrastructure Engineer','Network Architect','CDN Engineer','IT Project Manager']},
-  {n:'Emerging Technologies',e:'🚀',p:['Blockchain Developer','AR/VR Developer','Game Developer','Quantum Computing Researcher','IoT Engineer','Edge Computing Specialist','Digital Twin Engineer','Web3 Developer','Metaverse Architect','QA Engineer','Technical Writer']},
-]},
-{id:'finance',name:'Finance',icon:'💰',
- desc:'Navigate capital flows, risk structures and the complex machinery of global markets.',
- bg:'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1920&q=80',
+  {n:'Software Development',e:'💻',p:['Software Engineer','Frontend Developer','Backend Developer','Full Stack Developer','iOS Developer','Android Developer','DevOps Engineer','Site Reliability Engineer','Cloud Architect','Solutions Architect','Platform Engineer','Software Architect','Embedded Systems Engineer','API Developer','SDK Developer','Flutter Developer','React Developer','Node.js Developer']},
+  {n:'AI & Machine Learning',e:'🤖',p:['Machine Learning Engineer','Data Scientist','AI Researcher','NLP Engineer','Computer Vision Engineer','Deep Learning Engineer','MLOps Engineer','AI Ethicist','Prompt Engineer','AI Safety Researcher','Robotics AI Engineer','Speech Recognition Engineer','Recommendation Systems Engineer','AI Product Manager']},
+  {n:'Cybersecurity',e:'🔐',p:['Security Analyst','Penetration Tester','Security Engineer','CISO','Cryptographer','Digital Forensics Analyst','Threat Intelligence Analyst','Security Architect','Red Team Specialist','Malware Analyst','Bug Bounty Hunter','Security Consultant','Zero Trust Architect','Identity & Access Manager']},
+  {n:'Data & Analytics',e:'📊',p:['Data Engineer','Data Analyst','BI Analyst','Database Administrator','Data Architect','Analytics Engineer','Data Pipeline Engineer','ETL Developer','Data Warehouse Architect','Data Governance Specialist','Spark Developer']},
+  {n:'Product & UX',e:'🎨',p:['Product Manager','UX Designer','UI Designer','UX Researcher','Product Designer','Interaction Designer','Information Architect','Design Systems Engineer','UX Writer','Accessibility Specialist','Growth PM','Technical PM']},
+  {n:'Cloud & Infrastructure',e:'☁️',p:['Network Engineer','Systems Administrator','Cloud Engineer','Cloud Security Engineer','Kubernetes Administrator','AWS Architect','Azure Architect','GCP Architect','Infrastructure Engineer','CDN Engineer','IT Project Manager']},
+  {n:'Emerging Tech',e:'🚀',p:['Blockchain Developer','AR/VR Developer','Game Developer','Quantum Computing Researcher','IoT Engineer','Edge Computing Specialist','Web3 Developer','Metaverse Architect','QA Engineer','Technical Writer']},
+ ]},
+{id:'india-gov',name:'Indian Government & PSU',icon:'🇮🇳',
+ desc:'Serve the nation through the most prestigious civil, defence and public sector opportunities in India.',
+ bg:'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1600&q=80',
  sub:[
-  {n:'Investment Banking',e:'🏦',p:['Investment Banker','M&A Analyst','ECM Analyst','DCM Analyst','LBO Analyst','IPO Specialist','Restructuring Advisor','Financial Sponsor Coverage','Syndication Banker','Cross-border M&A Advisor']},
-  {n:'Trading & Markets',e:'📈',p:['Equity Trader','Forex Trader','Derivatives Trader','Portfolio Manager','Hedge Fund Manager','Market Maker','Proprietary Trader','Fixed Income Trader','Commodity Trader','Quantitative Trader','Algorithmic Trading Developer','High-Frequency Trader']},
-  {n:'Financial Analysis',e:'🔍',p:['Financial Analyst','Equity Research Analyst','Credit Rating Analyst','Risk Analyst','Quantitative Analyst','Valuation Analyst','Macro Economist','Sector Analyst','ESG Analyst','Thematic Research Analyst']},
-  {n:'Insurance & Actuarial',e:'🛡️',p:['Actuary','Insurance Underwriter','Claims Adjuster','Insurance Agent','Risk Manager','Reinsurance Analyst','Catastrophe Modeler','Life Insurance Consultant','P&C Underwriter','Health Insurance Actuary']},
-  {n:'Accounting & Tax',e:'📋',p:['CPA','Forensic Accountant','Tax Advisor','External Auditor','Controller','CFO','Bookkeeper','Payroll Specialist','Cost Accountant','Management Accountant','Tax Attorney','Transfer Pricing Specialist','Revenue Recognition Specialist']},
-  {n:'Wealth Management',e:'💎',p:['Financial Planner','Wealth Manager','Venture Capitalist','Private Equity Analyst','Family Office Advisor','Estate Planner','Trust Officer','Financial Coach','Retirement Planning Specialist','Impact Investing Analyst']},
-]},
+  {n:'Civil Services (UPSC)',e:'🏛️',p:['IAS Officer','IPS Officer','IFS Officer (Foreign Service)','IRS Officer','IFS Officer (Forest)','IRTS Officer','IRAS Officer','IRPS Officer','IDAS Officer','ICAS Officer','IPoS Officer','IAAS Officer','ITS Officer','ICES Officer','IOFS Officer']},
+  {n:'State Services (PSC)',e:'📋',p:['State Civil Service Officer','State Police Service Officer','State Forest Service Officer','Deputy Collector','Deputy Superintendent of Police','Block Development Officer','Tehsildar','District Social Welfare Officer','State Finance Officer','State Audit Officer']},
+  {n:'Banking & Finance',e:'🏦',p:['RBI Grade B Officer','SBI PO','IBPS PO','Bank Clerk (IBPS)','SBI Clerk','RBI Assistant','NABARD Grade A Officer','SEBI Grade A Officer','LIC AAO','LIC HFL Officer','SIDBI Officer','NHB Officer']},
+  {n:'SSC & Central Govt',e:'📝',p:['SSC CGL Officer','SSC CHSL','SSC MTS','SSC GD Constable','SSC CPO (SI)','Income Tax Inspector','Excise Inspector','Preventive Officer','Examiner (Customs)','Postal Inspector','Statistical Investigator','Auditor (CAG)','Accountant (CGDA)']},
+  {n:'Railways',e:'🚂',p:['Railway Group A Officer (RAS)','Railway Loco Pilot','Railway Station Master','Railway TC/CC','Railway Junior Engineer','Railway Group D','Railway NTPC','Railway Protection Force','Railway Accounts Officer','IRCTC Manager']},
+  {n:'PSU & Navratna',e:'⚙️',p:['ONGC Engineer','BHEL Engineer','NTPC Engineer','SAIL Officer','GAIL Engineer','IOC Officer','BPCL Officer','HPCL Officer','Coal India Officer','BEL Engineer','HAL Engineer','DRDO Scientist','ISRO Scientist','BARC Scientist','NLC Engineer','NMDC Officer','MTNL Officer','BSNL JTO']},
+ ]},
+{id:'finance',name:'Finance & Banking',icon:'💰',
+ desc:'Navigate capital flows, risk structures and the complex machinery of global and Indian markets.',
+ bg:'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1600&q=80',
+ sub:[
+  {n:'Investment Banking',e:'🏦',p:['Investment Banker','M&A Analyst','ECM Analyst','IPO Specialist','Restructuring Advisor','Syndication Banker','Cross-border M&A Advisor','Leveraged Finance Analyst']},
+  {n:'Trading & Markets',e:'📈',p:['Equity Trader','Forex Trader','Derivatives Trader','Portfolio Manager','Hedge Fund Manager','Market Maker','Proprietary Trader','Fixed Income Trader','Commodity Trader','Quantitative Trader','Algorithmic Trading Developer']},
+  {n:'Financial Analysis',e:'🔍',p:['Financial Analyst','Equity Research Analyst','Credit Rating Analyst','Risk Analyst','Quantitative Analyst','Valuation Analyst','Macro Economist','ESG Analyst','Thematic Research Analyst']},
+  {n:'Indian CA & Accounting',e:'📋',p:['Chartered Accountant (CA)','Cost Accountant (CMA)','Company Secretary (CS)','CPA','Forensic Accountant','Tax Advisor','External Auditor','Controller','CFO','Bookkeeper','Payroll Specialist','Transfer Pricing Specialist']},
+  {n:'Insurance & Actuarial',e:'🛡️',p:['Actuary','Insurance Underwriter','Claims Adjuster','LIC Agent','Risk Manager','Reinsurance Analyst','Catastrophe Modeler','Health Insurance Actuary','IRDA Officer']},
+  {n:'Wealth & Fintech',e:'💎',p:['Financial Planner','Wealth Manager','Venture Capitalist','Private Equity Analyst','Family Office Advisor','Estate Planner','Fintech Product Manager','Digital Payments Specialist','UPI Solutions Architect','Cryptocurrency Analyst','Robo-advisory Specialist']},
+ ]},
 {id:'health',name:'Healthcare',icon:'⚕️',
- desc:'Dedicate your expertise to healing, prevention and the relentless advancement of human health.',
- bg:'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1920&q=80',
+ desc:'Dedicate your expertise to healing, prevention and advancing human health in India and beyond.',
+ bg:'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1600&q=80',
  sub:[
-  {n:'Physicians & Surgeons',e:'👨‍⚕️',p:['General Practitioner','Cardiologist','Neurologist','Oncologist','Pediatrician','Orthopedic Surgeon','Dermatologist','Psychiatrist','Radiologist','Anesthesiologist','Emergency Physician','Ophthalmologist','Gastroenterologist','Endocrinologist','Nephrologist','Pulmonologist','Rheumatologist','Urologist','Hematologist','Geriatrician','Intensivist','Hospitalist','Infectious Disease Specialist']},
-  {n:'Nursing',e:'🏥',p:['Registered Nurse','Nurse Practitioner','Licensed Practical Nurse','Nurse Anesthetist','Midwife','Clinical Nurse Specialist','ICU Nurse','ER Nurse','Oncology Nurse','Pediatric Nurse','Psychiatric Nurse','Public Health Nurse','Travel Nurse']},
-  {n:'Allied Health',e:'🩺',p:['Physical Therapist','Occupational Therapist','Speech Therapist','Respiratory Therapist','Radiologic Technologist','MRI Technologist','Surgical Technologist','Medical Laboratory Scientist','Diagnostic Sonographer','Nuclear Medicine Technologist','Cardiovascular Technologist','Phlebotomist']},
-  {n:'Mental Health',e:'🧠',p:['Psychologist','Clinical Social Worker','Mental Health Counselor','Marriage & Family Therapist','Substance Abuse Counselor','Behavioral Analyst','Play Therapist','Art Therapist','Music Therapist','Neuropsychologist','Forensic Psychologist']},
-  {n:'Dental & Vision',e:'🦷',p:['Dentist','Orthodontist','Oral Surgeon','Dental Hygienist','Prosthodontist','Endodontist','Periodontist','Pediatric Dentist','Optometrist','Vision Therapist','Ocularist']},
-  {n:'Healthcare Operations',e:'🏨',p:['Healthcare Administrator','Medical Coder','EMT','Paramedic','Patient Care Coordinator','Medical Scribe','Clinical Research Coordinator','Hospital CEO','Chief Medical Officer','Health IT Manager','Medical Social Worker','Patient Advocate','Nutritionist','Dietitian']},
-]},
+  {n:'Physicians & Surgeons',e:'👨‍⚕️',p:['General Practitioner','Cardiologist','Neurologist','Oncologist','Pediatrician','Orthopedic Surgeon','Dermatologist','Psychiatrist','Radiologist','Anesthesiologist','Emergency Physician','Ophthalmologist','Gastroenterologist','Endocrinologist','Pulmonologist','Gynecologist','Urologist','Hematologist','Geriatrician','Intensivist']},
+  {n:'AYUSH & Traditional',e:'🌿',p:['Ayurvedic Doctor (BAMS)','Homeopathy Doctor (BHMS)','Unani Doctor (BUMS)','Yoga Instructor','Naturopath (BNYS)','Siddha Practitioner','Panchakarma Specialist','Ayurvedic Nutritionist','Medical Astrologer']},
+  {n:'Nursing',e:'🏥',p:['Registered Nurse','Nurse Practitioner','ANM (Auxiliary Nurse Midwife)','GNM Nurse','ICU Nurse','ER Nurse','Oncology Nurse','Pediatric Nurse','Psychiatric Nurse','Public Health Nurse','Community Health Nurse']},
+  {n:'Allied Health',e:'🩺',p:['Physical Therapist','Occupational Therapist','Speech Therapist','Respiratory Therapist','Radiologic Technologist','MRI Technologist','Surgical Technologist','Medical Laboratory Scientist','Diagnostic Sonographer','Phlebotomist','Physiotherapist']},
+  {n:'Mental Health',e:'🧠',p:['Psychologist','Clinical Psychologist','Psychiatrist','Mental Health Counselor','Marriage & Family Therapist','Substance Abuse Counselor','Behavioral Analyst','Play Therapist','Neuropsychologist','Forensic Psychologist']},
+  {n:'Healthcare Operations',e:'🏨',p:['Healthcare Administrator','Medical Coder','EMT','Paramedic','Patient Care Coordinator','Medical Scribe','Clinical Research Coordinator','Hospital CEO','Chief Medical Officer','Medical Social Worker','Nutritionist','Dietitian','NABH Quality Manager']},
+ ]},
 {id:'edu',name:'Education',icon:'📚',
  desc:'Shape the minds of generations through teaching, mentorship and intellectual leadership.',
- bg:'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1920&q=80',
+ bg:'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1600&q=80',
  sub:[
-  {n:'K-12 Teaching',e:'🏫',p:['Kindergarten Teacher','Elementary Teacher','Middle School Teacher','High School Math Teacher','High School Science Teacher','High School English Teacher','High School History Teacher','PE Teacher','Special Education Teacher','ESL Teacher','Art Teacher','Music Teacher','Drama Teacher','Computer Science Teacher']},
-  {n:'Higher Education',e:'🎓',p:['University Professor','Adjunct Lecturer','Research Scientist','Academic Dean','Department Chair','University President','Postdoctoral Researcher','Graduate Teaching Assistant','Academic Advisor','Registrar','Financial Aid Officer','Admissions Counselor']},
-  {n:'Student Support',e:'🤝',p:['School Counselor','School Psychologist','Librarian','Media Specialist','Instructional Coach','Curriculum Developer','Behavior Interventionist','School Social Worker','Attendance Officer']},
-  {n:'Administration',e:'📝',p:['Principal','Vice Principal','Superintendent','School Board Member','District Curriculum Director','Assessment Coordinator','Special Education Director','Athletic Director']},
-  {n:'EdTech & Non-Traditional',e:'💡',p:['Online Course Creator','Corporate Trainer','Private Tutor','EdTech Specialist','Instructional Designer','eLearning Developer','Learning Experience Designer','Homeschool Educator','Museum Educator','STEM Education Specialist','Literacy Coach']},
-]},
-{id:'arts',name:'Creative Arts',icon:'🎭',
- desc:'Channel human imagination and storytelling into culture-defining work across every medium.',
- bg:'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1920&q=80',
- sub:[
-  {n:'Visual Arts & Design',e:'🖌️',p:['Graphic Designer','Illustrator','Photographer','Videographer','Animator','3D Artist','Motion Graphics Designer','Art Director','Fine Artist','Sculptor','Conceptual Artist','Muralist','Digital Artist','Concept Artist','Environment Artist','Character Artist','VFX Artist']},
-  {n:'Music',e:'🎵',p:['Musician','Singer','Songwriter','Music Producer','Sound Engineer','DJ','Mixing Engineer','Mastering Engineer','Music Teacher','Conductor','Composer','Film Score Composer','Session Musician','Music Therapist','A&R Manager','Music Supervisor']},
-  {n:'Writing & Literature',e:'✍️',p:['Author','Copywriter','Content Writer','Screenwriter','Editor','Journalist','Technical Writer','Grant Writer','Ghostwriter','Literary Agent','Poet','Creative Writing Teacher','UX Writer','Fantasy Author','Travel Writer']},
-  {n:'Performance',e:'🎬',p:['Actor','Stand-Up Comedian','Stage Manager','Stage Director','Film Director','Theater Producer','Improv Artist','Circus Performer','Stunt Performer','Voice Actor','Casting Director','Choreographer','Ballet Dancer','Opera Singer']},
-  {n:'Architecture & Space Design',e:'🏛️',p:['Interior Designer','Fashion Designer','Industrial Designer','Landscape Architect','Set Designer','Production Designer','Costume Designer','Jewelry Designer','Furniture Designer','Typographer','Brand Identity Designer','Exhibition Designer']},
-]},
+  {n:'School Teaching',e:'🏫',p:['Primary School Teacher','Middle School Teacher','High School Teacher','PRT (Primary)','TGT (Trained Graduate Teacher)','PGT (Post Graduate Teacher)','Navodaya Vidyalaya Teacher','KVS Teacher','CTET Qualified Teacher','NVS Teacher','Special Education Teacher','ESL Teacher','CBSE School Teacher','ICSE School Teacher']},
+  {n:'Higher Education',e:'🎓',p:['University Professor','Associate Professor','Assistant Professor','Adjunct Lecturer','Research Scientist','Academic Dean','Department Chair','Postdoctoral Researcher','Academic Advisor','Registrar','Admissions Counselor','NTA NET Qualified Lecturer']},
+  {n:'Competitive Exam Coaching',e:'📝',p:['IIT-JEE Coach','NEET Coach','UPSC Mentor','CAT Trainer','SSC Coach','Bank Exam Trainer','GATE Coach','NDA Coaching Faculty','Defence Exam Trainer','CA/CS Coach','Olympiad Trainer']},
+  {n:'EdTech & Online',e:'💡',p:['Online Course Creator','Corporate Trainer','Private Tutor','EdTech Specialist','Instructional Designer','eLearning Developer','Learning Experience Designer','STEM Education Specialist','Literacy Coach','Content Creator (Education)','YouTube Educator']},
+ ]},
 {id:'eng',name:'Engineering',icon:'⚙️',
  desc:'Solve civilization\'s grand challenges in infrastructure, materials and complex systems.',
- bg:'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1920&q=80',
+ bg:'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1600&q=80',
  sub:[
-  {n:'Civil & Structural',e:'🏗️',p:['Civil Engineer','Structural Engineer','Geotechnical Engineer','Transportation Engineer','Water Resources Engineer','Environmental Engineer','Bridge Engineer','Tunnel Engineer','Highway Engineer','Urban Infrastructure Engineer','Coastal Engineer','Dam Engineer','Foundation Engineer']},
-  {n:'Mechanical',e:'🔧',p:['Mechanical Engineer','Automotive Engineer','Aerospace Engineer','HVAC Engineer','Manufacturing Engineer','Robotics Engineer','Thermal Engineer','Fluid Mechanics Engineer','Mechatronics Engineer','Product Development Engineer','Tool & Die Engineer','Turbomachinery Engineer']},
-  {n:'Electrical & Electronic',e:'⚡',p:['Electrical Engineer','Electronics Engineer','Power Systems Engineer','Control Systems Engineer','Signal Processing Engineer','RF Engineer','Photonics Engineer','VLSI Design Engineer','PCB Designer','EMI/EMC Engineer','Power Electronics Engineer','Smart Grid Engineer']},
-  {n:'Chemical & Materials',e:'⚗️',p:['Chemical Engineer','Process Engineer','Petroleum Engineer','Materials Engineer','Polymer Engineer','Nanotechnology Engineer','Semiconductor Engineer','Metallurgical Engineer','Nuclear Engineer','Corrosion Engineer','Food Process Engineer','Pharmaceutical Process Engineer']},
-  {n:'Industrial & Systems',e:'🏭',p:['Industrial Engineer','Quality Engineer','Safety Engineer','Operations Research Analyst','Lean Manufacturing Specialist','Six Sigma Engineer','Supply Chain Engineer','Ergonomics Engineer','Systems Engineer','Reliability Engineer','Maintenance Engineer']},
-  {n:'Biomedical',e:'🔬',p:['Biomedical Engineer','Biomechanical Engineer','Clinical Engineer','Prosthetics Engineer','Medical Device Engineer','Tissue Engineer','Neural Engineer','Pharmaceutical Engineer','Bioinformatics Engineer','Lab Automation Engineer']},
-]},
+  {n:'Civil & Structural',e:'🏗️',p:['Civil Engineer','Structural Engineer','Geotechnical Engineer','Transportation Engineer','Water Resources Engineer','Environmental Engineer','Bridge Engineer','Highway Engineer','Urban Infrastructure Engineer','Coastal Engineer','Dam Engineer','Foundation Engineer','Urban Planner (India)']},
+  {n:'Mechanical',e:'🔧',p:['Mechanical Engineer','Automotive Engineer','Aerospace Engineer','HVAC Engineer','Manufacturing Engineer','Robotics Engineer','Thermal Engineer','Fluid Mechanics Engineer','Mechatronics Engineer','Product Development Engineer','Tool & Die Engineer']},
+  {n:'Electrical & Electronic',e:'⚡',p:['Electrical Engineer','Electronics Engineer','Power Systems Engineer','Control Systems Engineer','Signal Processing Engineer','RF Engineer','VLSI Design Engineer','PCB Designer','EMI/EMC Engineer','Power Electronics Engineer','Smart Grid Engineer']},
+  {n:'Chemical & Materials',e:'⚗️',p:['Chemical Engineer','Process Engineer','Petroleum Engineer','Materials Engineer','Polymer Engineer','Nanotechnology Engineer','Semiconductor Engineer','Metallurgical Engineer','Nuclear Engineer','Food Process Engineer','Pharmaceutical Process Engineer']},
+  {n:'Industrial & Systems',e:'🏭',p:['Industrial Engineer','Quality Engineer','Safety Engineer','Operations Research Analyst','Lean Manufacturing Specialist','Six Sigma Black Belt','Supply Chain Engineer','Ergonomics Engineer','Systems Engineer','Reliability Engineer']},
+  {n:'Biomedical',e:'🔬',p:['Biomedical Engineer','Biomechanical Engineer','Clinical Engineer','Medical Device Engineer','Tissue Engineer','Neural Engineer','Pharmaceutical Engineer','Bioinformatics Engineer','Lab Automation Engineer']},
+ ]},
+{id:'arts',name:'Creative Arts',icon:'🎭',
+ desc:'Channel human imagination and storytelling into culture-defining work across every medium.',
+ bg:'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1600&q=80',
+ sub:[
+  {n:'Visual Arts & Design',e:'🖌️',p:['Graphic Designer','Illustrator','Photographer','Videographer','Animator','3D Artist','Motion Graphics Designer','Art Director','Fine Artist','Sculptor','Conceptual Artist','Muralist','Digital Artist','Concept Artist','VFX Artist','UI/UX Designer','Brand Identity Designer']},
+  {n:'Music',e:'🎵',p:['Musician','Singer','Songwriter','Music Producer','Sound Engineer','DJ','Mixing Engineer','Mastering Engineer','Music Teacher','Conductor','Composer','Film Score Composer','Session Musician','A&R Manager','Music Supervisor','Classical Vocalist (Carnatic/Hindustani)','Playback Singer']},
+  {n:'Writing & Literature',e:'✍️',p:['Author','Copywriter','Content Writer','Screenwriter','Editor','Journalist','Technical Writer','Grant Writer','Ghostwriter','Literary Agent','Poet','Creative Writing Teacher','UX Writer','Regional Language Author','Hindi/Tamil/Telugu Writer']},
+  {n:'Performance & Film',e:'🎬',p:['Actor','Stand-Up Comedian','Stage Director','Film Director','Theater Producer','Voice Actor','Casting Director','Choreographer','Ballet Dancer','Bollywood Actor','Regional Film Actor','Web Series Actor','Dubbing Artist']},
+  {n:'Architecture & Design',e:'🏛️',p:['Interior Designer','Fashion Designer','Industrial Designer','Landscape Architect','Set Designer','Production Designer','Costume Designer','Jewelry Designer','Furniture Designer','Typographer','Exhibition Designer']},
+ ]},
 {id:'legal',name:'Law & Legal',icon:'⚖️',
  desc:'Uphold justice, navigate regulatory complexity and protect the rights of individuals and institutions.',
- bg:'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80',
+ bg:'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1600&q=80',
  sub:[
-  {n:'Practice Areas',e:'📜',p:['Corporate Lawyer','Criminal Defense Attorney','Prosecutor','Family Lawyer','Immigration Attorney','IP Attorney','Patent Attorney','Tax Attorney','Personal Injury Lawyer','Real Estate Attorney','Environmental Lawyer','Employment Lawyer','Bankruptcy Attorney','International Trade Lawyer','Human Rights Attorney','Antitrust Lawyer','Securities Lawyer','Healthcare Attorney']},
-  {n:'Legal Support',e:'📁',p:['Paralegal','Legal Secretary','Court Reporter','Bailiff','Law Clerk','Legal Researcher','Legal Aid Worker','E-Discovery Specialist','Jury Consultant','Process Server']},
-  {n:'Judiciary & ADR',e:'🔨',p:['Judge','Magistrate','Arbitrator','Mediator','Administrative Law Judge','Small Claims Adjudicator','Family Court Judge','Federal Circuit Judge']},
-  {n:'Corporate Legal',e:'🏢',p:['General Counsel','Deputy General Counsel','Compliance Officer','Legal Analyst','Contract Manager','Privacy Officer','Regulatory Affairs Specialist','In-house Litigation Manager','M&A Legal Counsel','Data Protection Officer']},
-]},
-{id:'biz',name:'Business',icon:'📊',
- desc:'Drive strategy, markets and the commercial engines that shape economies worldwide.',
- bg:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920&q=80',
+  {n:'Indian Legal Practice',e:'📜',p:['Advocate (High Court)','Advocate (Supreme Court)','District Court Lawyer','Civil Lawyer','Criminal Defense Advocate','Family Court Lawyer','Property Lawyer','Consumer Court Advocate','Public Interest Litigation Lawyer','Legal Aid Lawyer','Lok Adalat Member']},
+  {n:'Specialisations',e:'🔍',p:['Corporate Lawyer','IP Attorney','Patent Attorney','Tax Attorney','Personal Injury Lawyer','Real Estate Attorney','Environmental Lawyer','Employment Lawyer','Bankruptcy Attorney','International Trade Lawyer','Human Rights Attorney','Antitrust Lawyer','Securities Lawyer']},
+  {n:'Judiciary',e:'🔨',p:['District Judge','Civil Judge (Junior Division)','Magistrate (Judicial)','Sessions Judge','High Court Judge','Supreme Court Judge','Arbitrator','Mediator','Administrative Law Judge','Family Court Judge','Lok Adalat Chairperson']},
+  {n:'Corporate Legal',e:'🏢',p:['General Counsel','Deputy General Counsel','Compliance Officer','Legal Analyst','Contract Manager','Privacy Officer','Regulatory Affairs Specialist','Data Protection Officer','M&A Legal Counsel','In-house Litigation Manager']},
+ ]},
+{id:'biz',name:'Business & Management',icon:'📊',
+ desc:'Drive strategy, markets and the commercial engines shaping Indian and global economies.',
+ bg:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1600&q=80',
  sub:[
   {n:'Executive Leadership',e:'👔',p:['CEO','COO','CFO','CMO','CTO','Chief People Officer','Chief Strategy Officer','President','General Manager','Business Unit Head','Managing Director','Partner']},
-  {n:'Operations & Management',e:'📋',p:['Operations Manager','Project Manager','Business Analyst','Program Manager','Process Improvement Manager','Logistics Manager','Supply Chain Manager','Procurement Manager','Facilities Manager','Administrative Director']},
-  {n:'Marketing & Growth',e:'📣',p:['Marketing Manager','Brand Strategist','Digital Marketing Specialist','SEO Specialist','Social Media Manager','Growth Hacker','Market Research Analyst','Content Strategist','Email Marketing Manager','Influencer Marketing Manager','Performance Marketing Analyst','PR Manager','Event Marketing Manager','Community Manager']},
+  {n:'Operations & Management',e:'📋',p:['Operations Manager','Project Manager','Business Analyst','Program Manager','Process Improvement Manager','Logistics Manager','Supply Chain Manager','Procurement Manager','Facilities Manager']},
+  {n:'Marketing & Growth',e:'📣',p:['Marketing Manager','Brand Strategist','Digital Marketing Specialist','SEO Specialist','Social Media Manager','Growth Hacker','Market Research Analyst','Content Strategist','Email Marketing Manager','Influencer Marketing Manager','Performance Marketing Analyst','PR Manager','Community Manager']},
   {n:'Sales & BD',e:'🤝',p:['Sales Manager','Account Executive','Business Development Manager','Sales Engineer','SDR','Key Account Manager','Enterprise Sales Rep','Channel Sales Manager','VP of Sales','Customer Success Manager','Partnership Manager']},
-  {n:'Human Resources',e:'👥',p:['HR Manager','Recruiter','Talent Acquisition Specialist','Compensation Analyst','L&D Specialist','HR Business Partner','CHRO','Employee Relations Specialist','Benefits Administrator','Workforce Planning Analyst','OD Consultant']},
-  {n:'Entrepreneurship',e:'🚀',p:['Entrepreneur','Startup Founder','Franchise Owner','Angel Investor','Venture Partner','Startup Studio Operator','Incubator Manager','Social Entrepreneur','Serial Entrepreneur']},
-]},
+  {n:'Human Resources',e:'👥',p:['HR Manager','Recruiter','Talent Acquisition Specialist','Compensation Analyst','L&D Specialist','HR Business Partner','CHRO','Employee Relations Specialist','Benefits Administrator','Workforce Planning Analyst']},
+  {n:'Entrepreneurship',e:'🚀',p:['Startup Founder','Franchise Owner','Angel Investor','Venture Partner','Social Entrepreneur','Serial Entrepreneur','MSME Owner','Street Food Entrepreneur','Agri-startup Founder','Edtech Startup Founder']},
+ ]},
 {id:'sci',name:'Science & Research',icon:'🔭',
  desc:'Push the boundaries of human knowledge through rigorous inquiry, experiment and discovery.',
- bg:'https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=1920&q=80',
+ bg:'https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=1600&q=80',
  sub:[
-  {n:'Life Sciences',e:'🧬',p:['Biologist','Microbiologist','Geneticist','Biochemist','Ecologist','Marine Biologist','Botanist','Zoologist','Neuroscientist','Immunologist','Parasitologist','Virologist','Cell Biologist','Structural Biologist','Evolutionary Biologist','Developmental Biologist']},
-  {n:'Physical Sciences',e:'⚛️',p:['Physicist','Chemist','Astronomer','Astrophysicist','Geologist','Meteorologist','Oceanographer','Seismologist','Mineralogist','Nuclear Physicist','Particle Physicist','Cosmologist','Plasma Physicist']},
-  {n:'Research Infrastructure',e:'🔬',p:['Research Scientist','Laboratory Technician','Clinical Research Coordinator','Science Writer','Postdoctoral Fellow','Principal Investigator','Lab Manager','Grants Coordinator','Science Communicator','Research Librarian']},
-  {n:'Applied Science',e:'🧪',p:['Environmental Scientist','Food Scientist','Materials Scientist','Forensic Scientist','Toxicologist','Pharmaceutical Scientist','Agricultural Scientist','Atmospheric Scientist','Remote Sensing Scientist','Conservation Scientist','Hydrologist']},
-]},
-{id:'gov',name:'Government & Public Service',icon:'🏛️',
- desc:'Serve the public interest through policy, governance, national security and diplomacy.',
- bg:'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=1920&q=80',
+  {n:'Life Sciences',e:'🧬',p:['Biologist','Microbiologist','Geneticist','Biochemist','Ecologist','Marine Biologist','Botanist','Zoologist','Neuroscientist','Immunologist','Virologist','Cell Biologist','Structural Biologist','Evolutionary Biologist']},
+  {n:'Physical Sciences',e:'⚛️',p:['Physicist','Chemist','Astronomer','Astrophysicist','Geologist','Meteorologist','Oceanographer','Seismologist','Mineralogist','Nuclear Physicist','Particle Physicist','Cosmologist']},
+  {n:'Research Infrastructure',e:'🔬',p:['Research Scientist','Laboratory Technician','Clinical Research Coordinator','Science Writer','Postdoctoral Fellow','Principal Investigator','Lab Manager','Grants Coordinator','Science Communicator','Research Librarian','ICMR Researcher','DST Fellow','CSIR Scientist']},
+  {n:'Applied Science',e:'🧪',p:['Environmental Scientist','Food Scientist','Materials Scientist','Forensic Scientist','Toxicologist','Pharmaceutical Scientist','Agricultural Scientist','Atmospheric Scientist','Conservation Scientist','Hydrologist']},
+ ]},
+{id:'defence',name:'Defence & Armed Forces',icon:'🎖️',
+ desc:'Serve, protect and lead in India\'s most honoured and demanding career paths.',
+ bg:'https://images.unsplash.com/photo-1526649661456-89c7ed4d00b8?w=1600&q=80',
  sub:[
-  {n:'Public Administration',e:'📋',p:['Policy Analyst','Government Administrator','City Manager','Urban Planner','Budget Analyst','Government Auditor','Legislative Assistant','Public Affairs Specialist','Parliamentary Secretary','Regional Governor','Municipal Manager']},
-  {n:'Elected Officials',e:'🗳️',p:['Mayor','Governor','Senator','Representative','Councilmember','President','Prime Minister','Ambassador','State Attorney General','Comptroller','Commissioner','School Board Trustee']},
-  {n:'Intelligence & Security',e:'🕵️',p:['FBI Agent','CIA Analyst','NSA Analyst','Border Patrol Agent','Secret Service Agent','DEA Agent','ATF Agent','Homeland Security Analyst','Counterintelligence Analyst','Cybersecurity Federal Analyst','Signals Intelligence Analyst']},
-  {n:'Regulatory & Compliance',e:'📜',p:['Regulatory Affairs Specialist','Inspector General','Customs Officer','FDA Reviewer','FTC Investigator','SEC Examiner','Health Inspector','Building Code Inspector','Environmental Inspector','Transportation Safety Inspector']},
-  {n:'International Affairs',e:'🌐',p:['Diplomat','Foreign Service Officer','International Development Specialist','UN Program Officer','World Bank Consultant','USAID Specialist','International Trade Negotiator','Cultural Attaché','Conflict Resolution Specialist','Peacekeeping Coordinator']},
-]},
-{id:'hosp',name:'Hospitality & Tourism',icon:'🏨',
- desc:'Craft unforgettable experiences across hotels, restaurants, travel and world-class events.',
- bg:'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1920&q=80',
- sub:[
-  {n:'Hotels & Lodging',e:'🛎️',p:['Hotel General Manager','Front Desk Manager','Concierge','Revenue Manager','Housekeeping Supervisor','Guest Relations Manager','Hotel Controller','Reservations Manager','Hotel Marketing Manager','Spa Manager','F&B Director','Butler']},
-  {n:'Food & Beverage',e:'🍽️',p:['Executive Chef','Sous Chef','Pastry Chef','Line Cook','Bartender','Sommelier','Restaurant Manager','Catering Manager','Banquet Manager','Mixologist','Head Baker','Chocolatier','Sushi Chef','Butcher','Brew Master']},
-  {n:'Travel & Tourism',e:'✈️',p:['Travel Agent','Tour Guide','Tourism Manager','Travel Blogger','Destination Marketing Manager','Ecotourism Guide','River Cruise Director','Expedition Leader','Tourism Policy Analyst','Cruise Director','Airport Services Manager']},
-  {n:'Events & Entertainment',e:'🎉',p:['Event Planner','Wedding Planner','Conference Coordinator','Entertainment Manager','Casino Manager','Amusement Park Manager','Sports Venue Manager','Convention Services Manager','Corporate Events Director','Experience Designer','Live Production Manager']},
-]},
-{id:'const',name:'Construction & Architecture',icon:'🏗️',
- desc:'Design and build the physical world — from skyscrapers to sustainable communities.',
- bg:'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1920&q=80',
- sub:[
-  {n:'Architecture & Design',e:'📐',p:['Architect','Interior Architect','Landscape Architect','Urban Designer','Sustainable Architect','Historic Preservation Architect','Healthcare Architect','Airport Architect','Residential Designer','BIM Manager','Architectural Illustrator']},
-  {n:'Skilled Trades',e:'🔨',p:['Carpenter','Electrician','Plumber','HVAC Technician','Welder','Mason','Ironworker','Painter','Roofer','Flooring Specialist','Tile Setter','Glazier','Insulation Worker','Drywall Installer','Pipefitter','Boilermaker']},
-  {n:'Construction Management',e:'🏢',p:['Construction Manager','Site Supervisor','Project Manager','Estimator','Construction Safety Officer','Quantity Surveyor','Procurement Manager','Subcontractor Manager','Commissioning Manager','Construction Claims Specialist']},
-  {n:'Inspection & Compliance',e:'📋',p:['Building Inspector','Code Enforcement Officer','Structural Inspector','Fire Inspector','Environmental Compliance Officer','Materials Testing Engineer','Home Inspector','Safety Inspector']},
-]},
-{id:'agri',name:'Agriculture & Food',icon:'🌾',
- desc:'Feed the planet and steward natural resources through science, policy and skilled practice.',
- bg:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80',
- sub:[
-  {n:'Farming & Production',e:'🌱',p:['Farmer','Rancher','Crop Scientist','Soil Scientist','Agricultural Engineer','Precision Agriculture Specialist','Organic Farmer','Aquaculture Farmer','Beekeeping Specialist','Horticulturist','Viticulturist','Arborist']},
-  {n:'Food Science',e:'🥬',p:['Food Scientist','Food Technologist','Quality Control Inspector','Nutritionist','Dietitian','Food Safety Auditor','Flavor Chemist','Food Product Developer','Beverage Scientist','Sensory Analyst']},
-  {n:'Forestry & Wildlife',e:'🌲',p:['Forester','Park Ranger','Wildlife Biologist','Conservation Officer','Restoration Ecologist','Wildfire Firefighter','Wood Scientist','Watershed Manager','Recreation Manager','Wildlife Photographer']},
-  {n:'Veterinary Sciences',e:'🐾',p:['Veterinarian','Veterinary Technician','Animal Scientist','Zoologist','Wildlife Rehabilitator','Marine Mammal Trainer','Animal Shelter Manager','Livestock Inspector','Equine Veterinarian','Exotic Animal Specialist']},
-]},
+  {n:'Indian Army',e:'⭐',p:['Indian Army Officer (IMA)','NDA Cadet → Army','Sapper (Corps of Engineers)','Army Medical Corps Doctor','Army Educational Corps','Army Ordnance Corps','Corps of Signals Officer','Army Aviation Pilot','Army Intelligence Officer','JCO (Junior Commissioned Officer)','Havildar','Sepoy/Jawan','Army Dental Corps','Judge Advocate General (Army)']},
+  {n:'Indian Navy & Air Force',e:'✈️',p:['Indian Navy Officer','Naval Aviator','Indian Air Force Pilot','IAF Ground Duty Officer','Naval Architect','Submarine Officer','Coastguard Commandant','IAF Technical Officer','Naval Engineer Officer','Fleet Air Arm Pilot','IAF Weather Officer','Coast Guard Navik']},
+  {n:'Paramilitary & CAPFs',e:'🛡️',p:['CRPF Officer','BSF Officer','CISF Officer','ITBP Officer','SSB Officer','NSG Commando','SPG Personnel','Assam Rifles Officer','Railway Protection Force','IB Officer (Intelligence Bureau)','RAW Analyst','NIA Officer']},
+  {n:'Defence Civilian & R&D',e:'🔧',p:['DRDO Scientist','ISRO Scientist','Defence Accounts Officer','AFHQ Civil Service','Defence Estates Officer','Ordnance Factory Manager','BEL Defence Engineer','HAL Production Engineer','DPSU Manager','Defence Legal Officer']},
+ ]},
 {id:'media',name:'Media & Communications',icon:'📡',
  desc:'Inform, entertain and shape public discourse across every modern storytelling platform.',
- bg:'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=1920&q=80',
+ bg:'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=1600&q=80',
  sub:[
-  {n:'Journalism',e:'📰',p:['Reporter','Editor','Photojournalist','Broadcast Journalist','Investigative Journalist','Data Journalist','Foreign Correspondent','Science Journalist','Business Reporter','Political Reporter','Sports Journalist','Editorial Writer','Fact Checker','War Correspondent']},
-  {n:'Digital & Social Media',e:'📱',p:['Blogger','Podcaster','YouTuber','TikToker','Social Media Influencer','Content Creator','Newsletter Writer','Digital Storyteller','Online Community Manager','Streaming Personality','Digital Media Producer','Social Video Editor']},
-  {n:'Broadcasting',e:'📺',p:['TV Anchor','Radio Host','Sports Commentator','Weather Reporter','News Producer','Show Runner','Broadcast Engineer','Production Assistant','Floor Manager','Talk Show Host','Documentary Presenter']},
-  {n:'Film & Audio Production',e:'🎥',p:['Film Producer','Video Editor','Camera Operator','Sound Designer','Foley Artist','Boom Operator','Lighting Director','Color Grader','Post-Production Supervisor','VFX Supervisor','Storyboard Artist','Script Supervisor']},
-  {n:'Publishing',e:'📚',p:['Book Publisher','Magazine Editor','Literary Agent','Acquisitions Editor','Copy Editor','Proofreader','Book Cover Designer','Editorial Director','Self-Publishing Consultant','Rights Manager']},
-]},
-{id:'sport',name:'Sports & Athletics',icon:'🏆',
- desc:'Compete, coach and operate at the apex of human physical performance and sports entertainment.',
- bg:'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1920&q=80',
+  {n:'Journalism',e:'📰',p:['Reporter','Editor','Photojournalist','Broadcast Journalist','Investigative Journalist','Data Journalist','Foreign Correspondent','Science Journalist','Political Reporter','Sports Journalist','Fact Checker','War Correspondent','Hindi News Anchor','Regional Language Journalist']},
+  {n:'Digital & Social',e:'📱',p:['Blogger','Podcaster','YouTuber','Instagram Creator','Meme Creator','Shorts Creator','Digital Storyteller','Online Community Manager','Newsletter Writer','Social Video Editor','OTT Content Creator']},
+  {n:'Broadcasting',e:'📺',p:['TV Anchor','Radio Host','Sports Commentator','Weather Reporter','News Producer','Show Runner','Broadcast Engineer','Doordarshan Producer','All India Radio Announcer','Regional TV Presenter','Talk Show Host']},
+  {n:'Film & Audio',e:'🎥',p:['Film Producer','Video Editor','Camera Operator','Sound Designer','Foley Artist','Lighting Director','Color Grader','Post-Production Supervisor','VFX Supervisor','Storyboard Artist','Bollywood Director','Regional Film Producer']},
+ ]},
+{id:'agri',name:'Agriculture & Food',icon:'🌾',
+ desc:'Feed India and steward natural resources through science, policy and skilled practice.',
+ bg:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1600&q=80',
  sub:[
-  {n:'Professional Athletes',e:'🏅',p:['Soccer Player','Basketball Player','Tennis Player','Swimmer','Sprinter','Gymnast','Boxer','MMA Fighter','Golfer','Baseball Player','Football Player','Cricket Player','Rugby Player','Volleyball Player','Cyclist','Triathlete','Esports Player','Race Car Driver']},
-  {n:'Coaching & Training',e:'🏋️',p:['Head Coach','Assistant Coach','Strength & Conditioning Coach','Defensive Coordinator','Pitching Coach','Personal Trainer','Sports Psychologist','Youth Sports Coach','Video Analyst','Tactical Analyst','Recruiting Coordinator']},
-  {n:'Sports Medicine & Science',e:'🩺',p:['Athletic Trainer','Sports Medicine Physician','Sports Physical Therapist','Sports Cardiologist','Team Physician','Sports Biomechanist','Performance Scientist','Wearable Tech Analyst','Sports Massage Therapist','Orthopedic Sports Surgeon']},
-  {n:'Sports Business',e:'💼',p:['Sports Agent','Sports Marketing Manager','Stadium Manager','Athletic Director','General Manager','Team Owner','Ticket Sales Director','Media Rights Negotiator','Sports Lawyer','Brand Partnership Manager','Sports Finance Analyst']},
-]},
-{id:'mil',name:'Military & Defense',icon:'🎖️',
- desc:'Serve, protect and lead in the world\'s most demanding operational environments.',
- bg:'https://images.unsplash.com/photo-1526649661456-89c7ed4d00b8?w=1920&q=80',
+  {n:'Farming & Production',e:'🌱',p:['Farmer','Rancher','Crop Scientist','Soil Scientist','Agricultural Engineer','Precision Agriculture Specialist','Organic Farmer','Aquaculture Farmer','Horticulturist','Viticulturist','Arborist','Krishi Vigyan Kendra Expert','NABARD Field Officer','Agricultural Extension Officer']},
+  {n:'Food Science',e:'🥬',p:['Food Scientist','Food Technologist','Quality Control Inspector','Nutritionist','Dietitian','Food Safety Auditor','Flavor Chemist','Food Product Developer','Beverage Scientist','Sensory Analyst','FSSAI Inspector']},
+  {n:'Forestry & Wildlife',e:'🌲',p:['Forester','Park Ranger','Wildlife Biologist','Conservation Officer','Restoration Ecologist','Wildfire Firefighter','Wood Scientist','Watershed Manager','Wildlife Photographer','Indian Forest Service Officer']},
+  {n:'Veterinary Sciences',e:'🐾',p:['Veterinarian','Veterinary Technician','Animal Scientist','Zoologist','Wildlife Rehabilitator','Marine Mammal Trainer','Animal Shelter Manager','Livestock Inspector','Exotic Animal Specialist','ICAR Scientist']},
+ ]},
+{id:'hosp',name:'Hospitality & Tourism',icon:'🏨',
+ desc:'Craft unforgettable experiences across hotels, restaurants, travel and world-class events.',
+ bg:'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600&q=80',
  sub:[
-  {n:'Officers & Leadership',e:'⭐',p:['Army Officer','Navy Officer','Air Force Officer','Marine Corps Officer','Coast Guard Officer','Space Force Officer','Special Forces Commander','Battalion Commander','Intelligence Officer','Operations Officer','Logistics Officer','Judge Advocate (JAG)']},
-  {n:'Enlisted & Special Ops',e:'🎯',p:['Infantry Soldier','Special Forces Operator','Navy SEAL','Army Ranger','Paratrooper','Intelligence Analyst','Combat Medic','Military Police Officer','Bomb Disposal Technician','Drone Operator','Cyber Warfare Specialist','Signal Corps Specialist']},
-  {n:'Military Support Services',e:'🏥',p:['Military Doctor','Military Surgeon','Military Chaplain','Military Social Worker','Military Psychologist','Military Dentist','Military Pharmacist','Military Nurse','Flight Surgeon','Military Lawyer']},
-  {n:'Defense & Veterans',e:'🛡️',p:['Defense Contractor','Defense Analyst','Military Systems Engineer','Veteran Affairs Counselor','Defense Policy Analyst','Aerospace Defense Engineer','Defense Cybersecurity Specialist','Weapons Systems Engineer','Security Clearance Investigator']},
-]},
+  {n:'Hotels & Lodging',e:'🛎️',p:['Hotel General Manager','Front Desk Manager','Concierge','Revenue Manager','Housekeeping Supervisor','Guest Relations Manager','Hotel Controller','Reservations Manager','Spa Manager','F&B Director','Butler','Hotel Management Graduate (IHM)']},
+  {n:'Food & Beverage',e:'🍽️',p:['Executive Chef','Sous Chef','Pastry Chef','Line Cook','Bartender','Sommelier','Restaurant Manager','Catering Manager','Banquet Manager','Mixologist','Head Baker','Chocolatier','Tiffin Service Owner','Cloud Kitchen Owner']},
+  {n:'Travel & Tourism',e:'✈️',p:['Travel Agent','Tour Guide','Tourism Manager','Travel Blogger','Destination Marketing Manager','Ecotourism Guide','Cruise Director','Airport Services Manager','Incredible India Tourism Officer','Domestic Tour Operator','Pilgrimage Tour Operator']},
+  {n:'Events & Entertainment',e:'🎉',p:['Event Planner','Wedding Planner','Conference Coordinator','Entertainment Manager','Casino Manager','Sports Venue Manager','Corporate Events Director','Experience Designer','Live Production Manager','Mehndi & Wedding Artist']},
+ ]},
 {id:'env',name:'Environment & Sustainability',icon:'🌍',
  desc:'Safeguard ecosystems, drive clean energy and engineer a livable future for our planet.',
- bg:'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&q=80',
+ bg:'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1600&q=80',
  sub:[
-  {n:'Conservation & Ecology',e:'🌿',p:['Environmental Scientist','Conservation Biologist','Wildlife Conservationist','Marine Conservationist','Habitat Restoration Specialist','Wetland Scientist','Biodiversity Researcher','Environmental Planner','Ecotoxicologist','Marine Ecologist','Freshwater Ecologist','Urban Ecologist']},
-  {n:'Clean Energy',e:'☀️',p:['Renewable Energy Engineer','Solar Panel Installer','Wind Turbine Technician','Energy Auditor','Battery Technology Engineer','Hydrogen Fuel Cell Engineer','Smart Grid Engineer','Energy Storage Analyst','EV Infrastructure Planner','Offshore Wind Engineer','Geothermal Engineer','Tidal Energy Specialist']},
-  {n:'Sustainability & Climate',e:'🌡️',p:['Sustainability Consultant','Carbon Analyst','ESG Specialist','Climate Scientist','Climate Risk Analyst','Carbon Credit Trader','Circular Economy Designer','Life Cycle Assessment Analyst','Corporate Sustainability Manager','Net Zero Strategist','Green Building Certifier']},
-  {n:'Environmental Policy',e:'📜',p:['Environmental Policy Analyst','Conservation Officer','Environmental Lawyer','Regulatory Compliance Specialist','Environmental Economist','Climate Policy Advisor','International Environmental Negotiator','Environmental Impact Assessor','Pollution Control Officer']},
-]},
+  {n:'Conservation & Ecology',e:'🌿',p:['Environmental Scientist','Conservation Biologist','Wildlife Conservationist','Marine Conservationist','Habitat Restoration Specialist','Wetland Scientist','Biodiversity Researcher','Environmental Planner','Ecotoxicologist','Urban Ecologist','Tiger Reserve Manager']},
+  {n:'Clean Energy',e:'☀️',p:['Renewable Energy Engineer','Solar Panel Installer','Wind Turbine Technician','Energy Auditor','Battery Technology Engineer','Smart Grid Engineer','EV Infrastructure Planner','Offshore Wind Engineer','Geothermal Engineer','Solar Farm Developer (India)']},
+  {n:'Sustainability & Climate',e:'🌡️',p:['Sustainability Consultant','Carbon Analyst','ESG Specialist','Climate Scientist','Climate Risk Analyst','Carbon Credit Trader','Circular Economy Designer','Life Cycle Assessment Analyst','Corporate Sustainability Manager','Net Zero Strategist','Green Building Certifier (IGBC)']},
+  {n:'Environmental Policy',e:'📜',p:['Environmental Policy Analyst','Conservation Officer','Environmental Lawyer','Regulatory Compliance Specialist','Environmental Economist','Climate Policy Advisor','MoEFCC Officer','Environmental Impact Assessor','Pollution Control Board Officer','NGT Legal Expert']},
+ ]},
+{id:'sport',name:'Sports & Athletics',icon:'🏆',
+ desc:'Compete, coach and operate at the apex of human physical performance and Indian sports.',
+ bg:'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1600&q=80',
+ sub:[
+  {n:'Professional Athletes',e:'🏅',p:['Cricketer','Badminton Player','Chess Player','Kabaddi Player','Wrestling Athlete','Boxing Champion','Athletics Sprinter','Swimmer','Hockey Player (Indian)','Tennis Player','Football Player (ISL)','Golfer','Shooter (Rifle/Pistol)','Weightlifter','Archer']},
+  {n:'Coaching & Training',e:'🏋️',p:['Head Coach','Assistant Coach','Strength & Conditioning Coach','Cricket Coach','Batting Coach','Bowling Coach','Personal Trainer','Sports Psychologist','Youth Sports Coach','Video Analyst','SAI Coach']},
+  {n:'Sports Medicine',e:'🩺',p:['Athletic Trainer','Sports Medicine Physician','Sports Physical Therapist','Sports Cardiologist','Team Physician','Sports Biomechanist','Performance Scientist','Sports Massage Therapist','Orthopedic Sports Surgeon']},
+  {n:'Sports Business',e:'💼',p:['Sports Agent','Sports Marketing Manager','Stadium Manager','Athletic Director','General Manager','Ticket Sales Director','Media Rights Negotiator','Sports Lawyer','Brand Partnership Manager','BCCI Official','IPL Team Manager']},
+ ]},
 {id:'fashion',name:'Fashion & Luxury',icon:'👗',
- desc:'Define cultural aesthetics, craft luxury experiences and lead the global style economy.',
- bg:'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=1920&q=80',
+ desc:'Define cultural aesthetics, craft luxury experiences and lead the style economy.',
+ bg:'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=1600&q=80',
  sub:[
-  {n:'Design & Creation',e:'✂️',p:['Fashion Designer','Textile Designer','Accessories Designer','Footwear Designer','Knitwear Designer','Womenswear Designer','Menswear Designer','Avant-garde Designer','Pattern Maker','Tailor','Embroidery Specialist','Print Designer']},
-  {n:'Fashion Business',e:'👜',p:['Fashion Buyer','Merchandise Planner','Retail Buyer','Fashion Brand Manager','Wholesale Manager','Licensing Manager','Fashion Finance Analyst','Retail Store Manager','Fashion Operations Manager','Supply Chain Manager (Fashion)']},
-  {n:'Styling & Production',e:'💄',p:['Fashion Stylist','Celebrity Stylist','Personal Shopper','Image Consultant','Fashion Show Producer','Wardrobe Manager','Costume Supervisor','Makeup Artist','Hair Stylist','Set Designer']},
-  {n:'Fashion Media & Marketing',e:'📸',p:['Fashion Photographer','Fashion Editor','Fashion Blogger','Fashion Journalist','Creative Director','Art Director (Fashion)','Fashion Social Media Manager','Fashion PR Manager','Fashion Content Creator','Trend Analyst','Fashion Forecaster']},
-]},
+  {n:'Design & Creation',e:'✂️',p:['Fashion Designer','Textile Designer','Accessories Designer','Footwear Designer','Knitwear Designer','Womenswear Designer','Menswear Designer','Pattern Maker','Tailor','Embroidery Specialist','Print Designer','Saree Designer','Bridal Wear Designer','Ethnic Wear Designer']},
+  {n:'Fashion Business',e:'👜',p:['Fashion Buyer','Merchandise Planner','Retail Buyer','Fashion Brand Manager','Wholesale Manager','Licensing Manager','Retail Store Manager','Fashion Operations Manager','Boutique Owner','Export House Manager']},
+  {n:'Styling & Production',e:'💄',p:['Fashion Stylist','Celebrity Stylist','Personal Shopper','Image Consultant','Fashion Show Producer','Wardrobe Manager','Makeup Artist','Hair Stylist','Bridal Makeup Artist','Set Designer']},
+  {n:'Fashion Media',e:'📸',p:['Fashion Photographer','Fashion Editor','Fashion Blogger','Fashion Journalist','Creative Director','Fashion Social Media Manager','Fashion PR Manager','Fashion Content Creator','Trend Analyst','Fashion Forecaster']},
+ ]},
 {id:'avia',name:'Aviation & Aerospace',icon:'🛸',
- desc:'Command the skies and pioneer the frontier of space exploration and aeronautical innovation.',
- bg:'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1920&q=80',
+ desc:'Command the skies and pioneer aerospace innovation and space exploration.',
+ bg:'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1600&q=80',
  sub:[
-  {n:'Flight Operations',e:'✈️',p:['Commercial Airline Pilot','First Officer','Flight Engineer','Corporate Pilot','Military Fighter Pilot','Helicopter Pilot','Test Pilot','Bush Pilot','Medevac Pilot','Cargo Pilot','Drone Pilot','UAS Operator','Glider Pilot']},
-  {n:'Air Traffic & Ground Ops',e:'🗼',p:['Air Traffic Controller','Airport Operations Manager','Flight Dispatcher','Airline Operations Coordinator','Ground Crew Manager','Ramp Agent','Cargo Operations Specialist','Airline Safety Manager','Aviation Security Manager','Airport CEO','Flight Planning Analyst']},
-  {n:'Aircraft Maintenance',e:'🔧',p:['Aircraft Mechanic','Avionics Technician','Aircraft Inspector','Structural Repair Technician','Engine Test Technician','Aircraft Painter','Interior Refurbishment Specialist','NDT Technician','Line Maintenance Technician','Heavy Maintenance Planner']},
-  {n:'Aerospace Engineering',e:'🚀',p:['Aerospace Engineer','Propulsion Engineer','Aerodynamics Engineer','Rocket Scientist','Satellite Engineer','Mission Controller','Spacecraft Systems Engineer','Launch Vehicle Engineer','Flight Dynamics Analyst','Orbital Mechanics Engineer','Space Habitat Designer','Planetary Scientist','Astronaut']},
-]},
-{id:'social',name:'Social Services',icon:'❤️',
- desc:'Empower communities, uplift vulnerable populations and drive meaningful social change.',
- bg:'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1920&q=80',
+  {n:'Flight Operations',e:'✈️',p:['Commercial Airline Pilot','First Officer','Flight Engineer','Corporate Pilot','Helicopter Pilot','Test Pilot','Cargo Pilot','Drone Pilot','UAS Operator','IndiGo Pilot','Air India Pilot','Vistara Captain']},
+  {n:'Air Traffic & Ground',e:'🗼',p:['Air Traffic Controller (AAI)','Airport Operations Manager','Flight Dispatcher','Airline Operations Coordinator','Ground Crew Manager','Ramp Agent','Cargo Operations Specialist','Airline Safety Manager','DGCA Inspector','Airport CEO']},
+  {n:'Aircraft Maintenance',e:'🔧',p:['Aircraft Mechanic (AME)','Avionics Technician','Aircraft Inspector','Structural Repair Technician','Engine Test Technician','NDT Technician','Line Maintenance Technician','Heavy Maintenance Planner']},
+  {n:'Aerospace Engineering',e:'🚀',p:['Aerospace Engineer','Propulsion Engineer','Aerodynamics Engineer','Rocket Scientist','ISRO Scientist','Satellite Engineer','Mission Controller','Spacecraft Systems Engineer','Launch Vehicle Engineer','Planetary Scientist','Astronaut Candidate']},
+ ]},
+{id:'social',name:'Social Services & NGO',icon:'❤️',
+ desc:'Empower communities, uplift vulnerable populations and drive meaningful social change in India.',
+ bg:'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1600&q=80',
  sub:[
-  {n:'Social Work',e:'🤲',p:['Social Worker','Child Protective Services Worker','Family Services Coordinator','Geriatric Social Worker','School Social Worker','Medical Social Worker','Homeless Services Coordinator','Refugee Resettlement Specialist','Foster Care Case Manager','Adoption Specialist','Crisis Intervention Specialist']},
-  {n:'Mental Health & Addiction',e:'💙',p:['Mental Health Counselor','Substance Abuse Counselor','Rehabilitation Specialist','Addiction Therapist','Trauma Counselor','Group Therapist','Co-occurring Disorders Specialist','Peer Support Specialist','Harm Reduction Coordinator','Recovery Coach']},
-  {n:'Nonprofits & NGOs',e:'🌍',p:['Nonprofit CEO','Program Director','Fundraiser','Grant Writer','Community Organizer','Volunteer Coordinator','Advocacy Director','Foundation Officer','Impact Evaluator','Corporate Giving Manager','Philanthropy Advisor','Field Operations Manager']},
-  {n:'Public Health',e:'🏥',p:['Public Health Officer','Epidemiologist','Health Educator','Community Health Worker','Biostatistician','Health Policy Analyst','Global Health Specialist','Disease Surveillance Officer','Vaccination Program Manager','Health Communications Specialist','Emergency Preparedness Planner']},
-]},
+  {n:'Social Work',e:'🤲',p:['Social Worker','Child Protective Services Worker','Anganwadi Worker','ASHA Worker','Family Services Coordinator','Geriatric Social Worker','School Social Worker','Medical Social Worker','Homeless Services Coordinator','NGO Field Coordinator','Disaster Relief Worker']},
+  {n:'Mental Health',e:'💙',p:['Mental Health Counselor','Substance Abuse Counselor','Rehabilitation Specialist','Addiction Therapist','Trauma Counselor','Group Therapist','Peer Support Specialist','Recovery Coach','School Counselor']},
+  {n:'Nonprofits & NGOs',e:'🌍',p:['Nonprofit CEO','Program Director','Fundraiser','Grant Writer','Community Organizer','Volunteer Coordinator','Advocacy Director','Foundation Officer','Impact Evaluator','Corporate CSR Manager','Philanthropy Advisor']},
+  {n:'Public Health',e:'🏥',p:['Public Health Officer','Epidemiologist','Health Educator','Community Health Worker','Biostatistician','Health Policy Analyst','ASHA Facilitator','Vaccination Program Manager','Health Communications Specialist','WHO Consultant','UNICEF India Program Officer']},
+ ]},
+{id:'skilled',name:'Skilled Trades & ITI',icon:'🔩',
+ desc:'Master a craft that keeps India running — from electricians to CNC operators and master craftsmen.',
+ bg:'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&q=80',
+ sub:[
+  {n:'Electrical & Electronics',e:'⚡',p:['Electrician','Wireman','Electronic Mechanic','Instrument Mechanic','Mechanic (Consumer Electronics)','Mechanic (Radio & TV)','Solar Technician','Electrical Lineman','Substation Operator','AC & Refrigeration Mechanic']},
+  {n:'Mechanical & Auto',e:'🔧',p:['Fitter','Turner','Machinist','Welder','Sheet Metal Worker','Mechanic (Motor Vehicle)','Tractor Mechanic','Diesel Mechanic','Pump Operator','CNC Machine Operator','Millwright Mechanic','Tool & Die Maker']},
+  {n:'Construction Trades',e:'🏗️',p:['Mason','Carpenter','Painter (General)','Plumber','Draughtsman (Civil)','Interior Decorator','Surveyor','Bar Bender & Steel Fixer','Crane Operator','Excavator Operator']},
+  {n:'IT & Modern Trades',e:'💻',p:['Computer Operator & PA','IT Mechanic','Mechanic (Computer Hardware)','Network Technician','Mobile Phone Hardware Technician','CCTV Technician','Data Entry Operator','Digital Marketing Executive','E-commerce Seller','Call Centre Agent']},
+ ]},
 ];
 
-// ═══════════════════════════════════
-// BUILD UI
-// ═══════════════════════════════════
-const $ = id => document.getElementById(id);
+// ═══════════════════════════════════════
+// FAQ DATA
+// ═══════════════════════════════════════
+const FAQS=[
+  {q:"What is Youhvah?",a:"Youhvah is a career exploration platform that maps over 1,200 careers across 21 sectors — including Indian government, defence, and ITI trades — with an AI-powered chatbot to guide you personally."},
+  {q:"Is Youhvah completely free to use?",a:"Yes! Browsing all 1,200+ careers, exploring sectors, and saving favourites is completely free. Creating an account is also free with no credit card required."},
+  {q:"How does the Youhvah AI chatbot work?",a:"Youhvah AI is powered by advanced AI technology. You can ask it anything — which career suits your interests, what qualifications are needed, salary expectations, or how to get started in any field."},
+  {q:"Can I save careers I like?",a:"Yes! Create a free account and hit the heart icon ❤️ on any career card. Your saved careers are stored in your profile and accessible anytime."},
+  {q:"Does Youhvah cover Indian government jobs?",a:"Absolutely. We have a dedicated 'Indian Government & PSU' sector covering UPSC civil services, SSC, banking (RBI, SBI, IBPS), railways, PSUs like DRDO/ISRO/ONGC, and much more."},
+  {q:"How do I contact the Youhvah team?",a:"You can reach us at youhvah@gmail.com or follow and DM us on Instagram @youhvah. We usually respond within 24 hours."},
+];
 
-// Background slides
-const bgEl=$('bg');
-SECTORS.forEach((s,i)=>{
-  const d=document.createElement('div');
-  d.className='bg-slide'+(i===0?' active':'');
-  d.style.backgroundImage=`url(${s.bg})`;
-  bgEl.appendChild(d);
-});
-const bgSlides=document.querySelectorAll('.bg-slide');
-let activeBg=0;
+// ═══════════════════════════════════════
+// APP STATE
+// ═══════════════════════════════════════
+let currentUser = null;
+let likedJobs = new Set();
+let chatHistory = [];
+let curSector = null;
+let curBg = 0;
 
-// Progress dots
-const progEl=$('progress');
-SECTORS.forEach((s,i)=>{
-  const b=document.createElement('button');
-  b.className='pd'+(i===0?' active':'');
-  b.title=s.name;b.setAttribute('aria-label',s.name);
-  b.onclick=()=>document.querySelectorAll('.sn')[i]?.scrollIntoView({behavior:'smooth',block:'center'});
-  progEl.appendChild(b);
-});
-const pDots=document.querySelectorAll('.pd');
+// ═══════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════
+const html = document.documentElement;
+let isDark = false;
 
-// Timeline sector nodes
-const tl=$('timeline');
-SECTORS.forEach((s,i)=>{
-  const total=s.sub.reduce((a,c)=>a+c.p.length,0);
-  const isRight=i%2===1; // even index → left, odd index → right
+function setTheme(dark){
+  isDark = dark;
+  html.className = dark ? 'dark' : 'light';
+  const icon = dark ? '☀️' : '🌙';
+  const t1 = document.getElementById('themeToggle');
+  const t2 = document.getElementById('themeToggle2');
+  if(t1) t1.textContent = icon;
+  if(t2) t2.textContent = icon;
+  localStorage.setItem('youhvah-theme', dark ? 'dark' : 'light');
+}
 
-  const n=document.createElement('div');
-  n.className='sn';n.dataset.i=i;
+function toggleTheme(){ setTheme(!isDark); }
+document.getElementById('themeToggle').onclick = toggleTheme;
+document.getElementById('themeToggle2').onclick = toggleTheme;
 
-  const leftHTML=`
-    <div class="sn-left${isRight?' sn-empty':''}">
-      ${!isRight?`<div class="sn-content">
-        <span class="sn-icon">${s.icon}</span>
-        <div class="sn-num">Sector ${String(i+1).padStart(2,'0')}</div>
-        <div class="sn-name">${s.name}</div>
-        <div class="sn-desc">${s.desc}</div>
-        <div class="sn-meta"><span>${total}</span> careers · <span>${s.sub.length}</span> specializations</div>
-        <button class="explore-btn" data-idx="${i}">Explore Careers <span>→</span></button>
-        <div class="connector-h"></div>
-      </div>`:''}
-    </div>`;
-  const rightHTML=`
-    <div class="sn-right${!isRight?' sn-empty':''}">
-      ${isRight?`<div class="sn-content">
-        <span class="sn-icon">${s.icon}</span>
-        <div class="sn-num">Sector ${String(i+1).padStart(2,'0')}</div>
-        <div class="sn-name">${s.name}</div>
-        <div class="sn-desc">${s.desc}</div>
-        <div class="sn-meta"><span>${total}</span> careers · <span>${s.sub.length}</span> specializations</div>
-        <button class="explore-btn" data-idx="${i}">Explore Careers <span>→</span></button>
-        <div class="connector-h"></div>
-      </div>`:''}
-    </div>`;
+// Load saved theme
+const savedTheme = localStorage.getItem('youhvah-theme');
+if(savedTheme === 'dark') setTheme(true);
 
-  // Pip decorations
-  const pips=[...Array(4)].map(()=>{
-    const t=Math.random()*60+20;
-    const d=Math.random()*2;
-    return `<div class="sn-pip" style="position:absolute;top:${t}%;animation-delay:${d}s"></div>`;
-  }).join('');
+// ═══════════════════════════════════════
+// LANDING → APP
+// ═══════════════════════════════════════
+function enterApp(){
+  document.getElementById('landing').classList.add('exit');
+  setTimeout(()=>{
+    document.getElementById('landing').style.display='none';
+    const app = document.getElementById('main-app');
+    app.classList.add('visible');
+    document.getElementById('chat-fab').style.display='flex';
+  }, 650);
+  buildApp();
+}
 
-  n.innerHTML=`
-    ${leftHTML}
-    <div class="sn-dot-col" style="position:relative">${pips}<div class="sn-dot" data-idx="${i}"></div></div>
-    ${rightHTML}
-  `;
-  tl.appendChild(n);
-});
+let appBuilt = false;
+function buildApp(){
+  if(appBuilt) return;
+  appBuilt = true;
+  buildBgSlides();
+  buildTimeline();
+  buildProgress();
+  buildFAQ();
+  buildStats();
+  buildObservers();
+}
 
-// Click handlers on dots and explore btns
-document.querySelectorAll('.sn-dot,[class*="explore-btn"]').forEach(el=>{
-  el.addEventListener('click',()=>openTree(parseInt(el.dataset.idx)));
-});
+// ═══════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════
+let authMode = 'signin';
 
-// Intersection observer — background + animations
-let curBg=0;
-const io=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(!e.isIntersecting) return;
-    const i=parseInt(e.target.dataset.i);
-    e.target.classList.add('visible');
-    if(i!==curBg){
-      bgSlides[curBg].classList.remove('active');
-      bgSlides[i].classList.add('active');
-      curBg=i;
-      pDots.forEach((d,j)=>d.classList.toggle('active',j===i));
-    }
+function openAuth(mode='signin'){
+  authMode = mode;
+  switchTab(mode);
+  document.getElementById('auth-modal').classList.add('open');
+}
+function closeAuth(){
+  document.getElementById('auth-modal').classList.remove('open');
+  document.getElementById('auth-msg').className='auth-msg';
+  document.getElementById('auth-msg').textContent='';
+}
+function switchTab(mode){
+  authMode = mode;
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>{
+    t.classList.toggle('active',(i===0&&mode==='signin')||(i===1&&mode==='signup'));
   });
-},{threshold:.28});
-document.querySelectorAll('.sn').forEach(n=>io.observe(n));
+  const p2 = document.getElementById('auth-pass2');
+  const nm = document.getElementById('auth-name');
+  const btn = document.getElementById('auth-submit-btn');
+  if(mode==='signup'){
+    p2.classList.remove('hidden');
+    nm.classList.remove('hidden');
+    btn.textContent='Create Account';
+  } else {
+    p2.classList.add('hidden');
+    nm.classList.add('hidden');
+    btn.textContent='Sign In';
+  }
+}
 
-// Parallax on hero
+function showAuthMsg(msg, type='error'){
+  const el = document.getElementById('auth-msg');
+  el.textContent = msg;
+  el.className = `auth-msg ${type}`;
+}
+
+async function handleAuth(){
+  const email = document.getElementById('auth-email').value.trim();
+  const pass = document.getElementById('auth-pass').value;
+  if(!email||!pass){ showAuthMsg('Please fill in all fields.'); return; }
+  const btn = document.getElementById('auth-submit-btn');
+  btn.textContent = '...';
+  btn.disabled = true;
+  try {
+    if(authMode==='signup'){
+      const pass2 = document.getElementById('auth-pass2').value;
+      if(pass!==pass2){ showAuthMsg('Passwords do not match.'); btn.textContent='Create Account'; btn.disabled=false; return; }
+      await auth.createUserWithEmailAndPassword(email, pass);
+      showAuthMsg('Account created! Welcome to Youhvah 🎉','success');
+      setTimeout(()=>{ closeAuth(); enterApp(); },1200);
+    } else {
+      await auth.signInWithEmailAndPassword(email, pass);
+      showAuthMsg('Welcome back!','success');
+      setTimeout(()=>{ closeAuth(); enterApp(); },800);
+    }
+  } catch(e){
+    const msgs={'auth/email-already-in-use':'This email is already registered. Please sign in.','auth/user-not-found':'No account found. Please sign up.','auth/wrong-password':'Incorrect password. Please try again.','auth/weak-password':'Password must be at least 6 characters.','auth/invalid-email':'Please enter a valid email address.'};
+    showAuthMsg(msgs[e.code]||e.message);
+    btn.textContent = authMode==='signup'?'Create Account':'Sign In';
+    btn.disabled = false;
+  }
+}
+
+// Firebase auth state
+if(auth){
+  auth.onAuthStateChanged(user=>{
+    currentUser = user;
+    updateUserUI();
+    if(user) loadLikedJobs();
+  });
+}
+
+function updateUserUI(){
+  const area = document.getElementById('user-area');
+  const likedBtn = document.getElementById('likedBtn');
+  if(currentUser){
+    const initial = (currentUser.email||'Y')[0].toUpperCase();
+    area.innerHTML=`<div class="hdr-user" onclick="handleSignOut()" style="cursor:pointer"><div class="hdr-avatar">${initial}</div><span>${currentUser.email.split('@')[0]}</span></div>`;
+    if(likedBtn) likedBtn.style.display='flex';
+  } else {
+    area.innerHTML=`<button class="sign-in-btn" onclick="openAuth('signin')">Sign in</button>`;
+    if(likedBtn) likedBtn.style.display='none';
+  }
+}
+
+async function handleSignOut(){
+  if(!confirm('Sign out of Youhvah?')) return;
+  await auth.signOut();
+  likedJobs.clear();
+}
+
+// ═══════════════════════════════════════
+// FIRESTORE — LIKED JOBS
+// ═══════════════════════════════════════
+async function loadLikedJobs(){
+  if(!db||!currentUser) return;
+  try{
+    const doc = await db.collection('users').doc(currentUser.uid).get();
+    if(doc.exists && doc.data().liked){
+      likedJobs = new Set(doc.data().liked);
+      updateLikeButtons();
+    }
+  } catch(e){ console.warn('Firestore not configured:', e.message); }
+}
+
+async function toggleLike(jobName, e){
+  e.stopPropagation();
+  if(!currentUser){ openAuth('signin'); return; }
+  if(likedJobs.has(jobName)) likedJobs.delete(jobName);
+  else likedJobs.add(jobName);
+  updateLikeButtons();
+  if(!db) return;
+  try{
+    await db.collection('users').doc(currentUser.uid).set({liked:[...likedJobs]},{merge:true});
+  } catch(err){ console.warn('Save failed:', err.message); }
+}
+
+function updateLikeButtons(){
+  document.querySelectorAll('.cc-like').forEach(btn=>{
+    const job = btn.dataset.job;
+    btn.classList.toggle('liked', likedJobs.has(job));
+    btn.title = likedJobs.has(job) ? 'Remove from saved' : 'Save career';
+    btn.textContent = likedJobs.has(job) ? '❤️' : '🤍';
+  });
+}
+
+// ═══════════════════════════════════════
+// BUILD UI
+// ═══════════════════════════════════════
+function buildBgSlides(){
+  const bg = document.getElementById('app-bg');
+  SECTORS.forEach((s,i)=>{
+    const d=document.createElement('div');
+    d.className='bg-slide'+(i===0?' active':'');
+    d.style.backgroundImage=`url(${s.bg})`;
+    bg.appendChild(d);
+  });
+}
+
+function buildProgress(){
+  const p = document.getElementById('progress');
+  SECTORS.forEach((s,i)=>{
+    const b=document.createElement('button');
+    b.className='pd'+(i===0?' active':'');
+    b.title=s.name;
+    b.onclick=()=>document.querySelectorAll('.sn')[i]?.scrollIntoView({behavior:'smooth',block:'center'});
+    p.appendChild(b);
+  });
+}
+
+function buildTimeline(){
+  const tl = document.getElementById('timeline');
+  SECTORS.forEach((s,i)=>{
+    const isRight=i%2===1;
+    const total=s.sub.reduce((a,c)=>a+c.p.length,0);
+    const n=document.createElement('div');
+    n.className='sn';n.dataset.i=i;
+    const pips=[...Array(3)].map(()=>{
+      const t=Math.random()*60+20,d=Math.random()*2;
+      return `<div class="sn-pip" style="position:absolute;top:${t}%;animation-delay:${d}s"></div>`;
+    }).join('');
+    const content=`<div class="sn-content">
+      <span class="sn-icon">${s.icon}</span>
+      <div class="sn-num">Sector ${String(i+1).padStart(2,'0')}</div>
+      <div class="sn-name">${s.name}</div>
+      <div class="sn-desc">${s.desc}</div>
+      <div class="sn-meta"><span>${total}</span> careers · <span>${s.sub.length}</span> specializations</div>
+      <button class="explore-btn" data-idx="${i}">Explore Careers →</button>
+      <div class="conn-h"></div>
+    </div>`;
+    n.innerHTML=`
+      <div class="sn-left${isRight?' sn-empty':''}">${!isRight?content:''}</div>
+      <div class="sn-dot-col" style="position:relative">${pips}<div class="sn-dot" data-idx="${i}"></div></div>
+      <div class="sn-right${!isRight?' sn-empty':''}">${isRight?content:''}</div>`;
+    tl.appendChild(n);
+  });
+  document.querySelectorAll('.sn-dot,.explore-btn').forEach(el=>{
+    el.addEventListener('click',()=>openOverlay(parseInt(el.dataset.idx)));
+  });
+}
+
+function buildFAQ(){
+  const list = document.getElementById('faq-list');
+  FAQS.forEach(f=>{
+    const item=document.createElement('div');
+    item.className='faq-item';
+    item.innerHTML=`<button class="faq-q">${f.q}<span class="faq-icon">+</span></button><div class="faq-a">${f.a}</div>`;
+    item.querySelector('.faq-q').onclick=()=>{
+      const isOpen=item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+      if(!isOpen) item.classList.add('open');
+    };
+    list.appendChild(item);
+  });
+}
+
+function buildStats(){
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting) return;
+      const el=e.target,target=+el.dataset.count;
+      let n=0;const step=target/55;
+      const t=setInterval(()=>{n=Math.min(n+step,target);el.textContent=Math.round(n).toLocaleString()+'+'||Math.round(n);if(n>=target){el.textContent=target.toLocaleString()+'+';clearInterval(t);}},16);
+      io.unobserve(el);
+    });
+  },{threshold:.5});
+  document.querySelectorAll('.stat-n').forEach(el=>io.observe(el));
+}
+
+function buildObservers(){
+  const bgSlides=document.querySelectorAll('.bg-slide');
+  const pDots=document.querySelectorAll('.pd');
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting) return;
+      const i=parseInt(e.target.dataset.i);
+      e.target.classList.add('visible');
+      if(i!==curBg){
+        bgSlides[curBg]?.classList.remove('active');
+        bgSlides[i]?.classList.add('active');
+        curBg=i;
+        pDots.forEach((d,j)=>d.classList.toggle('active',j===i));
+      }
+    });
+  },{threshold:.25});
+  document.querySelectorAll('.sn').forEach(n=>io.observe(n));
+}
+
+// Parallax
 document.addEventListener('mousemove',e=>{
-  const dx=(e.clientX/innerWidth-.5)*18;
-  const dy=(e.clientY/innerHeight-.5)*10;
-  const hi=$('heroInner');
-  if(hi) hi.style.transform=`translate(${dx}px,${dy}px)`;
+  const hi=document.getElementById('heroInner');
+  if(!hi) return;
+  const dx=(e.clientX/innerWidth-.5)*14,dy=(e.clientY/innerHeight-.5)*8;
+  hi.style.transform=`translate(${dx}px,${dy}px)`;
 });
 
-// ═══════════════════════════════════
-// TREE OVERLAY
-// ═══════════════════════════════════
-let curSector=null;
-
-function openTree(idx){
+// ═══════════════════════════════════════
+// CAREER OVERLAY
+// ═══════════════════════════════════════
+function openOverlay(idx){
   curSector=SECTORS[idx];
   const total=curSector.sub.reduce((a,c)=>a+c.p.length,0);
-  $('ovTitle').innerHTML=`<span>${curSector.icon}</span> ${curSector.name}`;
-  $('ovMeta').textContent=`${total} career paths`;
-
-  // Build tabs
-  const tabs=$('ovTabs');
+  document.getElementById('ovTitle').innerHTML=`<span>${curSector.icon}</span> ${curSector.name}`;
+  document.getElementById('ovMeta').textContent=`${total} career paths`;
+  const tabs=document.getElementById('ovTabs');
   tabs.innerHTML='';
   const all=document.createElement('button');
-  all.className='tab active';all.textContent='All';
+  all.className='ov-tab active';all.textContent='All';
   all.onclick=()=>selectTab(-1,all);
   tabs.appendChild(all);
   curSector.sub.forEach((s,i)=>{
     const b=document.createElement('button');
-    b.className='tab';b.textContent=`${s.e} ${s.n}`;
+    b.className='ov-tab';b.textContent=`${s.e} ${s.n}`;
     b.onclick=()=>selectTab(i,b);
     tabs.appendChild(b);
   });
-
   renderCards(-1);
-  $('overlay').classList.add('open');
+  document.getElementById('career-overlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
 
 function selectTab(idx,el){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.ov-tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   renderCards(idx);
 }
 
 function renderCards(subcatIdx){
-  const grid=$('cardsGrid');
+  const grid=document.getElementById('cardsGrid');
   grid.innerHTML='';
   const list=[];
-  if(subcatIdx===-1){
-    curSector.sub.forEach(s=>s.p.forEach(p=>list.push({name:p,e:s.e,sub:s.n})));
-  } else {
-    const s=curSector.sub[subcatIdx];
-    s.p.forEach(p=>list.push({name:p,e:s.e,sub:s.n}));
-  }
+  if(subcatIdx===-1) curSector.sub.forEach(s=>s.p.forEach(p=>list.push({name:p,e:s.e,sub:s.n})));
+  else { const s=curSector.sub[subcatIdx]; s.p.forEach(p=>list.push({name:p,e:s.e,sub:s.n})); }
+  if(!list.length){ grid.innerHTML='<div class="no-results">No careers found</div>'; return; }
   list.forEach((p,i)=>{
     const c=document.createElement('div');
-    c.className='cc';
-    c.style.animationDelay=(i*.028)+'s';
-    c.innerHTML=`<span class="cc-icon">${p.e}</span><div class="cc-title">${p.name}</div><div class="cc-tag">${p.sub}</div>`;
+    c.className='cc';c.style.animationDelay=(i*.025)+'s';
+    const isLiked=likedJobs.has(p.name);
+    c.innerHTML=`<button class="cc-like ${isLiked?'liked':''}" data-job="${p.name}" onclick="toggleLike('${p.name.replace(/'/g,"\\'")}',event)">${isLiked?'❤️':'🤍'}</button><span class="cc-icon">${p.e}</span><div class="cc-title">${p.name}</div><div class="cc-tag">${p.sub}</div>`;
     grid.appendChild(c);
   });
-  if(!list.length) grid.innerHTML='<div class="no-results">No careers found</div>';
 }
 
-$('ovClose').onclick=()=>{
-  $('overlay').classList.remove('open');
+function closeOverlay(){
+  document.getElementById('career-overlay').classList.remove('open');
   document.body.style.overflow='';
-};
-document.addEventListener('keydown',e=>{if(e.key==='Escape')$('ovClose').onclick()});
+}
 
-// ═══════════════════════════════════
-// SEARCH
-// ═══════════════════════════════════
-$('searchInput').addEventListener('input',e=>{
-  const q=e.target.value.trim().toLowerCase();
-  if(!q){$('overlay').classList.remove('open');document.body.style.overflow='';return;}
-
-  const results=[];
-  SECTORS.forEach(sec=>{
-    sec.sub.forEach(sub=>{
-      sub.p.forEach(p=>{
-        if(p.toLowerCase().includes(q)||sub.n.toLowerCase().includes(q)||sec.name.toLowerCase().includes(q))
-          results.push({name:p,e:sub.e,sub:`${sec.name} — ${sub.n}`});
-      });
+// Liked panel
+function openLiked(){
+  const grid=document.getElementById('likedGrid');
+  grid.innerHTML='';
+  if(!likedJobs.size){ grid.innerHTML='<div class="liked-empty">No saved careers yet.<br>Explore and tap ❤️ to save.</div>'; }
+  else {
+    [...likedJobs].forEach((name,i)=>{
+      const sector=SECTORS.find(s=>s.sub.some(sub=>sub.p.includes(name)));
+      const sub=sector?.sub.find(s=>s.p.includes(name));
+      const c=document.createElement('div');
+      c.className='cc';c.style.animationDelay=(i*.04)+'s';
+      c.innerHTML=`<button class="cc-like liked" data-job="${name}" onclick="toggleLike('${name.replace(/'/g,"\\'")}',event);setTimeout(openLiked,300)">❤️</button><span class="cc-icon">${sub?.e||'⭐'}</span><div class="cc-title">${name}</div><div class="cc-tag">${sub?.n||''} · ${sector?.name||''}</div>`;
+      grid.appendChild(c);
     });
-  });
+  }
+  document.getElementById('liked-panel').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLiked(){
+  document.getElementById('liked-panel').classList.remove('open');
+  document.body.style.overflow='';
+}
 
-  $('ovTitle').innerHTML=`🔍 "${e.target.value}"`;
-  $('ovMeta').textContent=`${results.length} result${results.length!==1?'s':''}`;
-  $('ovTabs').innerHTML='';
-  const grid=$('cardsGrid');grid.innerHTML='';
-  if(!results.length){grid.innerHTML='<div class="no-results">No careers match your search</div>';}
+// Search
+document.getElementById('searchInput').addEventListener('input',e=>{
+  const q=e.target.value.trim().toLowerCase();
+  if(!q){ closeOverlay(); return; }
+  const results=[];
+  SECTORS.forEach(sec=>sec.sub.forEach(sub=>sub.p.forEach(p=>{
+    if(p.toLowerCase().includes(q)||sub.n.toLowerCase().includes(q)||sec.name.toLowerCase().includes(q))
+      results.push({name:p,e:sub.e,sub:`${sec.name} — ${sub.n}`});
+  })));
+  document.getElementById('ovTitle').innerHTML=`🔍 Results`;
+  document.getElementById('ovMeta').textContent=`${results.length} careers found for "${e.target.value}"`;
+  document.getElementById('ovTabs').innerHTML='';
+  const grid=document.getElementById('cardsGrid');grid.innerHTML='';
+  if(!results.length){ grid.innerHTML='<div class="no-results">No careers match your search</div>'; }
   else results.forEach((p,i)=>{
-    const c=document.createElement('div');
-    c.className='cc';c.style.animationDelay=(i*.022)+'s';
-    c.innerHTML=`<span class="cc-icon">${p.e}</span><div class="cc-title">${p.name}</div><div class="cc-tag">${p.sub}</div>`;
+    const c=document.createElement('div');c.className='cc';c.style.animationDelay=(i*.02)+'s';
+    const isLiked=likedJobs.has(p.name);
+    c.innerHTML=`<button class="cc-like ${isLiked?'liked':''}" data-job="${p.name}" onclick="toggleLike('${p.name.replace(/'/g,"\\'")}',event)">${isLiked?'❤️':'🤍'}</button><span class="cc-icon">${p.e}</span><div class="cc-title">${p.name}</div><div class="cc-tag">${p.sub}</div>`;
     grid.appendChild(c);
   });
-  curSector={name:'Search'};
-  $('overlay').classList.add('open');
+  curSector={name:'Search',sub:[]};
+  document.getElementById('career-overlay').classList.add('open');
   document.body.style.overflow='hidden';
 });
 
-// ═══════════════════════════════════
-// STAT COUNTERS
-// ═══════════════════════════════════
-const statsIO=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(!e.isIntersecting)return;
-    const el=e.target;
-    const target=+el.dataset.count;
-    let n=0;const step=target/55;
-    const t=setInterval(()=>{n=Math.min(n+step,target);el.textContent=Math.round(n).toLocaleString();if(n>=target)clearInterval(t);},16);
-    statsIO.unobserve(el);
-  });
-},{threshold:.5});
-document.querySelectorAll('.stat-n').forEach(el=>statsIO.observe(el));
+// ═══════════════════════════════════════
+// CHATBOT — GROQ API
+// ═══════════════════════════════════════
+const SYSTEM_PROMPT=`You are Youhvah AI, a warm and knowledgeable career guidance assistant for the Youhvah platform. You help users in India and globally explore career paths, understand qualifications needed, learn about salaries, discover government jobs (UPSC, SSC, banking, railways, PSUs), and find the right path based on their interests and strengths.
+
+Be conversational, encouraging, and specific. When someone mentions an interest or skill, suggest 3-5 relevant careers. When asked about Indian government jobs, give detailed information about exams, eligibility, and selection process. Keep responses concise (2-4 short paragraphs max). Always end with a follow-up question to keep the conversation going. Never refuse to help with career-related questions.`;
+
+function openChat(){
+  document.getElementById('chat-panel').classList.add('open');
+  document.getElementById('chat-fab').classList.add('hidden-fab');
+  if(!chatHistory.length) addBotMsg("Hi! I'm Youhvah AI 👋 I can help you explore careers, find government jobs, understand exam patterns, or discover what path fits your interests. What are you passionate about or curious to explore?");
+}
+function closeChat(){
+  document.getElementById('chat-panel').classList.remove('open');
+  document.getElementById('chat-fab').classList.remove('hidden-fab');
+}
+
+function addBotMsg(text){
+  const msgs=document.getElementById('chatMessages');
+  const div=document.createElement('div');div.className='msg bot';div.textContent=text;
+  msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
+}
+function addUserMsg(text){
+  const msgs=document.getElementById('chatMessages');
+  const div=document.createElement('div');div.className='msg user';div.textContent=text;
+  msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
+}
+function addTyping(){
+  const msgs=document.getElementById('chatMessages');
+  const div=document.createElement('div');div.className='msg typing';div.id='typing-indicator';
+  div.innerHTML='<div class="typing-dots"><span></span><span></span><span></span></div>';
+  msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
+  return div;
+}
+
+async function sendMsg(){
+  const input=document.getElementById('chatInput');
+  const text=input.value.trim();
+  if(!text) return;
+  input.value='';
+  addUserMsg(text);
+  chatHistory.push({role:'user',content:text});
+  const typing=addTyping();
+  try{
+    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${GROQ_API_KEY}`},
+      body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:400,messages:[{role:'system',content:SYSTEM_PROMPT},...chatHistory.slice(-8)]})
+    });
+    const data=await res.json();
+    typing.remove();
+    const reply=data.choices?.[0]?.message?.content||"I'm having trouble connecting right now. Please try again!";
+    chatHistory.push({role:'assistant',content:reply});
+    addBotMsg(reply);
+  } catch(err){
+    typing.remove();
+    if(GROQ_API_KEY==='PASTE_YOUR_GROQ_API_KEY_HERE'){
+      addBotMsg("⚠️ Groq API key not configured yet. Paste your key in the code where it says PASTE_YOUR_GROQ_API_KEY_HERE.");
+    } else {
+      addBotMsg("Connection issue. Please check your internet and try again.");
+    }
+  }
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    closeOverlay();closeLiked();
+    document.getElementById('auth-modal').classList.remove('open');
+  }
+});
 </script>
 </body>
 </html>
