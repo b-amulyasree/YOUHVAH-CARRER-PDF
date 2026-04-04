@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YOUHVAH — Find Your Path</title>
+<title>Youhvah — Discover Your Destiny</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
@@ -18,9 +18,9 @@ import { getFirestore, doc, setDoc, getDoc, updateDoc }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey:"AIzaSyAIdIcd3lZvhwe8SVTpLPwX4Lmszy_tZes", authDomain:"youhvah-65b42.firebaseapp.com",
-  projectId:"youhvah-65b42", storageBucket:"youhvah-65b42.firebasestorage.app",
-  messagingSenderId:"571229917621", appId:"1:571229917621:web:388e1ac42c14c882ce89fc"
+  apiKey:"YOUR_API_KEY", authDomain:"YOUR_AUTH_DOMAIN",
+  projectId:"YOUR_PROJECT_ID", storageBucket:"YOUR_STORAGE_BUCKET",
+  messagingSenderId:"YOUR_SENDER_ID", appId:"YOUR_APP_ID"
 };
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app); const db=getFirestore(app);
@@ -444,7 +444,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;text-align:center}
   <div class="hero-orb hero-orb-3"></div>
   <div class="hero-content">
     <div class="hero-eyebrow">✦ India's Career Discovery Platform</div>
-    <h1 class="hero-title"><span class="gold">Find Your Path</span><br><span class="wine">Build Your Future</span></h1>
+    <h1 class="hero-title"><span class="gold">Find Your</span><br><span class="wine">Calling</span></h1>
     <p class="hero-subtitle">Explore 1,200+ careers across 21 sectors — from UPSC &amp; Defence to ISRO &amp; AYUSH — and discover your destiny.</p>
     <div class="hero-cta">
       <button class="btn-primary" onclick="document.getElementById('filterWizard').scrollIntoView({behavior:'smooth'})">Find My Path ↓</button>
@@ -582,7 +582,8 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;text-align:center}
       </div>
       <div class="career-grid" id="careerGrid"></div>
     </div>
-   <!-- AI Career View -->
+
+    <!-- AI Career View -->
     <div class="career-ai-view" id="careerAiView">
       <div class="ai-panel-header">
         <button class="ai-back-btn" id="aiBackBtn" onclick="backToGrid()">←</button>
@@ -602,7 +603,6 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;text-align:center}
     </div>
   </div>
 </div>
- 
 
 <!-- ═══════ SAVED PANEL ═══════ -->
 <div id="savedPanel">
@@ -651,7 +651,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 2rem;text-align:center}
   <div id="chatBox">
     <div class="chat-header">
       <div class="chat-avatar">Y</div>
-      <div><div class="chat-title">Youhvah AI</div><div class="chat-status">● Career Guide • Groq</div></div>
+      <div><div class="chat-title">Youhvah AI</div><div class="chat-status">● Career Guide · Groq</div></div>
       <button class="chat-close" onclick="toggleFloatChat()">✕</button>
     </div>
     <div class="chat-messages" id="chatMessages"></div>
@@ -936,7 +936,7 @@ function openSector(id){
   currentSector=sector;currentCareer=null;
   document.getElementById('cmIcon').textContent=sector.icon;
   document.getElementById('cmTitle').textContent=sector.name;
-  document.getElementById('cmSub').textContent=`${sector.careers.length} careers • ${sector.tagline}`;
+  document.getElementById('cmSub').textContent=`${sector.careers.length} careers · ${sector.tagline}`;
   _showGridView();
   renderCareerGrid(sector,'all','');
   document.getElementById('gridSearch').value='';currentRiskFilter='all';
@@ -951,7 +951,7 @@ function _openSectorSilent(id){
   currentSector=sector;
   document.getElementById('cmIcon').textContent=sector.icon;
   document.getElementById('cmTitle').textContent=sector.name;
-  document.getElementById('cmSub').textContent=`${sector.careers.length} careers • ${sector.tagline}`;
+  document.getElementById('cmSub').textContent=`${sector.careers.length} careers · ${sector.tagline}`;
   renderCareerGrid(sector,'all','');
   document.getElementById('careerModal').classList.add('active');
   document.body.style.overflow='hidden';
