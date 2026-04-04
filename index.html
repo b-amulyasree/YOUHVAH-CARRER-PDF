@@ -1112,7 +1112,7 @@ async function sendAiPanelMsg(text,isAuto){
       method:'POST',
       headers:{'Authorization':`Bearer ${groqKey}`,'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'llama3-70b-8192',max_tokens:500,
+        model:'llama-3.3-70b-versatile',max_tokens:500,
         messages:[
           {role:'system',content:`You are Youhvah AI — India's sharpest career guide. STRICT RULES YOU NEVER BREAK:
 • ALWAYS bullet points. NEVER paragraphs.
@@ -1219,7 +1219,7 @@ async function sendFloatChatMsg(text,isAuto){
       method:'POST',
       headers:{'Authorization':`Bearer ${groqKey}`,'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'llama3-70b-8192',max_tokens:500,
+        model:'llama-3.3-70b-versatile',max_tokens:500,
         messages:[
           {role:'system',content:`You are Youhvah AI — India's sharpest career guide. STRICT RULES YOU NEVER BREAK:
 • ALWAYS bullet points. NEVER paragraphs.
