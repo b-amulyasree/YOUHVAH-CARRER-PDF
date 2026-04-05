@@ -1281,7 +1281,7 @@ ${ctx}`},...aiPanelHistory.slice(-8)]
     const reply=data.choices[0].message.content;
     aiPanelHistory.push({role:'assistant',content:reply});
     addAiMsg(reply,'bot');
-  }catch(e){removeAiTyping();addAiMsg('Connection error. Check your Groq key.','bot')}
+  }catch(e){removeAiTyping();addAiMsg('Error: ' + e.message, 'bot')}
 }
 
 // ════════ FILTER WIZARD ════════
