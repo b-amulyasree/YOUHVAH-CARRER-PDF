@@ -1,18 +1,31 @@
-async function sendMessage(messages) {
+export default async function handler(req, res) {
   try {
-    const res = await fetch("/api/chat", {
+    if (req.method !== "POST") {
+      return res.status(405).json({ error: "Only POST allowed" });
+    }
+
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
+        "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ messages })
+      body: JSON.stringify({
+        model: "llama3-70b-8192",
+        messages: req.body.messages || [
+          { role: "user", content: "Hello" }
+        ]
+      })
     });
 
-    const data = await res.json();
+    const data = await response.json();
 
-    return data.choices?.[0]?.message?.content || "Error";
+    return res.status(200).json(data);
 
-  } catch (err) {
-    return "Connection error. Check backend.";
+  } catch (error) {
+    return res.status(500).json({
+      error: "Server crashed",
+      details: error.message
+    });
   }
 }
